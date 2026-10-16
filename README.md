@@ -24,23 +24,19 @@ Switch user (Manager or Staff) and store from the sidebar. There is no real logi
 
 ## Scripts
 
-`TODO(devin): keep this table in sync with package.json`
-
-| Command | What it does |
-|---|---|
-| `npm run dev` | Dev server |
-| `npm run check` | Typecheck, lint, repo rules, unit and component tests |
-| `npm run check:full` | `check` plus production build |
-| `npm test` | Vitest (unit, route handler and component tests) |
-| `npm run e2e` | Playwright end-to-end tests |
-| `npm run build` | Production build |
+| Command              | What it does                                          |
+| -------------------- | ----------------------------------------------------- |
+| `npm run dev`        | Dev server                                            |
+| `npm run check`      | Typecheck, lint, repo rules, unit and component tests |
+| `npm run check:full` | `check` plus production build                         |
+| `npm test`           | Vitest (unit, route handler and component tests)      |
+| `npm run e2e`        | Playwright end-to-end tests                           |
+| `npm run build`      | Production build                                      |
 
 ## Tests
 
-`TODO(devin): confirm each command works with one command from a clean clone`
-
 - Unit and route handler tests: `npm test`
-- End-to-end: `npm run e2e` (starts the app by itself and resets data between tests)
+- End-to-end: `npm run e2e` (builds the app, starts it with E2E=1 and SIMULATED_LATENCY_MS=0, runs tests)
 
 ## Tech stack
 
@@ -51,21 +47,27 @@ Extra libraries and why: `TODO(devin): list, for example papaparse for CSV parsi
 ## How it works
 
 ### How the first page of data gets from the server into TanStack Query
+
 `TODO(devin): short explanation of the server prefetch, dehydrate and HydrationBoundary flow as built, with file names. Source: docs/ARCHITECTURE.md`
 
 ### Where permissions are checked, and why in both places
+
 `TODO(devin): explain can() in lib/domain/policy.ts, the withApi wrapper, and the UI locks`
 
 ### How a double adjustment is prevented
+
 `TODO(devin): explain Idempotency-Key, stored response replay, same key with another payload, client key handling`
 
 ### How the transfer's two movements stay consistent
+
 `TODO(devin): explain transferId, transaction in the repository, validation before writes, rollback, and the tests that prove it`
 
 ### API errors
+
 One error shape everywhere. See [docs/API.md](docs/API.md) for codes.
 
 ### In-memory data and Vercel
+
 Data is seeded from JSON and kept in memory, as the brief asks. It resets when the server restarts. On Vercel each serverless instance has its own memory, so two requests can see different data. This is fine for a demo, not for production.
 
 ## Decisions for the parts that were not designed

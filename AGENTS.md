@@ -8,13 +8,13 @@ Stockroom: small inventory app for Kopi Lane (6 stores). Next.js App Router, Rou
 
 ## Docs: read only what the step needs
 
-| Doc | Read when |
-|---|---|
-| `docs/CONVENTIONS.md` | always, before writing code or tests |
-| `docs/ARCHITECTURE.md` | server, data flow, query setup, Contracts |
-| `docs/API.md` | routes, errors, adjustments |
-| `docs/IMPORT.md` | import |
-| `docs/DECISIONS.md` | edge cases and parts that were not designed |
+| Doc                    | Read when                                   |
+| ---------------------- | ------------------------------------------- |
+| `docs/CONVENTIONS.md`  | always, before writing code or tests        |
+| `docs/ARCHITECTURE.md` | server, data flow, query setup, Contracts   |
+| `docs/API.md`          | routes, errors, adjustments                 |
+| `docs/IMPORT.md`       | import                                      |
+| `docs/DECISIONS.md`    | edge cases and parts that were not designed |
 
 If a task conflicts with a doc, stop and say so.
 
@@ -22,13 +22,13 @@ If a task conflicts with a doc, stop and say so.
 
 (Created in Phase 0. Keep this table accurate.)
 
-| Command | Use |
-|---|---|
-| `npm run dev` | dev server |
-| `npm run check` | typecheck + lint + repo rules + unit/component tests |
-| `npm run check:full` | `check` + `build` (phase end only) |
-| `npm test -- <path>` | one test file while working |
-| `npm run e2e` | Playwright, only when the step says so |
+| Command              | Use                                                                          |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `npm run dev`        | dev server                                                                   |
+| `npm run check`      | typecheck + lint + repo rules + unit/component tests                         |
+| `npm run check:full` | `check` + `build` (phase end only)                                           |
+| `npm test -- <path>` | one test file while working                                                  |
+| `npm run e2e`        | Playwright (builds and starts the app with E2E=1 and SIMULATED_LATENCY_MS=0) |
 
 All scripts must exit by themselves (no watch mode, no prompts).
 
