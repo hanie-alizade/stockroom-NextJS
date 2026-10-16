@@ -180,8 +180,22 @@ src/lib/domain/dates.ts
   formatWhen(date: Date | string, now: Date): string    // "2h ago", "Today, 09:10", "Yesterday", "12 Oct"
   formatDateTime(date: Date | string): string          // "14 Oct, 10:58"
 
+src/lib/domain/stock-rules.ts
+  type MovementType = "receive" | "sell" | "write_off" | "transfer_out" | "transfer_in" | "import"
+  type MovementDraft = { productId: string; storeId: string; type: MovementType;
+    quantity: number /* signed */; balanceAfter: number; note?: string; transferId?: string }
+  isValidQuantity(quantity: number): boolean            // whole number > 0
+  canRemoveStock(onHand: number, quantity: number): boolean
+  planTransfer(input: { productId: string; from: { storeId: string; onHand: number };
+    to: { storeId: string; onHand: number }; quantity: number; transferId: string }
+  ): { out: MovementDraft; in: MovementDraft }
+    // throws AppError INSUFFICIENT_STOCK (409) or VALIDATION_ERROR with SAME_STORE (422)
+
 src/lib/domain/schemas.ts
-  adjustmentSchema, productListQuerySchema, importRequestSchema (Zod); type Adjustment = z.infer<typeof adjustmentSchema>
+  adjustmentSchema (Zod discriminated union on type): receive, sell, write_off, transfer
+  productListQuerySchema (Zod): store, q, category, status, sort, dir, page, pageSize
+  importRequestSchema (Zod): storeId, mapping, rows
+  type Adjustment = z.infer<typeof adjustmentSchema>
 
 src/lib/server/services/imports.service.ts
   parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] }   // papaparse on the server, header row required
