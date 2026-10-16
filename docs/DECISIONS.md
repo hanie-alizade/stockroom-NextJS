@@ -54,3 +54,4 @@ While the request runs: the submit button shows a spinner and "Saving...", all f
 - **Wording we wrote ourselves:** toasts for receive, sell and write-off, error toast, empty states of the Movements tab, empty catalogue for Staff, upload rejection messages and a few import messages. Listed in `docs/SCREENS.md` as "own wording".
 - **Tooltip text:** the design has two versions ("write off" and "write off or transfer"). We use the second one for both locked types.
 - **Sample-data differences in the design** (dates, "Last movement" values, the Aina or Faiz user on the same screen) are example data and are ignored.
+- **Dates:** use a fixed time zone (Asia/Kuala_Lumpur) so server and browser agree. Relative time uses a 12-hour threshold, "Yesterday" is by calendar day (not 24 hours), "Just now" covers ±1 minute, and older dates show the year when in a different year. Invalid inputs throw RangeError.
