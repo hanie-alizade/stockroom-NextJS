@@ -181,7 +181,7 @@ describe("formatWhen", () => {
 
   describe("error handling", () => {
     it("throws RangeError for 'not a date'", () => {
-      expect(() => formatWhen("not a date" as any, MORNING)).toThrow(RangeError);
+      expect(() => formatWhen("not a date", MORNING)).toThrow(RangeError);
     });
 
     it("throws RangeError for new Date(NaN)", () => {
@@ -236,6 +236,6 @@ describe("formatDateTime", () => {
   });
 
   it("throws RangeError for an invalid input", () => {
-    expect(() => formatDateTime("not a date" as any)).toThrow(RangeError);
+    expect(() => formatDateTime("not a date")).toThrow(RangeError);
   });
 });
