@@ -44,6 +44,10 @@ Next.js (App Router), TypeScript strict, Tailwind, shadcn/ui, TanStack Query, Zo
 
 Extra libraries and why: `TODO(devin): list, for example papaparse for CSV parsing in the browser`
 
+### Tokens
+
+Design tokens are defined in `src/app/globals.css` as CSS custom properties. Primitives (stone, green, sage, amber, red, blue, violet) are never exposed directly to Tailwind. Semantic tokens (bg-canvas, text-primary, accent-default, status-warn-bg, etc.) are exposed as Tailwind colors, so components use classes like `bg-bg-canvas`, `text-text-primary`, `bg-accent-default`. Text styles are Tailwind utilities (`text-page-title`, `text-body`, `text-mono`, etc.). Hex values are only allowed in globals.css.
+
 ## How it works
 
 ### How the first page of data gets from the server into TanStack Query

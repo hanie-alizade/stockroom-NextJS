@@ -1,26 +1,271 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primitives */
+  --stone-0: #ffffff;
+  --stone-25: #fbfaf8;
+  --stone-50: #f6f4f1;
+  --stone-100: #eeebe6;
+  --stone-200: #e2ded7;
+  --stone-300: #cfc9bf;
+  --stone-400: #a39c91;
+  --stone-500: #7a7368;
+  --stone-600: #5c564d;
+  --stone-900: #1e1b17;
+  --green-50: #ecf5f1;
+  --green-100: #d3e8df;
+  --green-600: #2f6b55;
+  --green-700: #24563f;
+  --green-800: #1b4232;
+  --sage-50: #eef4ec;
+  --sage-700: #3d6b2e;
+  --amber-50: #fdf4e3;
+  --amber-200: #f2d8a4;
+  --amber-700: #8a5a0b;
+  --red-50: #fcebea;
+  --red-200: #f2c2be;
+  --red-600: #b4352b;
+  --red-700: #962a22;
+  --blue-50: #eaf1fb;
+  --blue-700: #2554a3;
+  --violet-50: #f1ecf9;
+  --violet-700: #5b3f99;
+
+  /* Semantic tokens */
+  --bg-canvas: var(--stone-50);
+  --bg-surface: var(--stone-0);
+  --bg-subtle: var(--stone-25);
+  --bg-muted: var(--stone-100);
+  --bg-overlay: var(--stone-900);
+  --border-default: var(--stone-200);
+  --border-strong: var(--stone-300);
+  --border-focus: var(--green-600);
+  --text-primary: var(--stone-900);
+  --text-secondary: var(--stone-600);
+  --text-tertiary: var(--stone-500);
+  --text-disabled: var(--stone-400);
+  --text-on-accent: var(--stone-0);
+  --text-link: var(--green-700);
+  --accent-default: var(--green-700);
+  --accent-hover: var(--green-800);
+  --accent-subtle: var(--green-50);
+  --accent-disabled: var(--green-100);
+  --status-ok-bg: var(--sage-50);
+  --status-ok-fg: var(--sage-700);
+  --status-warn-bg: var(--amber-50);
+  --status-warn-fg: var(--amber-700);
+  --status-warn-border: var(--amber-200);
+  --status-danger-bg: var(--red-50);
+  --status-danger-fg: var(--red-700);
+  --status-danger-border: var(--red-200);
+  --status-danger-solid: var(--red-600);
+  --status-info-bg: var(--blue-50);
+  --status-info-fg: var(--blue-700);
+  --status-transfer-bg: var(--violet-50);
+  --status-transfer-fg: var(--violet-700);
+
+  /* shadcn aliases */
+  --background: var(--bg-canvas);
+  --foreground: var(--text-primary);
+  --card: var(--bg-surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--bg-surface);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--accent-default);
+  --primary-foreground: var(--text-on-accent);
+  --secondary: var(--bg-muted);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--bg-muted);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--accent-subtle);
+  --accent-foreground: var(--accent-default);
+  --destructive: var(--status-danger-solid);
+  --destructive-foreground: var(--text-on-accent);
+  --border: var(--border-default);
+  --input: var(--border-strong);
+  --ring: var(--border-focus);
+}
+
+@theme {
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-inherit: inherit;
+  --color-*: initial;
 }
 
 @theme inline {
+  /* Semantic tokens as Tailwind colors */
+  --color-bg-canvas: var(--bg-canvas);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-muted: var(--bg-muted);
+  --color-bg-overlay: var(--bg-overlay);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus: var(--border-focus);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-on-accent: var(--text-on-accent);
+  --color-text-link: var(--text-link);
+  --color-accent-default: var(--accent-default);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-disabled: var(--accent-disabled);
+  --color-status-ok-bg: var(--status-ok-bg);
+  --color-status-ok-fg: var(--status-ok-fg);
+  --color-status-warn-bg: var(--status-warn-bg);
+  --color-status-warn-fg: var(--status-warn-fg);
+  --color-status-warn-border: var(--status-warn-border);
+  --color-status-danger-bg: var(--status-danger-bg);
+  --color-status-danger-fg: var(--status-danger-fg);
+  --color-status-danger-border: var(--status-danger-border);
+  --color-status-danger-solid: var(--status-danger-solid);
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-fg: var(--status-info-fg);
+  --color-status-transfer-bg: var(--status-transfer-bg);
+  --color-status-transfer-fg: var(--status-transfer-fg);
+
+  /* shadcn aliases */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Spacing */
+  --spacing-2xs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+  --spacing-3xl: 32px;
+  --spacing-4xl: 40px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px 0 #1f1a140d;
+  --shadow-popover: 0 4px 12px 0 #1f1a1414, 0 1px 3px 0 #1f1a140f;
+  --shadow-dialog:
+    0 24px 48px 0 #1f1a142e, 0 2px 6px 0 #1f1a140f; /* TODO(hanie): second layers are my reading of the Figma export */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@utility text-page-title {
+  font-family: var(--font-plex-sans);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+@utility text-section {
+  font-family: var(--font-plex-sans);
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+@utility text-card {
+  font-family: var(--font-plex-sans);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+@utility text-body {
+  font-family: var(--font-plex-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+@utility text-body-strong {
+  font-family: var(--font-plex-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+
+@utility text-body-small {
+  font-family: var(--font-plex-sans);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+@utility text-label {
+  font-family: var(--font-plex-sans);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+@utility text-overline {
+  font-family: var(--font-plex-sans);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em; /* TODO(hanie): confirm */
+}
+
+@utility text-caption {
+  font-family: var(--font-plex-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+@utility text-numeric-large {
+  font-family: var(--font-plex-sans);
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+@utility text-mono {
+  font-family: var(--font-plex-mono);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+@utility text-mono-strong {
+  font-family: var(--font-plex-mono);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+@utility focus-ring {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px #2f6b5547;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-plex-sans);
 }
