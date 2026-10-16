@@ -19,6 +19,7 @@ Show it honestly. One point is drawn as a visible dot with a tooltip, and a shor
 ## 2. Parts that were not designed
 
 **Below 1024px**
+
 - 768 to 1023px: sidebar collapses into a top bar with a menu button; the table stays a table but scrolls horizontally inside its own container, with the SKU and Name columns sticky.
 - Under 768px (down to 375px): the sidebar becomes a slide-in menu holding the store switcher and the user switcher; table rows become cards (name, SKU, status badge with text, on hand and reorder level); filters collapse into one "Filters" sheet; the adjust dialog becomes a full-height sheet; pagination controls stay reachable with 44px touch targets.
 - Why: a table is still the best format when it fits, and cards avoid sideways scrolling on phones.
@@ -30,18 +31,26 @@ A summary with counts (created, updated, unchanged, skipped), a "Download skippe
 Its own empty state: "No movements yet" with one sentence of explanation, and a "Receive stock" button that opens the dialog. This is different from "no results for these filters" on the same tab, which says that the filters matched nothing and offers "Clear filters".
 
 **Staff opens /import directly**
-The link is hidden in the sidebar. If Staff open the URL anyway, the page (checked on the server) renders a "Managers only" screen with a short explanation and a link back to Products. No silent redirect, because the person should understand why. The API also returns 403 for them anyway.
+The link is hidden in the sidebar. If Staff open the URL anyway, the server-side page check redirects them to Products (as the Figma note suggests) with `?notice=managers-only`, and the list shows a small dismissible message "Import is available to managers only", so the person still understands why. The API also returns 403. (An earlier idea was a separate "Managers only" screen; the redirect is less code and follows the design.)
 
 **Saving state inside the dialog**
-While the request runs: the submit button shows a spinner and "Saving...", all fields are disabled, and closing is disabled until the request ends so the person cannot lose the result. On error the dialog stays open, keeps the typed values, shows the message at the top (and field messages under fields), and the button becomes "Try again". A retry reuses the same idempotency key for the same payload. On success, the dialog shows the new numbers for a moment, then closes and returns focus to the button that opened it. `[verify the success moment against Figma]`
+While the request runs: the submit button shows a spinner and "Saving...", all fields are disabled, and closing is disabled until the request ends so the person cannot lose the result. On error the dialog stays open, keeps the typed values, shows the message at the top (and field messages under fields), and the button becomes "Try again". A retry reuses the same idempotency key for the same payload. On success, a toast appears, the dialog closes and focus returns to the button that opened it.
 
 ## 3. Other decisions
 
-- **Summary cards ignore the search and filters.** They only follow the store scope. Otherwise clicking "Low stock" would change the very number you just clicked. `[verify]`
-- **Selection:** "select all" selects the current page only. Selection is cleared when the store, search or filters change, and kept when only the page changes. Export CSV contains the selected rows as they are shown in the current scope (SKU, name, category, status, on hand, reorder level, unit cost). Money in the export uses the `68.00` form.
+- **Summary cards ignore the search and filters.** They only follow the store scope. Otherwise clicking "Low stock" would change the very number you just clicked. The Figma note says the store scopes "cards, table, totals" and does not mention filters.
+- **Selection:** "select all" selects the current page only. Selection is cleared when the store, search or filters change (the design says a filter change resets it), and kept when only the page changes. The state keeps the selected rows' data, since rows from other pages are not loaded. Export CSV contains the selected rows as they are shown in the current scope (SKU, name, category, status, on hand, reorder level, unit cost). Money in the export uses the `68.00` form.
 - **URL state:** only non-default values are written to the URL. Filters, store, sort and page use `router.push` so Back works; the search box is debounced and uses `router.replace` while typing so history is not flooded. Changing a filter, search or the store resets page to 1.
-- **Defaults:** sort by SKU ascending, page size 10 (options 10, 25, 50). `[verify]`
-- **Write-off reason:** a required text field, trimmed, 3 to 200 characters. If Figma shows preset reasons, use them plus "Other" with text. `[verify]`
+- **Defaults:** sort by Updated, newest first, page size 25 (options 25, 50, 100). Both from the design.
+- **Status sort direction:** the design cycles descending, ascending, off for every column. For Status, descending is defined as Out, Low, In stock, so the first click shows the most urgent products and it matches the "Out first" answer above.
+- **Notes:** one `note` field on the movement. The design shows an optional Note (max 200) on Transfer and none on Sell. We also allow it on Receive (the history shows "PO-7781" on received rows). For Write-off the same field is required and labelled Reason (3 to 200 characters).
+- **Title badge in the detail page:** follows the scope totals (all stores when "All stores" is selected, that store otherwise). The stock-by-store table always shows per-store status.
 - **Error with old data on screen:** keep the old data visible and marked as possibly out of date, with a clear error banner and a Retry button. An error is never shown as "0 stock".
-- **Role handling:** a missing or invalid cookie means Staff. The switcher posts to `/api/session` and then refreshes the router and clears the query cache.
+- **Users and roles:** the design has three people (Aina Rahman Manager, Faiz Hakim Staff, Mei Ling, whose role is not shown, assumed Staff). The cookie holds a user id and the server derives the role, so a client cannot claim to be a Manager. A missing or unknown cookie falls back to the Staff user Faiz Hakim (least privilege), so a first-time visitor must use "Switch" to become a Manager. This is stated in the README. Movements record who made them (the "By" column).
+- **Products carried per store:** the design shows 248 products overall and 212 at Mont Kiara, so a product is carried only at some stores. Adjustments and the dialog lists only use stores that carry the product (else 422 `NOT_STOCKED_AT_STORE`). Import can start carrying a product at the chosen store.
 - **Chart data:** rebuilt from movements, going backwards from today's stock. The seed generator makes movements that add up to the current stock so the chart and the numbers agree.
+- **Header "Export" button on the list:** the design has one next to "Import CSV". The brief asks only for exporting the selected rows, so the header button is not built and goes under "What I cut" in the README.
+- **Status sort:** the design shows no sort icon on the Status header. We still allow sorting by it, because the Handoff notes ask how Status should sort.
+- **Wording we wrote ourselves:** toasts for receive, sell and write-off, error toast, empty states of the Movements tab, empty catalogue for Staff, upload rejection messages and a few import messages. Listed in `docs/SCREENS.md` as "own wording".
+- **Tooltip text:** the design has two versions ("write off" and "write off or transfer"). We use the second one for both locked types.
+- **Sample-data differences in the design** (dates, "Last movement" values, the Aina or Faiz user on the same screen) are example data and are ignored.

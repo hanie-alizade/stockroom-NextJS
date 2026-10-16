@@ -70,7 +70,7 @@ Every route is wrapped with `withApi(handler, options)`, which does:
 
 1. Waits about 500 ms (`SIMULATED_LATENCY_MS`, default 500).
 2. If `?fail=1`, returns a 500 `INTERNAL_ERROR` before any state is touched.
-3. Reads the role from the cookie (missing or invalid means `staff`, the least privilege).
+3. Reads the user from the cookie `stockroom_user` and takes the role from the server's user list (missing or unknown means the default Staff user, the least privilege).
 4. Checks `options.action` against `can(role, action)` and returns 403 `FORBIDDEN`.
 5. Runs the handler and maps thrown `AppError`s and `ZodError`s to the standard error shape.
 
@@ -121,8 +121,10 @@ Having one wrapper means the error format, delay and fail switch cannot drift be
 ## Seed data
 
 - `scripts/generate-seed.ts` writes `data/seed.json` using a seeded PRNG, so the data is stable between runs.
-- About 250 products, 6 stores, stock per store, reorder level per store, 30+ days of movements per product that add up to the current stock.
-- Must include on purpose: out of stock, low stock, reorder level 0, a product with no movements, a product with a single history point, and a couple of products with a long name.
+- 248 products, 6 stores, 6 categories, 7 suppliers, 3 users. A product is "carried" at a store when it has a stock row there, with its own on hand and reorder level. Mont Kiara carries exactly 212 products, the other stores a similar share (the design shows 212 and 248).
+- 90 days of movements per product that add up to the current stock (the chart ranges are 7, 30 and 90 days). Movements have a note and the user who made them, and transfers come as linked pairs.
+- Fixtures taken from the design, used in tests: KL-1042 Arabica beans 1 kg (Coffee, Highland Roasters, 6800 sen; Mont Kiara 18, Subang 4, Cheras 0, Damansara 22, Puchong 15, Shah Alam 25; reorder level 5 everywhere, so 84 on hand and 30 reorder in total); KL-1043 Robusta beans 1 kg; KL-2210 Oat milk 1 L (out of stock everywhere).
+- Must include on purpose: out of stock, low stock, reorder level 0, a product with no movements, a product with one history point, a product not carried at some stores, two long names.
 
 ## Contracts (for test-first work)
 
@@ -131,28 +133,29 @@ Exact names and paths. The Tester writes tests against these before the code exi
 ```
 src/lib/domain/errors.ts
   type ErrorCode = "INVALID_JSON" | "IDEMPOTENCY_KEY_REQUIRED" | "FORBIDDEN" | "PRODUCT_NOT_FOUND"
-    | "STORE_NOT_FOUND" | "INSUFFICIENT_STOCK" | "VALIDATION_ERROR" | "IDEMPOTENCY_KEY_REUSED"
-    | "IMPORT_TOO_LARGE" | "INTERNAL_ERROR"
+    | "STORE_NOT_FOUND" | "NOT_STOCKED_AT_STORE" | "INSUFFICIENT_STOCK" | "VALIDATION_ERROR" | "IDEMPOTENCY_KEY_REUSED"
+    | "IMPORT_TOO_LARGE" | "FILE_TOO_LARGE" | "INVALID_FILE" | "INTERNAL_ERROR"
   type FieldError = { field: string; code: string; message: string }
   class AppError extends Error { constructor(code: ErrorCode, status: number, message: string, fieldErrors?: FieldError[]) }
 
 src/lib/domain/status.ts
   type StockStatus = "in_stock" | "low" | "out"
-  getStatus(onHand: number, reorderLevel: number): StockStatus
+  getStatus(onHand: number, reorderLevel: number): StockStatus   // also used by the browser for the dialog preview
 
 src/lib/domain/money.ts
   parseMoneyToSen(input: string): number | null        // "68.00" -> 6800, "RM 68" -> 6800, "68.005" -> null
-  formatMoney(sen: number, options?: { withCurrency?: boolean }): string   // "68.00" or "RM 68.00"
+  formatMoney(sen: number, options?: { withCurrency?: boolean }): string   // "68.00", "RM 68.00", "1,234.50" (thousands separators)
 
 src/lib/domain/policy.ts
   type Role = "manager" | "staff"
+  type User = { id: string; name: string; initials: string; role: Role }
   type Action = "view" | "receive" | "sell" | "write_off" | "transfer" | "import"
   can(role: Role, action: Action): boolean
 
 src/lib/domain/stock-rules.ts
   type MovementType = "receive" | "sell" | "write_off" | "transfer_out" | "transfer_in" | "import"
   type MovementDraft = { productId: string; storeId: string; type: MovementType;
-    quantity: number /* signed */; balanceAfter: number; reason?: string; transferId?: string }
+    quantity: number /* signed */; balanceAfter: number; note?: string; transferId?: string }
   isValidQuantity(quantity: number): boolean            // whole number > 0
   canRemoveStock(onHand: number, quantity: number): boolean
   planTransfer(input: { productId: string; from: { storeId: string; onHand: number };
@@ -161,20 +164,27 @@ src/lib/domain/stock-rules.ts
     // throws AppError INSUFFICIENT_STOCK (409) or VALIDATION_ERROR with SAME_STORE (422)
 
 src/lib/domain/import-validation.ts
-  type ImportField = "sku" | "name" | "category" | "quantity" | "unitCost" | "reorderLevel"
+  type ImportField = "sku" | "name" | "category" | "quantity" | "unitCost"
   type ImportErrorCode = "MISSING_REQUIRED" | "INVALID_QUANTITY" | "INVALID_UNIT_COST" | "INVALID_SKU"
-    | "UNKNOWN_CATEGORY" | "DUPLICATE_SKU_IN_FILE" | "NAME_TOO_LONG" | "INVALID_REORDER_LEVEL"
+    | "UNKNOWN_CATEGORY" | "DUPLICATE_SKU_IN_FILE" | "NAME_TOO_LONG"
   type ImportContext = { rowNumber: number; mapping: Partial<Record<ImportField, string>>;
     categories: readonly string[]; existingSkus: ReadonlySet<string>;
-    duplicateSkuRows: ReadonlyMap<string, readonly number[]> }   // SKU -> row numbers, only SKUs seen more than once
+    duplicateOfRow?: number }   // set when an earlier row had the same SKU: the number of that first row
   type ImportRowError = { code: ImportErrorCode; field: ImportField; message: string }
   type ImportRowResult = { rowNumber: number; status: "valid" | "invalid"; action?: "create" | "update";
-    data?: { sku: string; name: string; category: string; quantity: number; unitCostSen: number; reorderLevel?: number };
+    data?: { sku: string; name: string; category: string; quantity: number; unitCostSen: number };
     errors: ImportRowError[] }
   validateImportRow(row: Record<string, string>, context: ImportContext): ImportRowResult
 
+src/lib/domain/dates.ts
+  formatWhen(date: Date | string, now: Date): string    // "2h ago", "Today, 09:10", "Yesterday", "12 Oct"
+  formatDateTime(date: Date | string): string          // "14 Oct, 10:58"
+
 src/lib/domain/schemas.ts
   adjustmentSchema, productListQuerySchema, importRequestSchema (Zod); type Adjustment = z.infer<typeof adjustmentSchema>
+
+src/lib/server/services/imports.service.ts
+  parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] }   // papaparse on the server, header row required
 
 src/lib/server/services/inventory.service.ts
   type AdjustmentResult = { movements: MovementDraft[] /* saved, with id and createdAt */; stock: { storeId: string; onHand: number }[] }
