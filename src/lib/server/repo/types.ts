@@ -85,4 +85,7 @@ export interface Repository {
 
   // Transaction: fn runs synchronously, touched rows are restored if it throws
   transaction<T>(fn: (repo: Repository) => T): T;
+
+  // Reset: restore seed data (for E2E testing)
+  reset(): void;
 }

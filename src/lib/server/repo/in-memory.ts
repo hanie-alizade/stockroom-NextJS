@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+
 import "server-only";
 
 import type {
@@ -275,6 +277,23 @@ class InMemoryRepository implements Repository {
       this.snapshots = outerSnapshots;
       throw error;
     }
+  }
+
+  reset(): void {
+    setGlobalStore({
+      stores: seedData.stores,
+      categories: seedData.categories,
+      suppliers: seedData.suppliers,
+      users: seedData.users,
+      products: new Map(seedData.products.map((p: Product) => [p.sku, p])),
+      stock: new Map(Object.entries(seedData.stock).map(([sku, stocks]) => [sku, stocks])),
+      movements: seedData.movements.map((m, i: number) => ({
+        ...m,
+        id: `m_${i}`,
+      })),
+      idempotency: new Map(),
+    });
+    this.data = getStore();
   }
 }
 

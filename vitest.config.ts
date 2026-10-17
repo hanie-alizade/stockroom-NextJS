@@ -8,12 +8,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: ["./tests/setup.ts"],
+    setupFiles: ["./vitest.setup.ts", "./tests/setup.ts"],
     exclude: ["e2e/**", "node_modules/**"],
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "server-only": path.resolve(__dirname, "./tests/stubs/server-only.ts"),
     },
   },
 });
