@@ -17,15 +17,16 @@ const productMovementsQuerySchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> | { id: string } },
 ): Promise<Response> {
   return withApi(async ({ repo }) => {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const rawParams = Object.fromEntries(searchParams.entries());
 
     const parsed = productMovementsQuerySchema.parse(rawParams);
 
-    const result = await getProductMovements(repo, params.id, {
+    const result = await getProductMovements(repo, id, {
       store: parsed.store ?? "all",
       type: parsed.type,
       from: parsed.from,

@@ -10,6 +10,7 @@ import { createRepository } from "@/lib/server/repo";
 
 export type WithApiOptions = {
   action?: Action;
+  request?: Request;
 };
 
 const SIMULATED_LATENCY_MS = Number(process.env.SIMULATED_LATENCY_MS ?? "500");
@@ -22,7 +23,8 @@ export async function withApi<T>(
   await new Promise((resolve) => setTimeout(resolve, SIMULATED_LATENCY_MS));
 
   // Fail switch
-  const url = new URL(globalThis.url ?? "", "http://localhost");
+  const requestUrl = options.request ? options.request.url : globalThis.url;
+  const url = new URL(requestUrl ?? "", "http://localhost");
   if (url.searchParams.has("fail")) {
     return errorResponse("INTERNAL_ERROR", 500, "Forced failure");
   }
@@ -42,6 +44,9 @@ export async function withApi<T>(
 
   try {
     const result = await handler({ user, repo });
+    if (result instanceof Response) {
+      return result;
+    }
     return Response.json(result);
   } catch (error) {
     if (error instanceof AppError) {

@@ -10,16 +10,17 @@ const productDetailQuerySchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> | { id: string } },
 ): Promise<Response> {
   return withApi(async ({ repo }) => {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const rawParams = Object.fromEntries(searchParams.entries());
 
     const parsed = productDetailQuerySchema.parse(rawParams);
     const store = parsed.store ?? "all";
 
-    const result = await getProductDetail(repo, params.id, store);
+    const result = await getProductDetail(repo, id, store);
 
     return result;
   });

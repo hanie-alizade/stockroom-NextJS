@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-
 import "server-only";
 
 import type {
@@ -14,28 +12,16 @@ import type {
   IdempotencyRecord,
 } from "./types";
 import type { MovementType } from "@/lib/domain/stock-rules";
+import seedJson from "@data/seed.json";
 
-interface SeedData {
-  stores: Store[];
-  categories: Category[];
-  suppliers: Supplier[];
-  users: User[];
-  products: Product[];
-  stock: Record<string, Stock[]>;
-  movements: Array<{
-    productId: string;
-    storeId: string;
-    type: MovementType;
-    quantity: number;
-    balanceAfter: number;
-    reason: string | null;
-    transferId: string | null;
-    createdAt: string;
-    userId: string;
-  }>;
+function toUser(u: { id: string; name: string; initials: string; role: string }): User {
+  return {
+    id: u.id,
+    name: u.name,
+    initials: u.initials,
+    role: u.role === "manager" ? "manager" : "staff",
+  };
 }
-
-const seedData: SeedData = require("../../../data/seed.json");
 
 const STORE_KEY = "__stockroom_store__";
 
@@ -69,13 +55,13 @@ function getStore(): StoreData {
   }
 
   const data: StoreData = {
-    stores: seedData.stores,
-    categories: seedData.categories,
-    suppliers: seedData.suppliers,
-    users: seedData.users,
-    products: new Map(seedData.products.map((p: Product) => [p.sku, p])),
-    stock: new Map(Object.entries(seedData.stock).map(([sku, stocks]) => [sku, stocks])),
-    movements: seedData.movements.map((m, i: number) => ({
+    stores: seedJson.stores,
+    categories: seedJson.categories,
+    suppliers: seedJson.suppliers,
+    users: seedJson.users.map(toUser),
+    products: new Map(seedJson.products.map((p: Product) => [p.sku, p])),
+    stock: new Map(Object.entries(seedJson.stock).map(([sku, stocks]) => [sku, stocks])),
+    movements: seedJson.movements.map((m, i: number) => ({
       ...m,
       id: `m_${i}`,
     })),
@@ -281,13 +267,13 @@ class InMemoryRepository implements Repository {
 
   reset(): void {
     setGlobalStore({
-      stores: seedData.stores,
-      categories: seedData.categories,
-      suppliers: seedData.suppliers,
-      users: seedData.users,
-      products: new Map(seedData.products.map((p: Product) => [p.sku, p])),
-      stock: new Map(Object.entries(seedData.stock).map(([sku, stocks]) => [sku, stocks])),
-      movements: seedData.movements.map((m, i: number) => ({
+      stores: seedJson.stores,
+      categories: seedJson.categories,
+      suppliers: seedJson.suppliers,
+      users: seedJson.users.map(toUser),
+      products: new Map(seedJson.products.map((p: Product) => [p.sku, p])),
+      stock: new Map(Object.entries(seedJson.stock).map(([sku, stocks]) => [sku, stocks])),
+      movements: seedJson.movements.map((m, i: number) => ({
         ...m,
         id: `m_${i}`,
       })),

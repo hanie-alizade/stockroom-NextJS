@@ -200,12 +200,16 @@ function generateProducts(): Product[] {
 
   let skuCounter = 1000;
   const targetProducts = 243;
+  const reservedSkus = new Set(["KL-1042", "KL-1043", "KL-2210"]);
 
   while (products.length < 3 + targetProducts) {
+    const sku = `KL-${skuCounter++}`;
+    if (reservedSkus.has(sku)) {
+      continue;
+    }
     const category = pick(categories);
     const names = categoryNames[category.name];
     const nameBase = pick(names);
-    const sku = `KL-${skuCounter++}`;
 
     products.push({
       sku,

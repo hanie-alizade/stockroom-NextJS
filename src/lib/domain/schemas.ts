@@ -4,12 +4,16 @@ const receiveSchema = z.object({
   type: z.literal("receive"),
   storeId: z.string(),
   quantity: z.number().int().positive(),
+  note: z.string().optional(),
+  reason: z.string().optional(),
 });
 
 const sellSchema = z.object({
   type: z.literal("sell"),
   storeId: z.string(),
   quantity: z.number().int().positive(),
+  note: z.string().optional(),
+  reason: z.string().optional(),
 });
 
 const writeOffSchema = z.object({
@@ -17,6 +21,7 @@ const writeOffSchema = z.object({
   storeId: z.string(),
   quantity: z.number().int().positive(),
   reason: z.string().trim().min(3).max(200),
+  note: z.string().optional(),
 });
 
 const transferSchema = z.object({
@@ -24,6 +29,8 @@ const transferSchema = z.object({
   fromStoreId: z.string(),
   toStoreId: z.string(),
   quantity: z.number().int().positive(),
+  note: z.string().optional(),
+  reason: z.string().optional(),
 });
 
 export const adjustmentSchema = z.discriminatedUnion("type", [

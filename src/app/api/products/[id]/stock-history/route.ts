@@ -11,15 +11,16 @@ const stockHistoryQuerySchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> | { id: string } },
 ): Promise<Response> {
   return withApi(async ({ repo }) => {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const rawParams = Object.fromEntries(searchParams.entries());
 
     const parsed = stockHistoryQuerySchema.parse(rawParams);
 
-    const result = await getStockHistory(repo, params.id, parsed.store ?? "all", parsed.days ?? 30);
+    const result = await getStockHistory(repo, id, parsed.store ?? "all", parsed.days ?? 30);
 
     return result;
   });
