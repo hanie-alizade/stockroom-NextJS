@@ -197,6 +197,19 @@ src/lib/domain/schemas.ts
   importRequestSchema (Zod): storeId, mapping, rows
   type Adjustment = z.infer<typeof adjustmentSchema>
 
+src/lib/server/repo/types.ts
+  Repository interface: getStores, getCategories, getSuppliers, getUsers, getProduct, listProducts,
+    getStock, listStock, getMovements, getIdempotency, createProduct, updateProduct, setStock,
+    addMovement, setIdempotency, transaction<T>(fn: (repo: Repository) => T): T
+  Types: Store, Category, Supplier, User, Product, Stock, Movement, IdempotencyRecord
+
+src/lib/server/repo/in-memory.ts
+  InMemoryRepository implementing Repository, stored on globalThis, loaded from data/seed.json
+  transaction runs fn synchronously, captures touched rows, restores snapshots on throw
+
+src/lib/server/repo/index.ts
+  Exports Repository type and createRepository()
+
 src/lib/server/services/imports.service.ts
   parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] }   // papaparse on the server, header row required
 

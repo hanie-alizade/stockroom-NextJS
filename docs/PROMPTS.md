@@ -173,6 +173,8 @@ Step 1.7: tests for the `withApi` wrapper at src/lib/server/http/with-api.ts (se
 Cover: the role comes from the user in the stockroom_user cookie (aina-rahman is manager, faiz-hakim is staff); a missing or unknown cookie falls back to the Staff user faiz-hakim; a client cannot set a role directly; 403 FORBIDDEN shape; ?fail=1 returns 500 INTERNAL_ERROR and does not run the handler; AppError and ZodError map to the standard shape; invalid JSON gives 400 INVALID_JSON. Docs: docs/API.md (Session, Error format, Codes).
 ```
 
+Suggested commit: feat(server): add repository interface and in-memory implementation
+
 **1.8 Implement withApi and small routes** (Builder)
 
 ```
