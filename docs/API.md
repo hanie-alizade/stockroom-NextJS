@@ -4,9 +4,9 @@ All routes live under `/api`, built with Next.js Route Handlers. Every route is 
 
 ## Session
 
-- Cookie `stockroom_role` = `manager` or `staff`.
-- Missing or invalid cookie is treated as `staff` (least privilege).
-- `POST /api/session` with `{ "role": "manager" | "staff" }` sets the cookie (used by the user switcher).
+- Cookie `stockroom_user` holds a user id (`aina-rahman`, `faiz-hakim`, `mei-ling`). The role (`manager` or `staff`) always comes from the server's user list, never from the client.
+- Missing or unknown cookie falls back to the default Staff user `faiz-hakim` (least privilege).
+- `POST /api/session` with `{ "userId": "aina-rahman" }` sets the cookie (used by the "Switch" menu).
 
 ## Error format (everywhere)
 
@@ -24,18 +24,21 @@ All routes live under `/api`, built with Next.js Route Handlers. Every route is 
 
 ## Codes and status codes
 
-| Status | `error`                    | When                                                                                                            |
-| ------ | -------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| 400    | `INVALID_JSON`             | Body is not parseable JSON                                                                                      |
-| 400    | `IDEMPOTENCY_KEY_REQUIRED` | Missing `Idempotency-Key` on a route that needs it                                                              |
-| 403    | `FORBIDDEN`                | Role cannot do this action (Staff write-off, transfer, import)                                                  |
-| 404    | `PRODUCT_NOT_FOUND`        | Unknown product id                                                                                              |
-| 404    | `STORE_NOT_FOUND`          | Unknown store id                                                                                                |
-| 409    | `INSUFFICIENT_STOCK`       | Sell, write-off or transfer would take a store below 0                                                          |
-| 422    | `VALIDATION_ERROR`         | Body or query failed validation (see `fieldErrors`), including same-store transfer and missing write-off reason |
-| 422    | `IDEMPOTENCY_KEY_REUSED`   | Same key, different payload                                                                                     |
-| 422    | `IMPORT_TOO_LARGE`         | More rows than the limit (default 2000)                                                                         |
-| 500    | `INTERNAL_ERROR`           | Unexpected error, or forced with `?fail=1`                                                                      |
+| Status | `error`                    | When                                                                                                              |
+| ------ | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 400    | `INVALID_JSON`             | Body is not parseable JSON                                                                                        |
+| 400    | `IDEMPOTENCY_KEY_REQUIRED` | Missing `Idempotency-Key` on a route that needs it                                                                |
+| 403    | `FORBIDDEN`                | Role cannot do this action (Staff write-off, transfer, import)                                                    |
+| 404    | `PRODUCT_NOT_FOUND`        | Unknown product id                                                                                                |
+| 404    | `STORE_NOT_FOUND`          | Unknown store id                                                                                                  |
+| 422    | `NOT_STOCKED_AT_STORE`     | The product is not carried at that store                                                                          |
+| 409    | `INSUFFICIENT_STOCK`       | Sell, write-off or transfer would take a store below 0                                                            |
+| 422    | `VALIDATION_ERROR`         | Body or query failed validation (see `fieldErrors`), including same-store transfer and a write-off without a note |
+| 422    | `IDEMPOTENCY_KEY_REUSED`   | Same key, different payload                                                                                       |
+| 413    | `FILE_TOO_LARGE`           | Import file over 5 MB                                                                                             |
+| 422    | `INVALID_FILE`             | Import file is not a readable CSV, or has no header row                                                           |
+| 422    | `IMPORT_TOO_LARGE`         | More rows than the limit (default 2000)                                                                           |
+| 500    | `INTERNAL_ERROR`           | Unexpected error, or forced with `?fail=1`                                                                        |
 
 Field error codes used inside `fieldErrors`: `REQUIRED`, `NOT_A_WHOLE_NUMBER`, `MUST_BE_POSITIVE`, `TOO_MANY`, `SAME_STORE`, `UNKNOWN_STORE`, `TOO_LONG`, `TOO_SHORT`.
 
@@ -43,11 +46,11 @@ Field error codes used inside `fieldErrors`: `REQUIRED`, `NOT_A_WHOLE_NUMBER`, `
 
 ### GET `/api/meta`
 
-Stores and categories for switchers and filters.
+Stores, categories and users for the switchers and filters. A store is `{ id, name }`; ids are kebab-case slugs such as `mont-kiara` or `subang`. A user is `{ id, name, initials, role }`. Also returns the current user.
 
 ### GET `/api/products`
 
-Query: `store` (`all` or a store id, default `all`), `q`, `category`, `status` (`in_stock` | `low` | `out`), `sort` (`sku` | `name` | `category` | `onHand` | `reorderLevel` | `status`), `dir` (`asc` | `desc`), `page`, `pageSize`. Validated by Zod schema.
+Query: `store` (`all` or a store id, default `all`), `q`, `category`, `status` (`in_stock` | `low` | `out`), `sort` (`updatedAt` | `sku` | `name` | `category` | `onHand` | `reorderLevel` | `unitCostSen` | `status`), `dir` (`asc` | `desc`), `page`, `pageSize` (25, 50 or 100; default 25). Default is `sort=updatedAt&dir=desc`. The client turns "sort off" into omitting both params.
 
 Response:
 
@@ -59,31 +62,35 @@ Response:
       "sku": "KL-1042",
       "name": "Arabica Beans 1kg",
       "category": "Coffee",
+      "supplier": "Highland Roasters",
       "unitCostSen": 6800,
       "onHand": 18,
       "reorderLevel": 20,
-      "status": "low"
+      "status": "low",
+      "updatedAt": "2026-10-15T08:30:00Z"
     }
   ],
   "page": 1,
   "pageSize": 10,
   "total": 247,
-  "summary": { "totalProducts": 250, "lowStock": 31, "outOfStock": 9 }
+  "summary": { "totalProducts": 250, "stockValueSen": 18452300, "lowStock": 31, "outOfStock": 9 }
 }
 ```
 
-- With `store=all`, `onHand` and `reorderLevel` are sums across stores, and `status` is calculated from those sums.
-- `summary` follows the store scope and ignores search, category, status and paging (reason in `docs/DECISIONS.md`). `[verify the card list against Figma]`
-- Status sort order is Out, Low, In stock (ascending). Ties are broken by SKU.
+- A product belongs to a store scope only if it is carried (has stock) there. `totalProducts` counts those products. With `store=all` that is every product with stock in at least one store.
+- With `store=all`, `onHand` and `reorderLevel` are sums across the stores that carry it, and `status` is calculated from those sums.
+- `summary` follows the store scope and ignores search, category, status and paging (reason in `docs/DECISIONS.md`). `stockValueSen` is the sum of `onHand` times `unitCostSen` over the scope.
+- `updatedAt` is the time of the latest movement in the scope (or the product creation time when there is none).
+- Sorting by `status`: `dir=desc` gives Out, Low, In stock (most urgent first), `asc` reverses it. Ties are broken by SKU.
 - Search is case-insensitive on name and SKU.
 
 ### GET `/api/products/:id`
 
-Query: `store`. Returns product details, totals for the scope, and `stockByStore` (all six stores with `onHand`, `reorderLevel`, `status`).
+Query: `store`. Returns product details (including `supplier`, `stockValueSen` and `lastMovementAt` for the scope), totals for the scope, and `stockByStore`: one entry per store that carries the product, with `storeId`, `onHand`, `reorderLevel`, `status`, `lastMovementAt`.
 
 ### GET `/api/products/:id/movements`
 
-Query: `store`, `type` (`receive` | `sell` | `write_off` | `transfer_out` | `transfer_in` | `import`), `from`, `to`, `page`, `pageSize`. Newest first.
+Query: `store`, `type` (`receive` | `sell` | `write_off` | `transfer_out` | `transfer_in` | `import`), `period` (`7d` | `30d` | `90d`, default `30d`), `page`, `pageSize` (25, 50 or 100). Newest first. The response also has `total` (the count shown on the tab).
 
 Movement:
 
@@ -91,55 +98,59 @@ Movement:
 {
   "id": "m_123",
   "productId": "p_001",
-  "storeId": "s_bangsar",
+  "storeId": "mont-kiara",
   "type": "transfer_out",
   "quantity": -5,
   "balanceAfter": 13,
-  "reason": null,
+  "note": null,
   "transferId": "t_77",
+  "counterpartStoreId": "subang",
   "createdAt": "2026-10-15T08:30:00Z",
-  "createdBy": "manager"
+  "by": { "id": "aina-rahman", "name": "Aina Rahman", "initials": "AR" }
 }
 ```
 
 ### GET `/api/products/:id/stock-history`
 
-Query: `store`, `days` (default 30). Daily end-of-day stock rebuilt from movements, going backwards from the current stock. Only real points are returned (a brand new product returns one point).
+Query: `store`, `days` (`7`, `30` or `90`; default 30). Daily end-of-day stock rebuilt from movements, going backwards from the current stock. Only real points are returned (a brand new product returns one point).
+
+Response: `{ "points": [ { "date": "2026-10-14", "onHand": 18 } ], "reorderLevel": 40 }`. `reorderLevel` is the sum of the reorder levels of the stores in the scope (the dashed line).
 
 ### POST `/api/products/:id/adjustments`
 
-Headers: `Idempotency-Key: <uuid>` (required). Role: Receive and Sell for everyone, Write-off and Transfer for Manager only.
+Headers: `Idempotency-Key: <uuid>` (required). Role: Receive and Sell for everyone, Write-off and Transfer for Manager only. A store must carry the product, else 422 `NOT_STOCKED_AT_STORE`.
 
-Body (discriminated union on `type`, validated by Zod schema):
+Body (discriminated union on `type`):
 
 ```json
-{ "type": "receive",   "storeId": "s_bangsar", "quantity": 10 }
-{ "type": "sell",      "storeId": "s_bangsar", "quantity": 2 }
-{ "type": "write_off", "storeId": "s_bangsar", "quantity": 1, "reason": "Expired" }
-{ "type": "transfer",  "fromStoreId": "s_bangsar", "toStoreId": "s_klcc", "quantity": 5 }
+{ "type": "receive",   "storeId": "mont-kiara", "quantity": 10 }
+{ "type": "sell",      "storeId": "mont-kiara", "quantity": 2 }
+{ "type": "write_off", "storeId": "mont-kiara", "quantity": 1, "note": "Expired" }
+{ "type": "transfer",  "fromStoreId": "mont-kiara", "toStoreId": "subang", "quantity": 5, "note": "Rebalancing" }
 ```
 
 Rules (server enforces all of them):
 
-- `quantity`: whole number, greater than 0 (Zod: `int().positive()`).
-- Sell, write-off and transfer cannot take the source below 0, else 409 `INSUFFICIENT_STOCK`.
-- Write-off requires `reason` (trimmed, 3 to 200 characters, Zod: `trim().min(3).max(200)`).
+- `quantity`: whole number, greater than 0.
+- Sell, write-off and transfer cannot take the source below 0, else 409 `INSUFFICIENT_STOCK` with a message like `Mont Kiara only has 18 on hand. Enter 18 or less.`
+- `note`: optional (up to 200 characters) for receive and transfer, required for write-off (the reason, trimmed, 3 to 200 characters). Sell has no note field.
+- Both transfer movements carry the same `note`.
 - Transfer: `fromStoreId` must differ from `toStoreId`, else 422 `VALIDATION_ERROR` with `SAME_STORE`.
 - Transfer creates two movements with the same `transferId`, in one transaction.
 
 Response 201:
 
 ```json
-{ "movements": [ ... ], "stock": [ { "storeId": "s_bangsar", "onHand": 13 }, { "storeId": "s_klcc", "onHand": 25 } ] }
+{ "movements": [ ... ], "stock": [ { "storeId": "mont-kiara", "onHand": 13 }, { "storeId": "subang", "onHand": 25 } ] }
 ```
 
 A replay of the same key and payload returns the same body and status, plus `Idempotent-Replay: true`.
 
 ### POST `/api/imports/validate`
 
-Manager only. Stateless: the browser parses the file and sends rows and mapping, the server validates everything again.
+Manager only. Stateless: the request sends the file and the mapping, and the server parses and validates everything.
 
-Body (validated by Zod schema): `{ "storeId": "...", "mapping": { "sku": "Item code", ... }, "rows": [ { "Item code": "KL-1", ... } ] }`
+Body: `multipart/form-data` with `file` (the CSV, at most 5 MB, else 413 `FILE_TOO_LARGE`; unreadable or no header, else 422 `INVALID_FILE`), `storeId`, and `mapping` (JSON text such as `{ "sku": "Item code", ... }`). The server parses the CSV itself (header row, empty lines skipped, at most 2000 rows).
 
 Response 200:
 
@@ -153,7 +164,7 @@ Nothing is saved by this route.
 
 ### POST `/api/imports/commit`
 
-Manager only. `Idempotency-Key` required. Same body as validate. The server validates again, applies the valid rows in one transaction, skips invalid ones and returns:
+Manager only. `Idempotency-Key` required. Same body as validate (the file is sent again). The server validates again, applies the valid rows in one transaction, skips invalid ones and returns:
 
 ```json
 { "created": 12, "updated": 40, "unchanged": 1, "skipped": 7, "skippedRows": [ { "rowNumber": 9, "errors": [ ... ] } ] }

@@ -1,6 +1,6 @@
 # Screens: exact copy, names and formats
 
-Source: the Figma design (Screens and Components pages). This file holds strings, names, formats and sample numbers, so tests and UI use the same wording. Behavior is in `docs/UI-NOTES.md`. "Own wording" marks text the design does not show, which we wrote ourselves.
+Source: the Figma screenshots (Screens and Components pages). This file holds strings, names, formats and sample numbers, so tests and UI use the same wording. Behavior is in `docs/UI-NOTES.md`. "Own wording" marks text the design does not show, which we wrote ourselves.
 
 ## Names
 
@@ -22,7 +22,7 @@ Source: the Figma design (Screens and Components pages). This file holds strings
 - **Status text:** badge `In stock`, `Low`, `Out of stock`. Card `Low stock`. Chip `Status: Low`. Icons: In stock circle-check, Low warning triangle, Out of stock circle-exclamation.
 - **Page sizes:** 25 (default), 50, 100.
 - **Rows:** header row height 40, body rows 52.
-- **Icons:** lucide-react, 16 px, stroke 1.8. Never emoji or font glyphs.
+- **Icons:** the Figma SVGs in `src/components/icons/`, 16 px, 1.2 stroke on the 16 grid, one color through `currentColor`. Never emoji or font glyphs.
 
 ## Products list
 

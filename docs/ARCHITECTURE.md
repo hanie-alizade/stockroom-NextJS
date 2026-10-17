@@ -23,7 +23,7 @@ Repository interface (src/lib/server/repo/types.ts)
 InMemory implementation (src/lib/server/repo/in-memory.ts), seeded from data/seed.json
 
 Pure domain (src/lib/domain), used by server AND client:
-  status.ts, stock-rules.ts, money.ts, policy.ts, import-validation.ts, schemas.ts
+  status.ts, stockRules.ts, money.ts, policy.ts, importValidation.ts, dates.ts, schemas.ts (shared types are in `src/types/`)
 ```
 
 Why the repository layer: the in-memory store is what the assignment asks for. The interface keeps services from knowing how data is stored, so a database implementation could replace it later. The interface is intentionally small: only what the rules need.
@@ -82,7 +82,7 @@ Having one wrapper means the error format, delay and fail switch cannot drift be
 2. It wraps the client component in `<HydrationBoundary state={dehydrate(queryClient)}>`.
 3. The client component calls `useQuery` with the same key, so it renders instantly from the hydrated cache and refetches by normal rules afterwards.
 4. If the prefetch fails (for example `?fail=1` on the page URL), the failed query is not dehydrated. The client then fetches by itself and shows the real error state with a retry button.
-5. Query keys are built in one file (`lib/client/query-keys.ts`) from the normalised URL params, so server and client always agree.
+5. Query keys are built in one file (`lib/client/queryKeys.ts`) from the normalised URL params, so server and client always agree.
 
 ## Writes and cache updates
 
@@ -128,92 +128,111 @@ Having one wrapper means the error format, delay and fail switch cannot drift be
 
 ## Contracts (for test-first work)
 
-Exact names and paths. The Tester writes tests against these before the code exists, so the Builder must not rename or move them without telling the author. Adding exports is fine.
+Types live in `src/types/` (one file per module, rules in `docs/CONVENTIONS.md` section 3). Functions live in the files listed below. These are the exact names and paths: do not rename or move them without telling the author. Adding exports is fine.
+
+### Types
 
 ```
-src/lib/domain/errors.ts
+src/types/common.ts
   type ErrorCode = "INVALID_JSON" | "IDEMPOTENCY_KEY_REQUIRED" | "FORBIDDEN" | "PRODUCT_NOT_FOUND"
-    | "STORE_NOT_FOUND" | "NOT_STOCKED_AT_STORE" | "INSUFFICIENT_STOCK" | "VALIDATION_ERROR" | "IDEMPOTENCY_KEY_REUSED"
-    | "IMPORT_TOO_LARGE" | "FILE_TOO_LARGE" | "INVALID_FILE" | "INTERNAL_ERROR"
+    | "STORE_NOT_FOUND" | "NOT_STOCKED_AT_STORE" | "INSUFFICIENT_STOCK" | "VALIDATION_ERROR"
+    | "IDEMPOTENCY_KEY_REUSED" | "IMPORT_TOO_LARGE" | "FILE_TOO_LARGE" | "INVALID_FILE" | "INTERNAL_ERROR"
   type FieldError = { field: string; code: string; message: string }
-  class AppError extends Error { constructor(code: ErrorCode, status: number, message: string, fieldErrors?: FieldError[]) }
+  type ApiErrorBody = { error: ErrorCode; message: string; fieldErrors: FieldError[] }
+  type Paginated<T> = { items: T[]; page: number; pageSize: number; total: number }
+  type PageSize = 25 | 50 | 100
+  type SortDirection = "asc" | "desc"
+  type IconProps = SVGProps<SVGSVGElement>
+  type IconComponent = (props: IconProps) => ReactElement
 
-src/lib/domain/status.ts
-  type StockStatus = "in_stock" | "low" | "out"
-  getStatus(onHand: number, reorderLevel: number): StockStatus   // also used by the browser for the dialog preview
+src/types/store.ts
+  type StoreId = string                       // kebab-case slug, for example "mont-kiara"
+  type Store = { id: StoreId; name: string }
+  type StoreScope = "all" | StoreId
 
-src/lib/domain/money.ts
-  parseMoneyToSen(input: string): number | null        // "68.00" -> 6800, "RM 68" -> 6800, "68.005" -> null
-  formatMoney(sen: number, options?: { withCurrency?: boolean }): string   // "68.00", "RM 68.00", "1,234.50" (thousands separators)
-
-src/lib/domain/policy.ts
+src/types/user.ts
   type Role = "manager" | "staff"
-  type User = { id: string; name: string; initials: string; role: Role }
   type Action = "view" | "receive" | "sell" | "write_off" | "transfer" | "import"
-  can(role: Role, action: Action): boolean
+  type User = { id: string; name: string; initials: string; role: Role }
 
-src/lib/domain/stock-rules.ts
+src/types/product.ts
+  type StockStatus = "in_stock" | "low" | "out"
+  type ProductSortKey = "updatedAt" | "sku" | "name" | "category" | "onHand" | "reorderLevel" | "unitCostSen" | "status"
+  type ProductListQuery = z.infer<typeof productListQuerySchema>   // store, q, category, status, sort, dir, page, pageSize
+  type ProductListItem = { id: string; sku: string; name: string; category: string; supplier: string;
+    unitCostSen: number; onHand: number; reorderLevel: number; status: StockStatus; updatedAt: string }
+  type ProductListSummary = { totalProducts: number; stockValueSen: number; lowStock: number; outOfStock: number }
+  type ProductListResponse = Paginated<ProductListItem> & { summary: ProductListSummary }
+  type StockByStore = { storeId: StoreId; onHand: number; reorderLevel: number; status: StockStatus; lastMovementAt: string | null }
+  type ProductDetail = { id: string; sku: string; name: string; category: string; supplier: string; unitCostSen: number;
+    onHand: number; reorderLevel: number; status: StockStatus; stockValueSen: number;
+    lastMovementAt: string | null; stockByStore: StockByStore[] }
+  type StockHistoryPoint = { date: string; onHand: number }
+  type StockHistory = { points: StockHistoryPoint[]; reorderLevel: number }
+
+src/types/movement.ts
   type MovementType = "receive" | "sell" | "write_off" | "transfer_out" | "transfer_in" | "import"
-  type MovementDraft = { productId: string; storeId: string; type: MovementType;
+  type MovementDraft = { productId: string; storeId: StoreId; type: MovementType;
     quantity: number /* signed */; balanceAfter: number; note?: string; transferId?: string }
-  isValidQuantity(quantity: number): boolean            // whole number > 0
-  canRemoveStock(onHand: number, quantity: number): boolean
-  planTransfer(input: { productId: string; from: { storeId: string; onHand: number };
-    to: { storeId: string; onHand: number }; quantity: number; transferId: string }
-  ): { out: MovementDraft; in: MovementDraft }
-    // throws AppError INSUFFICIENT_STOCK (409) or VALIDATION_ERROR with SAME_STORE (422)
+  type Movement = MovementDraft & { id: string; createdAt: string;
+    by: { id: string; name: string; initials: string }; counterpartStoreId?: StoreId }
+  type MovementPeriod = "7d" | "30d" | "90d"
+  type MovementListResponse = Paginated<Movement>
 
-src/lib/domain/import-validation.ts
+src/types/adjustment.ts
+  type Adjustment = z.infer<typeof adjustmentSchema>
+  type AdjustmentResult = { movements: Movement[]; stock: { storeId: StoreId; onHand: number }[] }
+
+src/types/import.ts
   type ImportField = "sku" | "name" | "category" | "quantity" | "unitCost"
   type ImportErrorCode = "MISSING_REQUIRED" | "INVALID_QUANTITY" | "INVALID_UNIT_COST" | "INVALID_SKU"
     | "UNKNOWN_CATEGORY" | "DUPLICATE_SKU_IN_FILE" | "NAME_TOO_LONG"
   type ImportContext = { rowNumber: number; mapping: Partial<Record<ImportField, string>>;
     categories: readonly string[]; existingSkus: ReadonlySet<string>;
-    duplicateOfRow?: number }   // set when an earlier row had the same SKU: the number of that first row
+    duplicateOfRow?: number }                 // set when an earlier row had the same SKU: the number of that first row
   type ImportRowError = { code: ImportErrorCode; field: ImportField; message: string }
   type ImportRowResult = { rowNumber: number; status: "valid" | "invalid"; action?: "create" | "update";
     data?: { sku: string; name: string; category: string; quantity: number; unitCostSen: number };
     errors: ImportRowError[] }
+```
+
+### Functions
+
+```
+src/lib/domain/errors.ts
+  class AppError extends Error { constructor(code: ErrorCode, status: number, message: string, fieldErrors?: FieldError[]) }
+
+src/lib/domain/status.ts
+  getStatus(onHand: number, reorderLevel: number): StockStatus   // also used by the browser for the dialog preview
+
+src/lib/domain/money.ts
+  parseMoneyToSen(input: string): number | null        // "68.00" -> 6800, "RM 68" -> 6800, "68.005" -> null
+  formatMoney(sen: number, options?: { withCurrency?: boolean }): string   // "68.00", "RM 68.00", "1,234.50"
+
+src/lib/domain/policy.ts
+  can(role: Role, action: Action): boolean
+
+src/lib/domain/stockRules.ts
+  isValidQuantity(quantity: number): boolean            // whole number > 0
+  canRemoveStock(onHand: number, quantity: number): boolean
+  planTransfer(input: { productId: string; from: { storeId: StoreId; onHand: number };
+    to: { storeId: StoreId; onHand: number }; quantity: number; transferId: string }
+  ): { out: MovementDraft; in: MovementDraft }
+    // throws AppError INSUFFICIENT_STOCK (409) or VALIDATION_ERROR with SAME_STORE (422)
+
+src/lib/domain/importValidation.ts
   validateImportRow(row: Record<string, string>, context: ImportContext): ImportRowResult
 
 src/lib/domain/dates.ts
   formatWhen(date: Date | string, now: Date): string    // "2h ago", "Today, 09:10", "Yesterday", "12 Oct"
   formatDateTime(date: Date | string): string          // "14 Oct, 10:58"
 
-src/lib/domain/stock-rules.ts
-  type MovementType = "receive" | "sell" | "write_off" | "transfer_out" | "transfer_in" | "import"
-  type MovementDraft = { productId: string; storeId: string; type: MovementType;
-    quantity: number /* signed */; balanceAfter: number; note?: string; transferId?: string }
-  isValidQuantity(quantity: number): boolean            // whole number > 0
-  canRemoveStock(onHand: number, quantity: number): boolean
-  planTransfer(input: { productId: string; from: { storeId: string; onHand: number };
-    to: { storeId: string; onHand: number }; quantity: number; transferId: string }
-  ): { out: MovementDraft; in: MovementDraft }
-    // throws AppError INSUFFICIENT_STOCK (409) or VALIDATION_ERROR with SAME_STORE (422)
-
 src/lib/domain/schemas.ts
-  adjustmentSchema (Zod discriminated union on type): receive, sell, write_off, transfer
-  productListQuerySchema (Zod): store, q, category, status, sort, dir, page, pageSize
-  importRequestSchema (Zod): storeId, mapping, rows
-  type Adjustment = z.infer<typeof adjustmentSchema>
+  adjustmentSchema, productListQuerySchema, importRequestSchema (Zod)
 
-src/lib/server/repo/types.ts
-  Repository interface: getStores, getCategories, getSuppliers, getUsers, getProduct, listProducts,
-    getStock, listStock, getMovements, getIdempotency, createProduct, updateProduct, setStock,
-    addMovement, setIdempotency, transaction<T>(fn: (repo: Repository) => T): T
-  Types: Store, Category, Supplier, User, Product, Stock, Movement, IdempotencyRecord
-
-src/lib/server/repo/in-memory.ts
-  InMemoryRepository implementing Repository, stored on globalThis, loaded from data/seed.json
-  transaction runs fn synchronously, captures touched rows, restores snapshots on throw
-
-src/lib/server/repo/index.ts
-  Exports Repository type and createRepository()
-
-src/lib/server/services/imports.service.ts
+src/lib/server/services/importsService.ts
   parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] }   // papaparse on the server, header row required
 
-src/lib/server/services/inventory.service.ts
-  type AdjustmentResult = { movements: MovementDraft[] /* saved, with id and createdAt */; stock: { storeId: string; onHand: number }[] }
+src/lib/server/services/inventoryService.ts
   createAdjustment(input: Adjustment, ctx: { role: Role; idempotencyKey: string }): Promise<AdjustmentResult>
 ```

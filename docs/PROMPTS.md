@@ -9,6 +9,8 @@ How to use:
 3. If the agent skips an item from the checklist, paste: `You skipped: <items>. Do only those.`
 4. If a check fails twice: `npm run check` failed. Failing lines: <paste only those lines>. Fix only the cause.
 
+Every task also follows these project rules (already in AGENTS.md): types come from `src/types/`, files are camelCase, icons come from `src/components/icons`.
+
 Assumption: Phase 0 (project, tooling, tokens) and the backend (domain rules, repository, routes, adjustments) exist. If a route listed in `docs/API.md` is missing, tell the agent in the first prompt.
 
 ---
@@ -23,7 +25,7 @@ Read: docs/UI-NOTES.md (Shell, Products list), docs/SCREENS.md (Names, Formats, 
 
 Feature checklist:
 1. Layout with a fixed 248px sidebar: logo block, store switcher ("All stores (6)" and the 6 stores, value in the URL as ?store=<id>), nav items Products and Suppliers and Reports (the last two disabled, aria-disabled, with the "Soon" tag), user card with a "Switch" menu listing the 3 users (POST /api/session, then router.refresh and clear the query cache). Do not add an Import link. Below 1024px the sidebar sits behind a menu button (sheet) with the same content.
-2. src/lib/client/query-keys.ts (all query keys built here), a small typed API client, a QueryClientProvider.
+2. src/lib/client/queryKeys.ts (all query keys built here), a small typed API client, a QueryClientProvider.
 3. URL-state helpers (parse and write): store, q, category, status, sort, dir, page, pageSize. Only non-default values go in the URL. Defaults: store all, sort updatedAt desc, pageSize 25 (options 25, 50, 100). Clicking a sortable header toggles desc, then asc. Changing store, search, category, status or page size resets page to 1. Search uses router.replace, everything else router.push, so Back works.
 4. Products page as a Server Component: prefetch the list with the same query key and pass it through HydrationBoundary (a failed prefetch is not dehydrated). A client component reads it with useQuery.
 5. Table with the columns from docs/SCREENS.md (no checkbox column, no row menu): SKU, Product (name with the supplier on a second line), Category, On hand, Reorder at, Status, Unit cost, Updated. SKU, numbers and money use the mono text styles. Status badge with icon and text. 0 on hand is red plus the Out of stock badge. Updated uses formatWhen. aria-sort on the active sorted th.
@@ -89,7 +91,7 @@ Attach: the three dialog screens (Transfer with error, Staff locked, Sell).
 
 ```
 Follow AGENTS.md. Task: the Adjust stock dialog UI (no network yet beyond a callback).
-Read: docs/UI-NOTES.md (Adjust stock dialog), docs/SCREENS.md (Adjust stock dialog), docs/API.md (adjustments rules), src/lib/domain/schemas.ts and stock-rules.ts (reuse them).
+Read: docs/UI-NOTES.md (Adjust stock dialog), docs/SCREENS.md (Adjust stock dialog), docs/API.md (adjustments rules), src/lib/domain/schemas.ts and stockRules.ts (reuse them).
 
 Feature checklist:
 1. A reusable component with props: product (id, name, SKU), the list of stores that carry it with their on hand, an optional initial store, an onSubmit callback, an opener ref. Use the shadcn Dialog (it provides the focus trap, Esc and focus return; verify focus returns to the opener).
@@ -121,11 +123,11 @@ Feature checklist:
 
 ```
 Follow AGENTS.md. Task: server-side CSV row validation. This is the only import work; there is no import UI and no commit route.
-Read: docs/IMPORT.md, docs/ARCHITECTURE.md (Contracts: import-validation, imports.service parseCsv), docs/SCREENS.md (Import, problem messages), docs/API.md (/api/imports/validate).
+Read: docs/IMPORT.md, docs/ARCHITECTURE.md (Contracts: importValidation, importsService parseCsv), docs/SCREENS.md (Import, problem messages), docs/API.md (/api/imports/validate).
 
 Feature checklist:
-1. src/lib/domain/import-validation.ts: validateImportRow(row, context) exactly as in the Contracts, with the exact messages from docs/SCREENS.md. Money parsed to sen without floats.
-2. src/lib/server/services/imports.service.ts: parseCsv with papaparse (header row, skip empty lines, BOM, max 2000 rows, 5 MB) and a validate function that numbers rows from 1 and marks later duplicate SKUs ("Same SKU as row N").
+1. src/lib/domain/importValidation.ts: validateImportRow(row, context) exactly as in the Contracts, with the exact messages from docs/SCREENS.md. Money parsed to sen without floats.
+2. src/lib/server/services/importsService.ts: parseCsv with papaparse (header row, skip empty lines, BOM, max 2000 rows, 5 MB) and a validate function that numbers rows from 1 and marks later duplicate SKUs ("Same SKU as row N").
 3. POST /api/imports/validate: multipart/form-data with file, storeId and mapping; Manager only through withApi (Staff get 403); returns the per-row results and the summary from docs/API.md; saves nothing. Errors: 413 FILE_TOO_LARGE, 422 INVALID_FILE, 422 IMPORT_TOO_LARGE.
 4. Tests (write them now): validateImportRow with at least six kinds of problem (missing SKU, negative quantity, decimal quantity, non-numeric unit cost, missing unit cost, unknown category, duplicate SKU, name too long), plus a valid row that is create and one that is update; route tests: Staff gets 403, Manager gets results, nothing is saved.
 5. samples/import-sample.csv with at least 50 rows, different header names ("Item code", "Description", "Group", "Qty", "Cost (RM)"), a few existing SKUs, a few new ones and broken rows of at least five kinds.
@@ -138,8 +140,8 @@ Follow AGENTS.md. Task: the two Playwright tests from the brief.
 Read: docs/SCREENS.md (names), docs/API.md (/api/test/reset, session), the existing playwright.config.ts.
 
 Feature checklist:
-1. e2e/manager-transfer.spec.ts: reset the store; sign in as Aina Rahman (Manager) with the user switcher (or set the stockroom_user cookie); on the products list filter (for example category Coffee), open a product, open Adjust stock, choose Transfer, move some units between two stores, and check that both stores' numbers changed in the Stock by store table (and the toast appeared).
-2. e2e/staff-locked.spec.ts: reset the store; as Faiz Hakim (Staff) open a product and the dialog; Write-off and Transfer are aria-disabled; also a direct POST to the adjustments API with type transfer returns 403.
+1. e2e/managerTransfer.spec.ts: reset the store; sign in as Aina Rahman (Manager) with the user switcher (or set the stockroom_user cookie); on the products list filter (for example category Coffee), open a product, open Adjust stock, choose Transfer, move some units between two stores, and check that both stores' numbers changed in the Stock by store table (and the toast appeared).
+2. e2e/staffLocked.spec.ts: reset the store; as Faiz Hakim (Staff) open a product and the dialog; Write-off and Transfer are aria-disabled; also a direct POST to the adjustments API with type transfer returns 403.
 3. Use role and label locators only, no waitForTimeout. Each test calls the reset route first.
 4. Run `npm run e2e` once at the end. If a test is flaky, report which one and why instead of looping.
 If you must make a small change in the app to make something testable (for example an accessible name), list it in the final message.
