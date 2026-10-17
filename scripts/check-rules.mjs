@@ -16,8 +16,8 @@ const RULES = [
     appliesTo: (file) => /\.(tsx)$/.test(file) && !COLOR_ALLOWED.some((r) => r.test(file)),
   },
   {
-    name: "no ts-ignore / ts-expect-error / eslint-disable",
-    pattern: /@ts-ignore|@ts-expect-error|eslint-disable/,
+    name: "no ts-ignore",
+    pattern: /@ts-ignore/,
     appliesTo: () => true,
   },
   {

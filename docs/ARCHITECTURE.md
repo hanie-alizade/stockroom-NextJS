@@ -11,49 +11,63 @@
 
 ```
 Route Handlers (src/app/api/**/route.ts)
-  parse input (Zod) -> authorize -> call service -> map errors to the standard error shape
+  parse input (Zod schemas) -> authorize -> call service -> map errors to the standard error shape
         |
-Services (src/lib/server/services)
-  inventory.service: adjustments, transfer, idempotency
-  products.service:  list, detail, summary, stock history
-  imports.service:   validate rows, commit rows
+Services (src/server/services)
+  inventory: adjustments, transfer, idempotency
+  products:  list, detail, summary, stock history
+  imports (planned, not built yet): validate rows, commit rows
         |
-Repository interface (src/lib/server/repo/types.ts)
-        |
-InMemory implementation (src/lib/server/repo/in-memory.ts), seeded from data/seed.json
+Repositories (src/server/repositories)
+  Repository interface + InMemory implementation, seeded from data/seed.json
 
-Pure domain (src/lib/domain), used by server AND client:
-  status.ts, stockRules.ts, money.ts, policy.ts, importValidation.ts, dates.ts, schemas.ts (shared types are in `src/types/`)
+Shared domain and helpers (src/domain, src/helpers), used by server AND client:
+  domain: errors.ts, status.ts, policy.ts, stockRules.ts, importValidation.ts (planned, not built yet)
+  helpers: money.ts, dates.ts
+  schemas: src/schemas/
+  types: src/types/
+  constants: src/constants/
 ```
 
 Why the repository layer: the in-memory store is what the assignment asks for. The interface keeps services from knowing how data is stored, so a database implementation could replace it later. The interface is intentionally small: only what the rules need.
 
 Trade-off to be honest about: an interface does not make a swap free. A real database implementation must give the same guarantees (a transaction for transfers, a unique constraint for idempotency keys, locking or constraints so stock cannot go negative under concurrency). The interface describes the contract. It does not provide the guarantee.
 
-## Suggested folder layout
+## Suggested folder layout (target layout, migration in progress)
 
 ```
 src/
-  app/
+  app/                         routes only (Next.js App Router)
     (app)/layout.tsx           sidebar, store switcher, user switcher
     (app)/page.tsx             products list (Server Component, prefetches)
     (app)/products/[id]/page.tsx
     (app)/import/page.tsx      role check on the server
     api/...                    route handlers
+  api/                         HTTP client
   components/
-    ui/                        shadcn
-    products/ detail/ import/ adjust/   feature components
-  lib/
-    domain/                    pure, shared, unit-tested
-    server/
-      http/                    withApi wrapper, errors
-      repo/                    interface + in-memory
-      services/
-      seed/                    loader
-    client/                    api client, query keys, hooks
-data/seed.json
+    ui/                        shadcn (kebab-case)
+    icons/                     Figma SVGs
+    common/                    shared components
+    layout/                    shell, sidebar, nav
+    <feature>/                 feature components (PascalCase folders if >1 file)
+  config/                      app configuration
+  constants/                   fixed values as const, queryKeys.ts
+  schemas/                     Zod schemas
+  types/                       shared data shapes
+  domain/                      pure business rules (errors, status, policy, stockRules)
+  helpers/                     pure helpers (money, dates)
+  hooks/                       React hooks (+ hooks/api)
+  providers/                   context providers (QueryClientProvider)
+  server/
+    http/                      withApi wrapper, errors
+    repositories/              repository interfaces and implementations
+    services/                  business services (inventory, products)
+    session/                   cookie session management
+Outside src:
+  tests/                       setup, helpers, shared mocks
+  e2e/                         Playwright specs
+  data/                        seed.json
 scripts/generate-seed.ts       deterministic seed generator (seeded PRNG)
-e2e/
 ```
 
 ## Shared domain rules (pure functions)
@@ -82,7 +96,7 @@ Having one wrapper means the error format, delay and fail switch cannot drift be
 2. It wraps the client component in `<HydrationBoundary state={dehydrate(queryClient)}>`.
 3. The client component calls `useQuery` with the same key, so it renders instantly from the hydrated cache and refetches by normal rules afterwards.
 4. If the prefetch fails (for example `?fail=1` on the page URL), the failed query is not dehydrated. The client then fetches by itself and shows the real error state with a retry button.
-5. Query keys are built in one file (`lib/client/queryKeys.ts`) from the normalised URL params, so server and client always agree.
+5. Query keys are built in `src/constants/queryKeys.ts` from the normalised URL params, so server and client always agree.
 
 ## Writes and cache updates
 
@@ -199,20 +213,20 @@ src/types/import.ts
 ### Functions
 
 ```
-src/lib/domain/errors.ts
+src/domain/errors.ts
   class AppError extends Error { constructor(code: ErrorCode, status: number, message: string, fieldErrors?: FieldError[]) }
 
-src/lib/domain/status.ts
+src/domain/status.ts
   getStatus(onHand: number, reorderLevel: number): StockStatus   // also used by the browser for the dialog preview
 
-src/lib/domain/money.ts
+src/helpers/money.ts
   parseMoneyToSen(input: string): number | null        // "68.00" -> 6800, "RM 68" -> 6800, "68.005" -> null
   formatMoney(sen: number, options?: { withCurrency?: boolean }): string   // "68.00", "RM 68.00", "1,234.50"
 
-src/lib/domain/policy.ts
+src/domain/policy.ts
   can(role: Role, action: Action): boolean
 
-src/lib/domain/stockRules.ts
+src/domain/stockRules.ts
   isValidQuantity(quantity: number): boolean            // whole number > 0
   canRemoveStock(onHand: number, quantity: number): boolean
   planTransfer(input: { productId: string; from: { storeId: StoreId; onHand: number };
@@ -220,19 +234,19 @@ src/lib/domain/stockRules.ts
   ): { out: MovementDraft; in: MovementDraft }
     // throws AppError INSUFFICIENT_STOCK (409) or VALIDATION_ERROR with SAME_STORE (422)
 
-src/lib/domain/importValidation.ts
+src/domain/importValidation.ts (planned, not built yet)
   validateImportRow(row: Record<string, string>, context: ImportContext): ImportRowResult
 
-src/lib/domain/dates.ts
+src/helpers/dates.ts
   formatWhen(date: Date | string, now: Date): string    // "2h ago", "Today, 09:10", "Yesterday", "12 Oct"
   formatDateTime(date: Date | string): string          // "14 Oct, 10:58"
 
-src/lib/domain/schemas.ts
+src/schemas/
   adjustmentSchema, productListQuerySchema, importRequestSchema (Zod)
 
-src/lib/server/services/importsService.ts
+src/server/services/importsService.ts (planned, not built yet)
   parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] }   // papaparse on the server, header row required
 
-src/lib/server/services/inventoryService.ts
+src/server/services/inventory/createAdjustment.ts
   createAdjustment(input: Adjustment, ctx: { role: Role; idempotencyKey: string }): Promise<AdjustmentResult>
 ```

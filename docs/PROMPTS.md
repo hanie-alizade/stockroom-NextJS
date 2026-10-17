@@ -1,3 +1,5 @@
+Historical prompts. Paths and conventions may be outdated, see docs/CONVENTIONS.md.
+
 # Prompts
 
 Nine prompts for the reduced scope in `docs/PLAN.md`. Copy one prompt at a time into your agent, in a new chat. The agent reads `AGENTS.md` by itself (scope rule, UI-lite rule, git rules, final message format), so the prompts only contain the task and the feature checklist.

@@ -92,7 +92,7 @@ Response:
 
 - A product belongs to a store scope only if it is carried (has stock) there. `totalProducts` counts those products. With `store=all` that is every product with stock in at least one store.
 - With `store=all`, `onHand` and `reorderLevel` are sums across the stores that carry it, and `status` is calculated from those sums.
-- `summary` follows the store scope and ignores search, category, status and paging (reason in `docs/DECISIONS.md`). `stockValueSen` is the sum of `onHand` times `unitCostSen` over the scope.
+- `summary` follows the store scope and ignores search, category, status and paging (see `docs/DECISIONS.md`). `stockValueSen` is the sum of `onHand` times `unitCostSen` over the scope.
 - `updatedAt` is the time of the latest movement in the scope (or the product creation time when there is none).
 - Sorting by `status`: `dir=desc` gives Out, Low, In stock (most urgent first), `asc` reverses it. Ties are broken by SKU.
 - Search is case-insensitive on name and SKU.
@@ -146,7 +146,7 @@ Rules (server enforces all of them):
 
 - `quantity`: whole number, greater than 0.
 - Sell, write-off and transfer cannot take the source below 0, else 409 `INSUFFICIENT_STOCK` with a message like `Mont Kiara only has 18 on hand. Enter 18 or less.`
-- `note`: optional (up to 200 characters) for receive and transfer, required for write-off (the reason, trimmed, 3 to 200 characters). Sell has no note field.
+- `note`: required for write-off (trimmed, 3 to 200 characters); optional for other types (up to 200 characters).
 - Both transfer movements carry the same `note`.
 - Transfer: `fromStoreId` must differ from `toStoreId`, else 422 `VALIDATION_ERROR` with `SAME_STORE`.
 - Transfer creates two movements with the same `transferId`, in one transaction.

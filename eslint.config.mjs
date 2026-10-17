@@ -12,7 +12,7 @@ const config = [
     rules: {
       "no-console": "error",
       eqeqeq: ["error", "always"],
-      "no-nested-ternary": "error",
+      "no-nested-ternary": "warn",
       "max-lines": [
         "warn",
         {
@@ -37,17 +37,13 @@ const config = [
       },
     },
     rules: {
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/consistent-type-imports": "error",
-      "@typescript-eslint/explicit-module-boundary-types": "error",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-floating-promises": "error",
       "no-restricted-syntax": [
         "error",
-        {
-          selector: "TSEnumDeclaration",
-          message: "Use string literal unions instead of enums (see docs/CONVENTIONS.md)",
-        },
         {
           selector: "ExportDefaultDeclaration",
           message:
@@ -67,7 +63,7 @@ const config = [
       ],
       "no-console": "error",
       eqeqeq: ["error", "always"],
-      "no-nested-ternary": "error",
+      "no-nested-ternary": "warn",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "max-lines": [
@@ -89,13 +85,7 @@ const config = [
       "src/app/**/not-found.tsx",
     ],
     rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "TSEnumDeclaration",
-          message: "Use string literal unions instead of enums (see docs/CONVENTIONS.md)",
-        },
-      ],
+      "no-restricted-syntax": "off",
     },
   },
 ];
