@@ -40,7 +40,9 @@ export const productListQuerySchema = z.object({
   q: z.string().optional(),
   category: z.string().optional(),
   status: z.enum(["in_stock", "low", "out"]).optional(),
-  sort: z.enum(["sku", "name", "category", "onHand", "reorderLevel", "status"]).optional(),
+  sort: z
+    .enum(["sku", "name", "category", "onHand", "reorderLevel", "status", "updatedAt"])
+    .optional(),
   dir: z.enum(["asc", "desc"]).optional(),
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().optional(),

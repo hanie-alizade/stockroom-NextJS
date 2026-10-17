@@ -1,5 +1,5 @@
-import type { Repository } from "./types";
+import type { Repository, Product, Stock, Movement } from "./types";
 import { createRepository } from "./in-memory";
 
-export type { Repository };
+export type { Repository, Product, Stock, Movement };
 export { createRepository };
