@@ -26,14 +26,11 @@ function toUser(u: { id: string; name: string; initials: string; role: string })
 const STORE_KEY = "__stockroom_store__";
 
 function getGlobalStore(): StoreData | null {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const value = (globalThis as Record<string, unknown>)[STORE_KEY];
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return value ? (value as StoreData) : null;
 }
 
 function setGlobalStore(data: StoreData): void {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   (globalThis as Record<string, unknown>)[STORE_KEY] = data;
 }
 
@@ -230,30 +227,27 @@ class InMemoryRepository implements Repository {
         if (snapshot === "undefined") {
           continue;
         }
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
         const value = snapshot as unknown;
         if (key.startsWith("product:")) {
           const sku = key.slice(8);
           if (value === null) {
             this.data.products.delete(sku);
           } else {
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             this.data.products.set(sku, value as Product);
           }
         } else if (key.startsWith("stock:")) {
           const parts = key.slice(6).split(":");
           const productId = parts[0];
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
           this.data.stock.set(productId, value as Stock[]);
         } else if (key === "movements") {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           this.data.movements = value as Movement[];
         } else if (key.startsWith("idempotency:")) {
           const idempotencyKey = key.slice(13);
           if (value === null) {
             this.data.idempotency.delete(idempotencyKey);
           } else {
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             this.data.idempotency.set(idempotencyKey, value as IdempotencyRecord);
           }
         }

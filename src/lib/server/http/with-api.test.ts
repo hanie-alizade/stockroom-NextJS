@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
-
 /* eslint-disable max-lines */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
