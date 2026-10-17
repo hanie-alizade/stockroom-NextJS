@@ -141,6 +141,8 @@ export async function listProducts(
       comparison = a.onHand - b.onHand;
     } else if (sort === "reorderLevel") {
       comparison = a.reorderLevel - b.reorderLevel;
+    } else if (sort === "unitCostSen") {
+      comparison = a.unitCostSen - b.unitCostSen;
     } else if (sort === "updatedAt") {
       comparison = a.updatedAt.localeCompare(b.updatedAt);
     }
