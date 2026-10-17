@@ -56,8 +56,13 @@ function getStore(): StoreData {
     categories: seedJson.categories,
     suppliers: seedJson.suppliers,
     users: seedJson.users.map(toUser),
-    products: new Map(seedJson.products.map((p: Product) => [p.sku, p])),
-    stock: new Map(Object.entries(seedJson.stock).map(([sku, stocks]) => [sku, stocks])),
+    products: new Map(seedJson.products.map((p: Product) => [p.sku, { ...p }])),
+    stock: new Map(
+      Object.entries(seedJson.stock).map(([sku, stocks]) => [
+        sku,
+        (stocks as Stock[]).map((s) => ({ ...s })),
+      ]),
+    ),
     movements: seedJson.movements.map((m, i: number) => ({
       ...m,
       id: `m_${i}`,
@@ -83,8 +88,12 @@ class InMemoryRepository implements Repository {
 
   private snapshot(key: string, value: unknown): void {
     if (!this.snapshots.has(key)) {
-      // Deep clone to capture state before modification
-      this.snapshots.set(key, JSON.parse(JSON.stringify(value)));
+      if (value === undefined) {
+        this.snapshots.set(key, undefined);
+      } else {
+        // Deep clone to capture state before modification
+        this.snapshots.set(key, JSON.parse(JSON.stringify(value)));
+      }
     }
   }
 
@@ -180,15 +189,18 @@ class InMemoryRepository implements Repository {
   setStock(productId: string, storeId: string, onHand: number, reorderLevel: number): void {
     const key = `stock:${productId}:${storeId}`;
     this.touch(key);
-    const stocks = this.data.stock.get(productId) ?? [];
-    this.snapshot(key, stocks);
+    let stocks = this.data.stock.get(productId);
+    if (!stocks) {
+      stocks = [];
+      this.data.stock.set(productId, stocks);
+    }
     const existing = stocks.find((s) => s.storeId === storeId);
+    this.snapshot(key, existing);
     if (existing) {
       existing.onHand = onHand;
       existing.reorderLevel = reorderLevel;
     } else {
       stocks.push({ storeId, onHand, reorderLevel });
-      this.data.stock.set(productId, stocks);
     }
   }
 
@@ -224,31 +236,40 @@ class InMemoryRepository implements Repository {
     } catch (error) {
       // Rollback: restore snapshots
       for (const [key, snapshot] of this.snapshots) {
-        if (snapshot === "undefined") {
-          continue;
-        }
-
-        const value = snapshot as unknown;
         if (key.startsWith("product:")) {
           const sku = key.slice(8);
-          if (value === null) {
+          if (snapshot === undefined) {
             this.data.products.delete(sku);
           } else {
-            this.data.products.set(sku, value as Product);
+            this.data.products.set(sku, snapshot as Product);
           }
         } else if (key.startsWith("stock:")) {
           const parts = key.slice(6).split(":");
           const productId = parts[0];
-
-          this.data.stock.set(productId, value as Stock[]);
+          const storeId = parts[1];
+          const stocks = this.data.stock.get(productId);
+          if (stocks) {
+            const index = stocks.findIndex((s) => s.storeId === storeId);
+            if (snapshot === undefined) {
+              if (index !== -1) {
+                stocks.splice(index, 1);
+              }
+            } else {
+              if (index !== -1) {
+                stocks[index] = snapshot as Stock;
+              } else {
+                stocks.push(snapshot as Stock);
+              }
+            }
+          }
         } else if (key === "movements") {
-          this.data.movements = value as Movement[];
+          this.data.movements = snapshot as Movement[];
         } else if (key.startsWith("idempotency:")) {
           const idempotencyKey = key.slice(13);
-          if (value === null) {
+          if (snapshot === undefined) {
             this.data.idempotency.delete(idempotencyKey);
           } else {
-            this.data.idempotency.set(idempotencyKey, value as IdempotencyRecord);
+            this.data.idempotency.set(idempotencyKey, snapshot as IdempotencyRecord);
           }
         }
       }
@@ -265,8 +286,13 @@ class InMemoryRepository implements Repository {
       categories: seedJson.categories,
       suppliers: seedJson.suppliers,
       users: seedJson.users.map(toUser),
-      products: new Map(seedJson.products.map((p: Product) => [p.sku, p])),
-      stock: new Map(Object.entries(seedJson.stock).map(([sku, stocks]) => [sku, stocks])),
+      products: new Map(seedJson.products.map((p: Product) => [p.sku, { ...p }])),
+      stock: new Map(
+        Object.entries(seedJson.stock).map(([sku, stocks]) => [
+          sku,
+          (stocks as Stock[]).map((s) => ({ ...s })),
+        ]),
+      ),
       movements: seedJson.movements.map((m, i: number) => ({
         ...m,
         id: `m_${i}`,
