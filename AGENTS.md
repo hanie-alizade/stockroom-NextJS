@@ -1,55 +1,70 @@
 # AGENTS.md
 
-Project facts and hard rules for any coding agent. Agent behavior, git rules and role skills live in `.devin/`.
+Rules for any coding agent in this repo (Devin, Cursor, Codex, Claude Code, others). Read this first.
 
 ## Project
 
-Stockroom: small inventory app for Kopi Lane (6 stores). Next.js App Router, Route Handlers as the backend, in-memory data. Take-home assignment: correctness, tests and code the author can explain live matter more than feature count. The written brief wins over Figma.
+Stockroom: small inventory app for Kopi Lane (6 stores). Next.js App Router, Route Handlers as the backend, in-memory data. Take-home assignment: correctness, a few good tests and code the author can explain live matter more than feature count. The written brief wins over Figma.
 
-## Docs: read only what the step needs
+## Scope rule (important)
+
+The docs describe the full design. The author is building a reduced version under time pressure. The feature list inside the prompt decides what to build. Anything not in that list is out of scope, even if a doc describes it. If you think something in the list is impossible or ambiguous, say so and stop.
+
+## Docs: read only what the prompt names
 
 | Doc                    | Read when                                   |
 | ---------------------- | ------------------------------------------- |
-| `docs/CONVENTIONS.md`  | always, before writing code or tests        |
+| `docs/CONVENTIONS.md`  | before writing code                         |
 | `docs/ARCHITECTURE.md` | server, data flow, query setup, Contracts   |
 | `docs/API.md`          | routes, errors, adjustments                 |
-| `docs/IMPORT.md`       | import                                      |
+| `docs/UI-NOTES.md`     | UI behavior from Figma annotations          |
+| `docs/SCREENS.md`      | exact UI copy, names, formats               |
 | `docs/DECISIONS.md`    | edge cases and parts that were not designed |
-
-If a task conflicts with a doc, stop and say so.
+| `docs/IMPORT.md`       | only for the import validation function     |
 
 ## Commands
 
-(Created in Phase 0. Keep this table accurate.)
+| Command              | Use                                   |
+| -------------------- | ------------------------------------- |
+| `npm run dev`        | dev server                            |
+| `npm run check`      | typecheck + lint + repo rules + tests |
+| `npm run check:full` | `check` + `build` (only when asked)   |
+| `npm test -- <path>` | one test file                         |
+| `npm run e2e`        | Playwright, only when asked           |
 
-| Command              | Use                                                                          |
-| -------------------- | ---------------------------------------------------------------------------- |
-| `npm run dev`        | dev server                                                                   |
-| `npm run check`      | typecheck + lint + repo rules + unit/component tests                         |
-| `npm run check:full` | `check` + `build` (phase end only)                                           |
-| `npm test -- <path>` | one test file while working                                                  |
-| `npm run e2e`        | Playwright (builds and starts the app with E2E=1 and SIMULATED_LATENCY_MS=0) |
-
-All scripts must exit by themselves (no watch mode, no prompts).
+All scripts exit by themselves (no watch mode).
 
 ## Hard rules
 
 1. TypeScript strict. No `any`, `@ts-ignore`, `@ts-expect-error`, `eslint-disable`, or `as` used to silence types. Parse unknown data with Zod.
-2. Money is integer sen. Never floats. Format only at the edge.
+2. Money is integer sen. Never floats.
 3. Status is calculated, never stored: use `getStatus()`.
-4. Every write checks `can(role, action)` on the server. The UI uses the same function only to lock or hide.
-5. Route Handlers stay thin: parse, authorize, call a service, map errors. Rules live in `lib/domain` (pure) and `lib/server/services`.
-6. Services use the repository interface only, never the arrays or maps directly.
-7. One error shape everywhere (`docs/API.md`).
-8. Theme tokens only. No hex colors or arbitrary pixel values in components.
-9. `"use client"` as low in the tree as possible. First render of list and detail is a Server Component with prefetch.
-10. Only approved dependencies (below). Ask before adding anything else.
-11. Never edit or delete a test to make it pass.
+4. Every write checks `can(role, action)` on the server. The UI uses the same function only to lock things.
+5. Route Handlers stay thin. Rules live in `lib/domain` and `lib/server/services`. Services use the repository interface only.
+6. One error shape everywhere (`docs/API.md`).
+7. Theme tokens and text-style utilities only. No hex colors, no raw `text-sm` or `font-bold`. Icons from `lucide-react` (size 16, strokeWidth 1.8).
+8. `"use client"` as low in the tree as possible. First render of list and detail is a Server Component with prefetch into TanStack Query.
+9. Only approved dependencies: next, react, typescript, tailwindcss, shadcn/ui and its Radix parts, @tanstack/react-query, zod, recharts, papaparse, vitest, @testing-library/*, jsdom, @playwright/test, eslint (+ plugins), prettier, husky, lint-staged, sonner, lucide-react. Ask before anything else.
+10. Never edit or delete an existing test to make it pass. Write new tests only when the prompt asks.
 
-Approved dependencies: next, react, typescript, tailwindcss, shadcn/ui and its Radix parts, @tanstack/react-query, zod, recharts, papaparse (CSV parsing in the browser), vitest, @testing-library/*, jsdom, @playwright/test, eslint (+ typescript-eslint, next config, import and react-hooks plugins), prettier (+ tailwind plugin), husky, lint-staged.
+## UI-lite rule
 
-## Roles (details in `.devin/skills/`)
+Build working, accessible structure with shadcn/ui components and the theme tokens. Match the region layout of the design (docs/SCREENS.md), not its pixels. Copy all texts exactly from `docs/SCREENS.md`. Do not tune spacing, sizes, shadows or colors beyond the tokens, do not add custom CSS files or animations. Tables may scroll horizontally on small screens. The author does the visual polish later.
 
-- **Builder** (`build-step`): app code only, never test files.
-- **Tester** (`test-first`, `test-after`): test files only, never app code.
-- **Reviewer** (`review-step`): read-only.
+## Working rules
+
+- Do exactly the task in the prompt. Do not start other work. Do not refactor or reformat files you did not need to change.
+- Do not open files to "understand the project". Use the docs named in the prompt.
+- Run `npm run check` once at the end, not after every edit. Use a single test file while working.
+- If a check fails, fix and run again. After the third failure of the same check, stop and report the error and your best guess. Never weaken lint, TypeScript or test config, never suppress errors, never change versions.
+- Do not create extra documents or reports. You may update the `TODO(devin)` parts of `README.md` only when the prompt says so.
+
+## Git (strict)
+
+- Never run `git commit`, `git add`, `git push`, `git stash`, `git reset`, `git checkout`, `git restore`, `git switch`, `git branch`, `git merge`, `git rebase`, or anything that changes history, branches, the index or files outside the task. Only read: `git status --short`, `git diff --stat`, `git diff -- <files>`.
+- Leave all changes uncommitted. The author reviews, accepts and commits herself. Preserve her existing uncommitted changes.
+- You may suggest one commit message as plain text: `<type>(<scope>): <description>` (types: feat, fix, refactor, test, style, perf, docs, chore).
+
+## Final message
+
+At most 8 lines: the feature checklist from the prompt with done or not done for each item, files changed, `npm run check` result, and the suggested commit message.
