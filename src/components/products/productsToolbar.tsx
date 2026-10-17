@@ -36,28 +36,35 @@ export function ProductsToolbar({
   onStatusChange,
 }: ProductsToolbarProps): React.ReactElement {
   const [inputValue, setInputValue] = useState(search);
-  const isFirstRender = useRef(true);
+  const [prevSearch, setPrevSearch] = useState(search);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Sync external search updates (e.g. browser back/forward)
-  useEffect(() => {
+  // Sync external search updates (e.g. browser back/forward or filter reset) during render
+  if (search !== prevSearch) {
+    setPrevSearch(search);
     setInputValue(search);
-  }, [search]);
+  }
 
-  // Debounce search input by 300ms
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = e.target.value;
+    setInputValue(nextValue);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
 
-    const timer = setTimeout(() => {
-      if (inputValue !== search) {
-        onSearchChange(inputValue);
-      }
+    debounceTimerRef.current = setTimeout(() => {
+      onSearchChange(nextValue);
     }, 300);
-
-    return () => clearTimeout(timer);
-  }, [inputValue, onSearchChange, search]);
+  };
 
   return (
     <div className="gap-md p-lg flex items-center">
@@ -67,7 +74,7 @@ export function ProductsToolbar({
           type="text"
           placeholder="Search name or SKU"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleSearchChange}
           className="border-border-default bg-bg-surface text-text-primary placeholder:text-text-tertiary focus:border-border-focus focus:ring-border-focus/20 text-body h-9 w-full rounded-md border pr-3 pl-9 outline-none focus:ring-2"
         />
       </div>
