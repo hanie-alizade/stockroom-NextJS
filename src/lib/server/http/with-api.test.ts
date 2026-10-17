@@ -51,12 +51,17 @@ describe("withApi", () => {
         ]),
       };
       vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
+      const mockCookies = {
         get: vi.fn(() => ({ value: "aina-rahman" })),
         size: 1,
         getAll: vi.fn(() => [{ value: "aina-rahman" }]),
         has: vi.fn(() => true),
-      } as any;
+        set: vi.fn(),
+        delete: vi.fn(),
+        *[Symbol.iterator](): Generator<[string, { name: string; value: string }]> {
+          yield ["stockroom_user", { name: "stockroom_user", value: "faiz-hakim" }];
+        },
+      };
       vi.mocked(cookies).mockResolvedValue(mockCookies as any);
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));

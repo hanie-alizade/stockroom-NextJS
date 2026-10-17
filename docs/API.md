@@ -4,9 +4,20 @@ All routes live under `/api`, built with Next.js Route Handlers. Every route is 
 
 ## Session
 
-- Cookie `stockroom_user` holds a user id (`aina-rahman`, `faiz-hakim`, `mei-ling`). The role (`manager` or `staff`) always comes from the server's user list, never from the client.
+- Cookie `stockroom_user` holds a user id (`aina-rahman`, `faiz-hakim`, `mei-ling`). The role (`manager` or `staff`) is always derived by the server from the user list, never from the client.
 - Missing or unknown cookie falls back to the default Staff user `faiz-hakim` (least privilege).
-- `POST /api/session` with `{ "userId": "aina-rahman" }` sets the cookie (used by the "Switch" menu).
+
+### POST `/api/session`
+
+Body: `{ userId: string }` (e.g., `{ "userId": "aina-rahman" }`)
+
+Response 200: `{ user: { id, name, initials, role } }`
+
+Error 400 `INVALID_JSON`: Body is not parseable JSON.
+
+Error 422 `VALIDATION_ERROR`: Unknown user id. Field errors: `[{ field: "userId", code: "UNKNOWN_USER", message: "Unknown user." }]`. The cookie is not set in this case.
+
+On success, the cookie `stockroom_user` is set with the user id (path `/`, httpOnly, sameSite `lax`).
 
 ## Error format (everywhere)
 
@@ -46,7 +57,9 @@ Field error codes used inside `fieldErrors`: `REQUIRED`, `NOT_A_WHOLE_NUMBER`, `
 
 ### GET `/api/meta`
 
-Stores, categories and users for the switchers and filters. A store is `{ id, name }`; ids are kebab-case slugs such as `mont-kiara` or `subang`. A user is `{ id, name, initials, role }`. Also returns the current user.
+Stores, categories and users for the switchers and filters. A store is `{ id, name }`; ids are kebab-case slugs such as `mont-kiara` or `subang`. A user is `{ id, name, initials, role }`.
+
+Response: `{ stores, categories, users, currentUser }`. `currentUser` is the user derived from the cookie (or the default Staff user if missing/unknown).
 
 ### GET `/api/products`
 
