@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/components/providers";
 import { AppShell } from "@/components/layout/appShell";
 import "./globals.css";
 
@@ -30,10 +30,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <TooltipProvider>
+        <Providers>
           <AppShell>{children}</AppShell>
-        </TooltipProvider>
-        <Toaster />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

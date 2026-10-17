@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ArrowDownIcon, ArrowUpIcon, CloseIcon, UploadIcon } from "@/components/icons";
-import type { MovementType } from "@/types/movement";
+import type { MovementType } from "@/lib/types/movement";
 
 interface MovementTypePillProps {
   type: MovementType;
