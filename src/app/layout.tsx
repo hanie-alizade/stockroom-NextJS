@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
+import { SessionProvider } from "@/components/providers/session-provider";
 import { AppShell } from "@/components/layout/appShell";
+import { getCurrentUser } from "@/lib/server/session";
+import { getMeta } from "@/lib/server/services/meta";
+import { createRepository } from "@/lib/server/repo";
+import { queryKeys } from "@/lib/constants/query-keys";
 import "./globals.css";
 
 const plexSans = IBM_Plex_Sans({
@@ -22,16 +28,33 @@ export const metadata: Metadata = {
   description: "Stock app for Kopi Lane",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): React.ReactElement {
+}): Promise<React.ReactElement> {
+  const user = await getCurrentUser();
+  const repo = createRepository();
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.meta.all,
+    queryFn: () => getMeta(repo, user),
+  });
+
+  const dehydratedState = dehydrate(queryClient, {
+    shouldDehydrateQuery: (query) => query.state.status === "success",
+  });
+
   return (
     <html lang="en" className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <Providers>
-          <AppShell>{children}</AppShell>
+          <HydrationBoundary state={dehydratedState}>
+            <SessionProvider user={user}>
+              <AppShell>{children}</AppShell>
+            </SessionProvider>
+          </HydrationBoundary>
           <Toaster />
         </Providers>
       </body>

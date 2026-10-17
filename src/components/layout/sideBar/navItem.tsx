@@ -20,7 +20,7 @@ export function NavItem({
   badgeText,
 }: NavItemProps): React.ReactElement {
   const baseClasses =
-    "flex h-9 w-[223px] items-center gap-2 rounded-lg px-3 text-sm transition-colors";
+    "flex h-9 w-[223px] items-center gap-2 rounded-lg px-3 text-body-strong transition-colors";
 
   if (disabled) {
     return (
@@ -28,9 +28,9 @@ export function NavItem({
         <Icon className="text-text-disabled size-4 shrink-0" />
         <span className="text-body-strong">{label}</span>
         {badgeText && (
-          <Badge variant="outline" className="ml-auto">
+          <span className="bg-bg-muted text-text-tertiary text-caption ml-auto rounded-full px-2 py-0.5">
             {badgeText}
-          </Badge>
+          </span>
         )}
       </div>
     );

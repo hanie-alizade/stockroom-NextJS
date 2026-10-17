@@ -63,7 +63,7 @@ export function StoreSelector(): React.ReactElement {
       <Select value={value} onValueChange={handleValueChange}>
         <SelectTrigger className="h-8 w-full" data-size="sm">
           <SupplierIcon className="shrink-0" />
-          <SelectValue />
+          <SelectValue className="flex-1 text-left" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All stores ({meta.stores.length})</SelectItem>

@@ -1,12 +1,12 @@
 import "server-only";
 
-import { cookies } from "next/headers";
 import { ZodError } from "zod";
 
 import { AppError, type ErrorCode, type FieldError } from "@/lib/domain/errors";
 import type { Role, User, Action } from "@/lib/domain/policy";
 import { can } from "@/lib/domain/policy";
 import { createRepository } from "@/lib/server/repo";
+import { getCurrentUser } from "@/lib/server/session";
 
 export type WithApiOptions = {
   action?: Action;
@@ -30,12 +30,8 @@ export async function withApi<T>(
   }
 
   // Get user from cookie
+  const user = await getCurrentUser();
   const repo = createRepository();
-  const users = repo.getUsers();
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("stockroom_user")?.value;
-  const user =
-    users.find((u) => u.id === userId) ?? users.find((u) => u.role === "staff") ?? users[0];
 
   // Authorization
   if (options.action && !can(user.role, options.action)) {

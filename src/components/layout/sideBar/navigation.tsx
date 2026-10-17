@@ -3,21 +3,20 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { BoxIcon, UploadIcon, SupplierIcon, ReportIcon } from "@/components/icons";
 import { NavItem } from "./navItem";
-import { useQueryMeta } from "@/lib/client/apiHooks";
-import { can } from "@/lib/domain/policy";
+import { useCan } from "@/components/providers/session-provider";
 
 export function Navigation(): React.ReactElement {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { data: meta, isLoading } = useQueryMeta();
+  const canImport = useCan("import");
 
-  const isProductsActive = pathname === "/" || pathname.startsWith("/products/");
+  const isProductsActive = pathname.startsWith("/products");
   const isImportActive = pathname === "/import";
 
   const currentStore = searchParams.get("store");
-  const productsHref = currentStore ? `/?store=${currentStore}` : "/";
+  const productsHref = currentStore ? `/products?store=${currentStore}` : "/products";
 
-  const showImport = !isLoading && meta && can(meta.currentUser.role, "import");
+  const showImport = canImport;
 
   return (
     <nav className="flex flex-col gap-1">

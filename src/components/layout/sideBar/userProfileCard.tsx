@@ -13,33 +13,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CheckIcon } from "@/components/icons";
 import { useQueryMeta, useMutationSwitchUser } from "@/lib/client/apiHooks";
-import { queryKeys } from "@/lib/constants/query-keys";
+import { useCurrentUser } from "@/components/providers/session-provider";
 
 export function UserProfileCard(): React.ReactElement | null {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: meta, isLoading } = useQueryMeta();
+  const currentUser = useCurrentUser();
 
   const switchUserMutation = useMutationSwitchUser();
 
   const handleSwitchUser = (userId: string): void => {
-    if (!meta) return;
-
-    if (userId === meta.currentUser.id) {
+    if (userId === currentUser.id) {
       return;
     }
 
     switchUserMutation.mutate(userId, {
       onSuccess: async () => {
-        await queryClient.invalidateQueries();
-        await queryClient.refetchQueries({ queryKey: queryKeys.meta.all });
+        queryClient.clear();
         router.refresh();
       },
       onError: (error) => {
         const apiError = error as unknown as { body: { message: string } };
-        toast.error("Couldn't switch user", {
-          description: apiError.body?.message || "An error occurred",
-        });
+        toast.error(apiError.body?.message || "An error occurred");
       },
     });
   };
@@ -57,59 +53,55 @@ export function UserProfileCard(): React.ReactElement | null {
     );
   }
 
-  if (!meta) {
-    return (
-      <div className="border-border-default bg-bg-surface flex items-center gap-3 rounded-lg border p-3">
-        <div className="flex flex-1 flex-col">
-          <span className="text-body-strong text-text-primary">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
-  const roleLabel = meta.currentUser.role === "manager" ? "Manager" : "Staff";
+  const roleLabel = currentUser.role === "manager" ? "Manager" : "Staff";
 
   return (
     <div className="border-border-default bg-bg-surface flex items-center gap-3 rounded-lg border p-3">
       <Avatar className="size-8">
-        <AvatarFallback className="bg-accent-subtle text-accent-default text-xs">
-          {meta.currentUser.initials}
+        <AvatarFallback className="bg-accent-subtle text-accent-default text-caption">
+          {currentUser.initials}
         </AvatarFallback>
       </Avatar>
 
       <div className="flex flex-1 flex-col">
-        <span className="text-body-strong text-text-primary">{meta.currentUser.name}</span>
+        <span className="text-body-strong text-text-primary">{currentUser.name}</span>
         <span className="text-caption text-text-secondary">{roleLabel}</span>
       </div>
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild disabled={switchUserMutation.isPending}>
+        <DropdownMenuTrigger asChild disabled={switchUserMutation.isPending || !meta}>
           <button
             type="button"
-            className="text-accent-default hover:text-accent-hover focus-visible:ring-border-focus text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="text-accent-default hover:text-accent-hover focus-visible:ring-border-focus text-label transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             Switch
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {meta.users.map((user) => {
-            const isCurrent = user.id === meta.currentUser.id;
-            const userRoleLabel = user.role === "manager" ? "Manager" : "Staff";
+          {meta ? (
+            meta.users.map((user) => {
+              const isCurrent = user.id === currentUser.id;
+              const userRoleLabel = user.role === "manager" ? "Manager" : "Staff";
 
-            return (
-              <DropdownMenuItem
-                key={user.id}
-                onClick={() => handleSwitchUser(user.id)}
-                disabled={isCurrent || switchUserMutation.isPending}
-              >
-                <div className="flex flex-1 flex-col">
-                  <span className="text-sm">{user.name}</span>
-                  <span className="text-text-secondary text-xs">{userRoleLabel}</span>
-                </div>
-                {isCurrent && <CheckIcon className="text-accent-default size-4" />}
-              </DropdownMenuItem>
-            );
-          })}
+              return (
+                <DropdownMenuItem
+                  key={user.id}
+                  onClick={() => handleSwitchUser(user.id)}
+                  disabled={isCurrent || switchUserMutation.isPending}
+                >
+                  <div className="flex flex-1 flex-col">
+                    <span className="text-body">{user.name}</span>
+                    <span className="text-caption text-text-secondary">{userRoleLabel}</span>
+                  </div>
+                  {isCurrent && <CheckIcon className="text-accent-default size-4" />}
+                </DropdownMenuItem>
+              );
+            })
+          ) : (
+            <DropdownMenuItem disabled>
+              <Skeleton className="h-4 w-24" />
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
