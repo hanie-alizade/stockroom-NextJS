@@ -1,6 +1,6 @@
 # Screens: exact copy, names and formats
 
-Source: the Figma screenshots (Screens and Components pages). This file holds strings, names, formats and sample numbers, so tests and UI use the same wording. Behavior is in `docs/UI-NOTES.md`. "Own wording" marks text the design does not show, which we wrote ourselves.
+Source: the Figma screenshots (Screens and Components pages). This file holds strings, names, formats and sample numbers, so tests and UI use the same wording. When a line says "not built", the UI differs from this file on purpose. Behavior is in `docs/UI-NOTES.md`. "Own wording" marks text the design does not show, which we wrote ourselves.
 
 ## Names
 
@@ -26,8 +26,13 @@ Source: the Figma screenshots (Screens and Components pages). This file holds st
 
 ## Products list
 
+<<<<<<< Updated upstream
 - **Title and subtitle:** "Products"; all stores `248 products across 6 stores`; one store `212 products at Mont Kiara`. (The design also shows `· synced 2 min ago`; optional, Phase 7.)
 - **Header button:** "Import CSV" (Managers only). The design also has an "Export" button here; we do not build it (selected-rows export is the one the brief asks for).
+=======
+- **Title and subtitle:** "Products"; all stores `248 products across 6 stores`; one store `212 products at Mont Kiara`. The design also shows `· synced 2 min ago`; it is built (relative to the last successful fetch).
+- **Header buttons:** "Export" (secondary, exports all filtered rows in the current sort, visible for every role) placed before "Import CSV" (Managers only).
+>>>>>>> Stashed changes
 - **Cards** (title / value / subtitle): Products / `248` / "Across 6 categories" (one store: "Active at this store"); Stock value / `RM 182,430.50` / "At unit cost, all stores" (one store: "At unit cost"); Low stock / `17` in amber / "At or below reorder level"; Out of stock / `6` in red / "Needs a reorder". Loading: value is the dash placeholder (U+2014), subtitles stay.
 - **Toolbar:** search placeholder "Search name or SKU"; dropdowns "All categories", "All statuses"; right side `248 results`. Status options: All statuses, In stock, Low, Out of stock (own wording).
 - **Columns, in order:** checkbox (select all), SKU, Product (name, with the supplier on a second line), Category, On hand, Reorder at, Status, Unit cost, Updated, `···`. Sortable: SKU, Product, Category, On hand, Reorder at, Unit cost, Updated. Status has no sort icon in the design; we still sort it (see DECISIONS).
@@ -37,7 +42,7 @@ Source: the Figma screenshots (Screens and Components pages). This file holds st
 - **Empty, no catalogue:** icon box; "No products yet"; "Import a CSV to get started. You can download a template first."; button "Import CSV" (Managers; for Staff, no button, own wording: "Ask a manager to import products.").
 - **Error:** red banner "We couldn't load products" / "The server returned an error (500). Your data hasn't changed." with link "Try again"; below it the centered state icon "!" "Something went wrong" / "We couldn't load this page. Your data is safe." with button "Try again". Both do the same thing: refetch the list.
 - **Footer:** "Rows per page" select, range text, previous and next icon buttons (own wording for labels: "Previous page", "Next page").
-- **Menu:** `···` has one item: "Adjust stock".
+- **Menu:** the design has a `···` menu with one item, "Adjust stock". Not built: the `···` button renders (accessible name "Row actions") but opens nothing. See `docs/DECISIONS.md` section 4.
 
 ## Product detail
 
