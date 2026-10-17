@@ -1,13 +1,8 @@
-/* eslint-disable max-lines */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { withApi } from "./with-api";
 import { cookies } from "next/headers";
 import { createRepository } from "@/lib/server/repo";
-import { AppError } from "@/lib/domain/errors";
-import type { Repository } from "@/lib/server/repo";
+import { mockCookies, mockRepository } from "tests/helpers";
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
@@ -16,20 +11,6 @@ vi.mock("next/headers", () => ({
 vi.mock("@/lib/server/repo", () => ({
   createRepository: vi.fn(),
 }));
-
-type MockRepository = Partial<Repository> & {
-  getUsers: () => Array<{ id: string; name: string; initials: string; role: "manager" | "staff" }>;
-};
-
-type MockUser = { id: string; name: string; initials: string; role: "manager" | "staff" };
-
-type MockCookies = {
-  get: (name: string) => { value: string } | undefined;
-  size: number;
-  getAll: (name?: string) => Array<{ value: string }>;
-  has: (name: string) => boolean;
-  [Symbol.iterator]?: () => IterableIterator<[string, { value: string }]>;
-};
 
 declare global {
   var url: string | URL | undefined;
@@ -40,29 +21,12 @@ describe("withApi", () => {
     process.env.SIMULATED_LATENCY_MS = "0";
     vi.clearAllMocks();
     globalThis.url = new URL("http://localhost");
+    vi.mocked(createRepository).mockReturnValue(mockRepository());
   });
 
   describe("user from cookie", () => {
     it("uses manager user when cookie has aina-rahman", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies = {
-        get: vi.fn(() => ({ value: "aina-rahman" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "aina-rahman" }]),
-        has: vi.fn(() => true),
-        set: vi.fn(),
-        delete: vi.fn(),
-        *[Symbol.iterator](): Generator<[string, { name: string; value: string }]> {
-          yield ["stockroom_user", { name: "stockroom_user", value: "faiz-hakim" }];
-        },
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
       await withApi(handler);
@@ -75,20 +39,7 @@ describe("withApi", () => {
     });
 
     it("uses staff user when cookie has faiz-hakim", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "faiz-hakim" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "faiz-hakim" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
       await withApi(handler);
@@ -101,20 +52,7 @@ describe("withApi", () => {
     });
 
     it("falls back to staff user faiz-hakim when cookie is missing", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => undefined),
-        size: 0,
-        getAll: vi.fn(() => []),
-        has: vi.fn(() => false),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies());
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
       await withApi(handler);
@@ -127,20 +65,7 @@ describe("withApi", () => {
     });
 
     it("falls back to staff user faiz-hakim when cookie has unknown user id", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "unknown-user" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "unknown-user" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("unknown-user"));
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
       await withApi(handler);
@@ -155,19 +80,7 @@ describe("withApi", () => {
 
   describe("authorization", () => {
     it("returns 403 FORBIDDEN when staff tries write_off", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "faiz-hakim" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "faiz-hakim" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn();
       const response = await withApi(handler, { action: "write_off" });
@@ -183,19 +96,7 @@ describe("withApi", () => {
     });
 
     it("returns 403 FORBIDDEN when staff tries transfer", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "faiz-hakim" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "faiz-hakim" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn();
       const response = await withApi(handler, { action: "transfer" });
@@ -211,19 +112,7 @@ describe("withApi", () => {
     });
 
     it("returns 403 FORBIDDEN when staff tries import", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "faiz-hakim" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "faiz-hakim" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn();
       const response = await withApi(handler, { action: "import" });
@@ -239,19 +128,7 @@ describe("withApi", () => {
     });
 
     it("allows manager to perform write_off", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "aina-rahman" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "aina-rahman" }]),
-        has: vi.fn(() => true),
-      } as any;
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async () => ({ success: true }));
       const response = await withApi(handler, { action: "write_off" });
@@ -261,19 +138,7 @@ describe("withApi", () => {
     });
 
     it("allows manager to perform transfer", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "aina-rahman" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "aina-rahman" }]),
-        has: vi.fn(() => true),
-      } as any;
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async () => ({ success: true }));
       const response = await withApi(handler, { action: "transfer" });
@@ -283,19 +148,7 @@ describe("withApi", () => {
     });
 
     it("allows manager to perform import", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "aina-rahman" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "aina-rahman" }]),
-        has: vi.fn(() => true),
-      } as any;
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async () => ({ success: true }));
       const response = await withApi(handler, { action: "import" });
@@ -307,19 +160,7 @@ describe("withApi", () => {
 
   describe("?fail=1 forced failure", () => {
     it("returns 500 INTERNAL_ERROR when ?fail=1 is present", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "faiz-hakim" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "faiz-hakim" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       globalThis.url = new URL("http://localhost?fail=1");
 
@@ -337,19 +178,7 @@ describe("withApi", () => {
     });
 
     it("does not run handler when ?fail=1 is present", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "faiz-hakim" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "faiz-hakim" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       globalThis.url = new URL("http://localhost?fail=1");
 
@@ -376,19 +205,7 @@ describe("withApi", () => {
 
   describe("success case", () => {
     it("returns handler result as JSON", async () => {
-      const mockRepo: MockRepository = {
-        getUsers: vi.fn((): MockUser[] => [
-          { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-        ]),
-      };
-      vi.mocked(createRepository).mockReturnValue(mockRepo as Repository);
-      const mockCookies: MockCookies = {
-        get: vi.fn(() => ({ value: "faiz-hakim" })),
-        size: 1,
-        getAll: vi.fn(() => [{ value: "faiz-hakim" }]),
-        has: vi.fn(() => true),
-      };
-      vi.mocked(cookies).mockResolvedValue(mockCookies as any);
+      vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn(async () => ({ success: true, data: "test" }));
       const response = await withApi(handler);

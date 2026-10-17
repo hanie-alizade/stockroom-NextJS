@@ -2,22 +2,14 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { POST } from "./route";
 import { cookies } from "next/headers";
 
+import { mockCookies as createMockCookies } from "tests/helpers";
+
 // next/headers has no request scope in vitest; withApi reads the cookie here.
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
 }));
 
-const mockCookies = {
-  get: vi.fn(() => ({ name: "stockroom_user", value: "faiz-hakim" })),
-  size: 1,
-  getAll: vi.fn(() => [{ name: "stockroom_user", value: "faiz-hakim" }]),
-  has: vi.fn(() => true),
-  set: vi.fn(),
-  delete: vi.fn(),
-  *[Symbol.iterator](): Generator<[string, { name: string; value: string }]> {
-    yield ["stockroom_user", { name: "stockroom_user", value: "faiz-hakim" }];
-  },
-};
+const mockCookies = createMockCookies("faiz-hakim");
 
 describe("POST /api/session", () => {
   beforeEach(() => {

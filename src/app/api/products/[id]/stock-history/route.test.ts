@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET } from "./route";
 import { createRepository } from "@/lib/server/repo";
 import { cookies } from "next/headers";
-import type { Repository, Product, Stock } from "@/lib/server/repo";
+import type { Product, Stock } from "@/lib/server/repo";
+
+import { mockCookies, mockRepository } from "tests/helpers";
 
 vi.mock("@/lib/server/repo", () => ({
   createRepository: vi.fn(),
@@ -11,8 +13,6 @@ vi.mock("@/lib/server/repo", () => ({
 vi.mock("next/headers", () => ({
   cookies: vi.fn(),
 }));
-
-type MockUser = { id: string; name: string; initials: string; role: "manager" | "staff" };
 
 describe("GET /api/products/:id/stock-history", () => {
   beforeEach(() => {
@@ -36,59 +36,21 @@ describe("GET /api/products/:id/stock-history", () => {
       { storeId: "s_shah_alam", onHand: 25, reorderLevel: 5 },
     ];
 
-    const mockUsers: MockUser[] = [
-      { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
-      { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
-    ];
-
-    const mockCookies = {
-      get: vi.fn(() => ({ name: "stockroom_user", value: "faiz-hakim" })),
-      size: 1,
-      getAll: vi.fn(() => [{ name: "stockroom_user", value: "faiz-hakim" }]),
-      has: vi.fn(() => true),
-      set: vi.fn(),
-      delete: vi.fn(),
-      *[Symbol.iterator](): Generator<[string, { name: string; value: string }]> {
-        yield ["stockroom_user", { name: "stockroom_user", value: "faiz-hakim" }];
-      },
-    };
-
-    const mockRepo: Repository = {
-      getProduct: vi.fn((sku: string) => (sku === "KL-1042" ? mockProduct : null)),
+    const mockRepo = mockRepository({
+      getProduct: vi.fn((sku: string) => {
+        if (sku === "KL-1042") return mockProduct;
+        if (sku === "KL-2210") return { ...mockProduct, sku: "KL-2210" };
+        return null;
+      }),
       getStock: vi.fn((productId: string, storeId: string) => {
         if (productId !== "KL-1042") return null;
         return mockStocks.find((s) => s.storeId === storeId) ?? null;
       }),
       listStock: vi.fn((productId: string) => (productId === "KL-1042" ? mockStocks : [])),
-      getUsers: vi.fn(() => mockUsers),
-      getStores: vi.fn(() => []),
-      getCategories: vi.fn(() => []),
-      getSuppliers: vi.fn(() => []),
-      listProducts: vi.fn(() => []),
-      getMovements: vi.fn(() => []),
-      getIdempotency: vi.fn(() => null),
-      createProduct: vi.fn(),
-      updateProduct: vi.fn(),
-      setStock: vi.fn(),
-      addMovement: vi.fn(() => ({
-        id: "",
-        productId: "",
-        storeId: "",
-        type: "receive" as const,
-        quantity: 0,
-        balanceAfter: 0,
-        reason: null,
-        transferId: null,
-        createdAt: "",
-        userId: "",
-      })),
-      setIdempotency: vi.fn(),
-      transaction: vi.fn((fn) => fn(mockRepo)),
-      reset: vi.fn(),
-    };
+    });
 
     vi.mocked(createRepository).mockReturnValue(mockRepo);
-    vi.mocked(cookies).mockResolvedValue(mockCookies);
+    vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
   });
 
   it("returns stock history for a product", async () => {
