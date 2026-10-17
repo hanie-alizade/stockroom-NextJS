@@ -6,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDownIcon } from "@/components/icons";
 import type { ReactNode } from "react";
 
 interface SelectOption {
