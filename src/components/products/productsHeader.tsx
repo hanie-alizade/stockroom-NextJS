@@ -4,8 +4,7 @@ import { ACTION, ALL_STORES } from "@/constants";
 import { DownloadIcon, UploadIcon } from "@/components/icons";
 import { useCan } from "@/components/providers/session-provider";
 import { useQueryMeta } from "@/lib/client/apiHooks";
-import type { MetaResponse } from "@/lib/types/meta";
-import type { StoreScope } from "@/lib/types/store";
+import type { MetaResponse, StoreScope } from "@/types";
 
 interface ProductsHeaderProps {
   totalProducts: number;

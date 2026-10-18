@@ -1,15 +1,7 @@
 import { ACTION, ROLE } from "@/constants";
+import type { Action, Role, User } from "@/types";
 
-export type Role = "manager" | "staff";
-
-export type User = {
-  id: string;
-  name: string;
-  initials: string;
-  role: Role;
-};
-
-export type Action = "view" | "receive" | "sell" | "write_off" | "transfer" | "import";
+export type { Action, Role, User };
 
 const STAFF_ACTIONS: Set<Action> = new Set([ACTION.VIEW, ACTION.RECEIVE, ACTION.SELL]);
 const MANAGER_ACTIONS: Set<Action> = new Set([

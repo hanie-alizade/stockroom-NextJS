@@ -11,8 +11,7 @@ import {
   setProductListPageSize,
   toggleProductListSort,
 } from "./productListUrlState";
-import type { StockStatus, ProductSortKey } from "@/lib/types/product";
-import type { PageSize } from "@/lib/types/common";
+import type { StockStatus, ProductSortKey, PageSize } from "@/types";
 
 export function useProductListUrlState() {
   const router = useRouter();

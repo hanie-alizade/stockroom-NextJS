@@ -1,3 +1,8 @@
+import type { z } from "zod";
+import type { importRequestSchema } from "@/schemas";
+
+export type ImportRequest = z.infer<typeof importRequestSchema>;
+
 export type ImportField = "sku" | "name" | "category" | "quantity" | "unitCost";
 
 export type ImportErrorCode =

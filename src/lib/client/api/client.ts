@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ApiErrorBody } from "@/lib/types/common";
+import type { ApiErrorBody } from "@/types";
 
 export class ApiError extends Error {
   constructor(public body: ApiErrorBody) {

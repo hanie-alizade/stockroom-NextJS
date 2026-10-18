@@ -1,19 +1,9 @@
 import type { ReactElement, SVGProps } from "react";
+import type { z } from "zod";
+import type { ERROR_CODE, PAGE_SIZE_OPTIONS, SORT_DIRECTION } from "@/constants";
+import type { paginationQuerySchema } from "@/schemas";
 
-export type ErrorCode =
-  | "INVALID_JSON"
-  | "IDEMPOTENCY_KEY_REQUIRED"
-  | "FORBIDDEN"
-  | "PRODUCT_NOT_FOUND"
-  | "STORE_NOT_FOUND"
-  | "NOT_STOCKED_AT_STORE"
-  | "INSUFFICIENT_STOCK"
-  | "VALIDATION_ERROR"
-  | "IDEMPOTENCY_KEY_REUSED"
-  | "IMPORT_TOO_LARGE"
-  | "FILE_TOO_LARGE"
-  | "INVALID_FILE"
-  | "INTERNAL_ERROR";
+export type ErrorCode = (typeof ERROR_CODE)[keyof typeof ERROR_CODE];
 
 export type FieldError = {
   field: string;
@@ -34,9 +24,11 @@ export type Paginated<T> = {
   total: number;
 };
 
-export type PageSize = 25 | 50 | 100;
+export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 
-export type SortDirection = "asc" | "desc";
+export type SortDirection = (typeof SORT_DIRECTION)[keyof typeof SORT_DIRECTION];
+
+export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
 
 export type IconProps = SVGProps<SVGSVGElement>;
 export type IconComponent = (props: IconProps) => ReactElement;

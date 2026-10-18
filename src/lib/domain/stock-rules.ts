@@ -4,20 +4,8 @@ import {
   HTTP_STATUS,
   MOVEMENT_TYPE,
 } from "@/constants";
+import type { MovementDraft, MovementType } from "@/types";
 import { AppError } from "./errors";
-
-export type MovementType =
-  "receive" | "sell" | "write_off" | "transfer_out" | "transfer_in" | "import";
-
-export type MovementDraft = {
-  productId: string;
-  storeId: string;
-  type: MovementType;
-  quantity: number;
-  balanceAfter: number;
-  note?: string;
-  transferId?: string;
-};
 
 /**
  * Check if a quantity is valid (whole number greater than zero).

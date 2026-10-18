@@ -4,7 +4,7 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { createRepository } from "@/lib/server/repo";
 import { ROLE, SESSION_COOKIE } from "@/constants";
-import type { User } from "@/lib/domain/policy";
+import type { User } from "@/types";
 
 export const getCurrentUser = cache(async (): Promise<User> => {
   const repo = createRepository();

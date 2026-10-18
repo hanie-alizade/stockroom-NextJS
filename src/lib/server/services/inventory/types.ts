@@ -1,59 +1,11 @@
 import { ADJUSTMENT_TYPE } from "@/constants";
-import type { Role } from "@/lib/domain/policy";
-import type { Movement, Repository } from "@/lib/server/repo";
-import type { Store } from "@/lib/server/repo/types";
-
-export type SavedMovement = Movement & {
-  note?: string;
-  createdBy: string;
-  by: string;
-};
-
-export type AdjustmentResult = {
-  movements: SavedMovement[];
-  stock: { storeId: string; onHand: number }[];
-  replay?: boolean;
-};
-
-export type ReceiveAdjustment = {
-  type: "receive";
-  storeId: string;
-  quantity: number;
-  note?: string;
-  reason?: string;
-  productId?: string;
-};
-
-export type SellAdjustment = {
-  type: "sell";
-  storeId: string;
-  quantity: number;
-  note?: string;
-  reason?: string;
-  productId?: string;
-};
-
-export type WriteOffAdjustment = {
-  type: "write_off";
-  storeId: string;
-  quantity: number;
-  reason?: string;
-  note?: string;
-  productId?: string;
-};
-
-export type TransferAdjustment = {
-  type: "transfer";
-  fromStoreId: string;
-  toStoreId: string;
-  quantity: number;
-  note?: string;
-  reason?: string;
-  productId?: string;
-};
-
-export type AdjustmentInput =
-  ReceiveAdjustment | SellAdjustment | WriteOffAdjustment | TransferAdjustment;
+import type { Repository } from "@/lib/server/repo";
+import type {
+  AdjustmentInput,
+  SavedMovement,
+  Role,
+  StoreRecord,
+} from "@/types";
 
 export type AdjustmentContext = {
   role: Role;
@@ -64,7 +16,7 @@ export type AdjustmentContext = {
 };
 
 export type ExecutionContext = {
-  storeMap: Map<string, Store>;
+  storeMap: Map<string, StoreRecord>;
   requestHash: string;
   idempotencyKey: string;
   now: string;

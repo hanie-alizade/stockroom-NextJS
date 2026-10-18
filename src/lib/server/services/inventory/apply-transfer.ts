@@ -9,7 +9,8 @@ import {
 import { AppError } from "@/lib/domain/errors";
 
 import type { Repository } from "@/lib/server/repo";
-import type { AdjustmentResult, ExecutionContext, TransferAdjustment } from "./types";
+import type { AdjustmentResult, TransferAdjustment } from "@/types";
+import type { ExecutionContext } from "./types";
 
 export function applyTransfer(
   txRepo: Repository,

@@ -1,4 +1,3 @@
-export * from "./types";
 export { listProducts } from "./list-products";
 export { getProductDetail } from "./get-product-detail";
 export { getProductMovements } from "./get-product-movements";

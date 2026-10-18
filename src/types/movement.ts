@@ -1,8 +1,10 @@
+import type { z } from "zod";
+import type { MOVEMENT_TYPE } from "@/constants";
+import type { movementListQuerySchema } from "@/schemas";
 import type { Paginated } from "./common";
 import type { StoreId } from "./store";
 
-export type MovementType =
-  "receive" | "sell" | "write_off" | "transfer_out" | "transfer_in" | "import";
+export type MovementType = (typeof MOVEMENT_TYPE)[keyof typeof MOVEMENT_TYPE];
 
 export type MovementDraft = {
   productId: string;
@@ -27,10 +29,12 @@ export type Movement = MovementDraft & {
 
 export type MovementPeriod = "7d" | "30d" | "90d";
 
+export type MovementListQuery = z.infer<typeof movementListQuerySchema>;
+
 export type MovementListResponse = Paginated<Movement>;
 
-// Repository internal type (has different structure than contracts)
-export type RepoMovement = {
+// Repository internal type
+export type MovementRecord = {
   id: string;
   productId: string;
   storeId: string;
@@ -41,4 +45,13 @@ export type RepoMovement = {
   transferId: string | null;
   createdAt: string;
   userId: string;
+};
+
+export type MovementWithUser = MovementRecord & { createdBy: string };
+
+export type ProductMovementsResult = {
+  items: MovementWithUser[];
+  page: number;
+  pageSize: number;
+  total: number;
 };

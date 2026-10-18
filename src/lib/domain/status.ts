@@ -1,6 +1,7 @@
 import { STOCK_STATUS } from "@/constants";
+import type { StockStatus } from "@/types";
 
-export type StockStatus = "in_stock" | "low" | "out";
+export type { StockStatus };
 
 /**
  * Calculate stock status based on on-hand quantity and reorder level.

@@ -1,15 +1,20 @@
 import type { z } from "zod";
-import type { productListQuerySchema } from "@/lib/domain/schemas";
-import type { Movement } from "./movement";
+import type { PRODUCT_SORT_KEY, STOCK_STATUS } from "@/constants";
+import type {
+  productDetailQuerySchema,
+  productListQuerySchema,
+  stockHistoryQuerySchema,
+} from "@/schemas";
 import type { Paginated } from "./common";
 import type { StoreId } from "./store";
 
-export type StockStatus = "in_stock" | "low" | "out";
+export type StockStatus = (typeof STOCK_STATUS)[keyof typeof STOCK_STATUS];
 
-export type ProductSortKey =
-  "updatedAt" | "sku" | "name" | "category" | "onHand" | "reorderLevel" | "unitCostSen" | "status";
+export type ProductSortKey = (typeof PRODUCT_SORT_KEY)[keyof typeof PRODUCT_SORT_KEY];
 
 export type ProductListQuery = z.infer<typeof productListQuerySchema>;
+export type ProductDetailQuery = z.infer<typeof productDetailQuerySchema>;
+export type StockHistoryQuery = z.infer<typeof stockHistoryQuerySchema>;
 
 export type ProductListItem = {
   id: string;
@@ -44,15 +49,15 @@ export type StockByStore = {
 };
 
 export type ProductDetail = {
-  id: string;
+  id?: string;
   sku: string;
   name: string;
   category: string;
   supplier: string;
   unitCostSen: number;
-  onHand: number;
-  reorderLevel: number;
-  status: StockStatus;
+  onHand?: number;
+  reorderLevel?: number;
+  status?: StockStatus;
   stockValueSen: number;
   lastMovementAt: string | null;
   stockByStore: StockByStore[];
@@ -61,9 +66,30 @@ export type ProductDetail = {
 export type StockHistoryPoint = {
   date: string;
   onHand: number;
+  reorderLevel?: number;
 };
 
 export type StockHistory = {
   points: StockHistoryPoint[];
+  reorderLevel: number;
+};
+
+export type StockHistoryResult = {
+  points: StockHistoryPoint[];
+  days: number;
+};
+
+// Repository internal types
+export type ProductRecord = {
+  sku: string;
+  name: string;
+  category: string;
+  supplier: string;
+  unitCostSen: number;
+};
+
+export type StockRecord = {
+  storeId: string;
+  onHand: number;
   reorderLevel: number;
 };

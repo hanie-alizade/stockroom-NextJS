@@ -1,21 +1,23 @@
 import "server-only";
 
 import type {
-  Repository,
-  Store,
   Category,
-  Supplier,
-  User,
-  Product,
-  Stock,
-  Movement,
   IdempotencyRecord,
+  Repository,
+  Supplier,
 } from "./types";
 import { ROLE } from "@/constants";
-import type { MovementType } from "@/lib/domain/stock-rules";
+import type {
+  MovementRecord,
+  MovementType,
+  ProductRecord,
+  StockRecord,
+  StoreRecord,
+  UserRecord,
+} from "@/types";
 import seedJson from "@data/seed.json";
 
-function toUser(u: { id: string; name: string; initials: string; role: string }): User {
+function toUser(u: { id: string; name: string; initials: string; role: string }): UserRecord {
   return {
     id: u.id,
     name: u.name,
@@ -36,13 +38,13 @@ function setGlobalStore(data: StoreData): void {
 }
 
 interface StoreData {
-  stores: Store[];
+  stores: StoreRecord[];
   categories: Category[];
   suppliers: Supplier[];
-  users: User[];
-  products: Map<string, Product>;
-  stock: Map<string, Stock[]>; // productId -> Stock[]
-  movements: Movement[];
+  users: UserRecord[];
+  products: Map<string, ProductRecord>;
+  stock: Map<string, StockRecord[]>; // productId -> StockRecord[]
+  movements: MovementRecord[];
   idempotency: Map<string, IdempotencyRecord>;
 }
 
@@ -57,11 +59,11 @@ function getStore(): StoreData {
     categories: seedJson.categories,
     suppliers: seedJson.suppliers,
     users: seedJson.users.map(toUser),
-    products: new Map(seedJson.products.map((p: Product) => [p.sku, { ...p }])),
+    products: new Map(seedJson.products.map((p: ProductRecord) => [p.sku, { ...p }])),
     stock: new Map(
       Object.entries(seedJson.stock).map(([sku, stocks]) => [
         sku,
-        (stocks as Stock[]).map((s) => ({ ...s })),
+        (stocks as StockRecord[]).map((s) => ({ ...s })),
       ]),
     ),
     movements: seedJson.movements.map((m, i: number) => ({
@@ -98,7 +100,7 @@ class InMemoryRepository implements Repository {
     }
   }
 
-  getStores(): Store[] {
+  getStores(): StoreRecord[] {
     return this.data.stores;
   }
 
@@ -110,24 +112,24 @@ class InMemoryRepository implements Repository {
     return this.data.suppliers;
   }
 
-  getUsers(): User[] {
+  getUsers(): UserRecord[] {
     return this.data.users;
   }
 
-  getProduct(sku: string): Product | null {
+  getProduct(sku: string): ProductRecord | null {
     return this.data.products.get(sku) ?? null;
   }
 
-  listProducts(): Product[] {
+  listProducts(): ProductRecord[] {
     return Array.from(this.data.products.values());
   }
 
-  getStock(productId: string, storeId: string): Stock | null {
+  getStock(productId: string, storeId: string): StockRecord | null {
     const stocks = this.data.stock.get(productId) ?? [];
     return stocks.find((s) => s.storeId === storeId) ?? null;
   }
 
-  listStock(productId: string): Stock[] {
+  listStock(productId: string): StockRecord[] {
     return this.data.stock.get(productId) ?? [];
   }
 
@@ -140,7 +142,7 @@ class InMemoryRepository implements Repository {
       to?: string;
       limit?: number;
     },
-  ): Movement[] {
+  ): MovementRecord[] {
     let filtered = this.data.movements.filter(
       (m) => m.productId === productId && m.storeId === storeId,
     );
@@ -170,14 +172,14 @@ class InMemoryRepository implements Repository {
     return this.data.idempotency.get(key) ?? null;
   }
 
-  createProduct(product: Product): void {
+  createProduct(product: ProductRecord): void {
     const key = `product:${product.sku}`;
     this.touch(key);
     this.snapshot(key, this.data.products.get(product.sku));
     this.data.products.set(product.sku, product);
   }
 
-  updateProduct(sku: string, product: Partial<Product>): void {
+  updateProduct(sku: string, product: Partial<ProductRecord>): void {
     const key = `product:${sku}`;
     this.touch(key);
     this.snapshot(key, this.data.products.get(sku));
@@ -205,9 +207,9 @@ class InMemoryRepository implements Repository {
     }
   }
 
-  addMovement(movement: Omit<Movement, "id">): Movement {
+  addMovement(movement: Omit<MovementRecord, "id">): MovementRecord {
     const id = `m_${this.data.movements.length}`;
-    const newMovement: Movement = { ...movement, id };
+    const newMovement: MovementRecord = { ...movement, id };
     const key = `movements`;
     this.touch(key);
     this.snapshot(key, this.data.movements);
@@ -242,7 +244,7 @@ class InMemoryRepository implements Repository {
           if (snapshot === undefined) {
             this.data.products.delete(sku);
           } else {
-            this.data.products.set(sku, snapshot as Product);
+            this.data.products.set(sku, snapshot as ProductRecord);
           }
         } else if (key.startsWith("stock:")) {
           const parts = key.slice(6).split(":");
@@ -257,14 +259,14 @@ class InMemoryRepository implements Repository {
               }
             } else {
               if (index !== -1) {
-                stocks[index] = snapshot as Stock;
+                stocks[index] = snapshot as StockRecord;
               } else {
-                stocks.push(snapshot as Stock);
+                stocks.push(snapshot as StockRecord);
               }
             }
           }
         } else if (key === "movements") {
-          this.data.movements = snapshot as Movement[];
+          this.data.movements = snapshot as MovementRecord[];
         } else if (key.startsWith("idempotency:")) {
           const idempotencyKey = key.slice(13);
           if (snapshot === undefined) {
@@ -287,11 +289,11 @@ class InMemoryRepository implements Repository {
       categories: seedJson.categories,
       suppliers: seedJson.suppliers,
       users: seedJson.users.map(toUser),
-      products: new Map(seedJson.products.map((p: Product) => [p.sku, { ...p }])),
+      products: new Map(seedJson.products.map((p: ProductRecord) => [p.sku, { ...p }])),
       stock: new Map(
         Object.entries(seedJson.stock).map(([sku, stocks]) => [
           sku,
-          (stocks as Stock[]).map((s) => ({ ...s })),
+          (stocks as StockRecord[]).map((s) => ({ ...s })),
         ]),
       ),
       movements: seedJson.movements.map((m, i: number) => ({

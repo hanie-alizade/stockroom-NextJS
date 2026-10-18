@@ -1,8 +1,7 @@
 import { DEFAULT_SORT_DIRECTION, SORT_DIRECTION } from "@/constants";
 import { cn } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon, SortIcon } from "@/components/icons";
-import type { ProductSortKey } from "@/lib/types/product";
-import type { SortDirection } from "@/lib/types/common";
+import type { ProductSortKey, SortDirection } from "@/types";
 
 interface ProductsSortHeaderProps {
   column: ProductSortKey;

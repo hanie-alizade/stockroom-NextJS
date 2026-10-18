@@ -2,12 +2,8 @@ import "server-only";
 
 import { ALL_STORES } from "@/constants";
 import { withApi } from "@/lib/server/http/with-api";
-import { z } from "zod";
+import { productDetailQuerySchema } from "@/schemas";
 import { getProductDetail } from "@/lib/server/services/products";
-
-const productDetailQuerySchema = z.object({
-  store: z.union([z.literal(ALL_STORES), z.string()]).optional(),
-});
 
 export async function GET(
   request: Request,

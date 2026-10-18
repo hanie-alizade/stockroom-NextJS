@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import type { User, Action } from "@/lib/domain/policy";
+import type { Action, User } from "@/types";
 import { can } from "@/lib/domain/policy";
 
 interface SessionContextValue {

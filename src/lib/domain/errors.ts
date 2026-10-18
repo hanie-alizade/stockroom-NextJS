@@ -1,23 +1,6 @@
-export type ErrorCode =
-  | "INVALID_JSON"
-  | "IDEMPOTENCY_KEY_REQUIRED"
-  | "FORBIDDEN"
-  | "PRODUCT_NOT_FOUND"
-  | "STORE_NOT_FOUND"
-  | "NOT_STOCKED_AT_STORE"
-  | "INSUFFICIENT_STOCK"
-  | "VALIDATION_ERROR"
-  | "IDEMPOTENCY_KEY_REUSED"
-  | "IMPORT_TOO_LARGE"
-  | "FILE_TOO_LARGE"
-  | "INVALID_FILE"
-  | "INTERNAL_ERROR";
+import type { ErrorCode, FieldError } from "@/types";
 
-export type FieldError = {
-  field: string;
-  code: string;
-  message: string;
-};
+
 
 export class AppError extends Error {
   code: ErrorCode;

@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import type { IconComponent } from "@/lib/types/common";
+import type { IconComponent } from "@/types";
 
 interface NavItemProps {
   href: string;

@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { queryKeys } from "@/constants";
-import type { ProductListQuery, ProductListResponse } from "@/lib/types/product";
+import type { ProductListQuery, ProductListResponse } from "@/types";
 import { getProductList } from "./productsApi";
 
 export function useProductList(

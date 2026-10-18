@@ -2,10 +2,10 @@ import "server-only";
 
 import { ALL_STORES, ERROR_CODE, HTTP_STATUS } from "@/constants";
 import { AppError } from "@/lib/domain/errors";
-import type { Repository, Product, Stock } from "@/lib/server/repo";
-import type { StockHistoryResult } from "./types";
+import type { Repository } from "@/lib/server/repo";
+import type { StockHistoryResult, StockRecord } from "@/types";
 
-function calculateStockAggregate(stocks: Stock[]): { onHand: number; reorderLevel: number } {
+function calculateStockAggregate(stocks: StockRecord[]): { onHand: number; reorderLevel: number } {
   return stocks.reduce(
     (acc, stock) => ({
       onHand: acc.onHand + stock.onHand,
@@ -15,7 +15,7 @@ function calculateStockAggregate(stocks: Stock[]): { onHand: number; reorderLeve
   );
 }
 
-function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): Stock[] {
+function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): StockRecord[] {
   if (storeId === ALL_STORES) {
     return repo.listStock(productId);
   }

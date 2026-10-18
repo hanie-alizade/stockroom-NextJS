@@ -1,20 +1,16 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { z } from "zod";
 import { ERROR_CODE, FIELD_ERROR_CODE, HTTP_STATUS, SESSION_COOKIE } from "@/constants";
 import { AppError } from "@/lib/domain/errors";
 import { withApi } from "@/lib/server/http/with-api";
-
-const sessionSchema = z.object({
-  userId: z.string(),
-});
+import { sessionBodySchema } from "@/schemas";
 
 export async function POST(request: Request): Promise<Response> {
   return withApi(
-    async ({ user, repo }) => {
+    async ({ repo }) => {
       const body = await request.json();
-      const { userId } = sessionSchema.parse(body);
+      const { userId } = sessionBodySchema.parse(body);
 
       const targetUser = repo.getUsers().find((u) => u.id === userId);
       if (!targetUser) {

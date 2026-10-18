@@ -7,7 +7,7 @@ import {
   REPLAY_HEADER,
 } from "@/constants";
 import { AppError } from "@/lib/domain/errors";
-import { adjustmentSchema } from "@/lib/domain/schemas";
+import { adjustmentSchema } from "@/schemas";
 import { withApi } from "@/lib/server/http/with-api";
 import { createAdjustment } from "@/lib/server/services/inventory.service";
 

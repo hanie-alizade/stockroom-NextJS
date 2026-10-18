@@ -66,7 +66,7 @@ describe("POST /api/products/:id/adjustments", () => {
         type: "write_off",
         storeId: "mont-kiara",
         quantity: 1,
-        reason: "Damaged packaging",
+        note: "Damaged packaging",
       }),
     });
 

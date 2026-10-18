@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Repository } from "@/lib/server/repo";
-import type { User } from "@/lib/domain/policy";
+import type { User } from "@/types";
 
 export async function getMeta(repo: Repository, user: User) {
   const stores = repo.getStores();

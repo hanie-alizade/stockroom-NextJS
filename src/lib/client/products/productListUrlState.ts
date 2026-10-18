@@ -9,9 +9,14 @@ import {
   SORT_DIRECTION,
   STOCK_STATUS,
 } from "@/constants";
-import type { ProductListQuery, StockStatus, ProductSortKey } from "@/lib/types/product";
-import type { PageSize, SortDirection } from "@/lib/types/common";
-import type { StoreScope } from "@/lib/types/store";
+import type {
+  PageSize,
+  ProductListQuery,
+  ProductSortKey,
+  SortDirection,
+  StockStatus,
+  StoreScope,
+} from "@/types";
 
 export interface RouterInstance {
   push: (href: string) => void;

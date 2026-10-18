@@ -9,8 +9,7 @@ import { ProductsToolbar } from "./productsToolbar";
 import { ProductsTable } from "./productsTable";
 import { Pagination } from "@/components/common/pagination";
 import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/constants";
-import type { ProductListSummary } from "@/lib/types/product";
-import type { PageSize } from "@/lib/types/common";
+import type { PageSize, ProductListSummary } from "@/types";
 
 export function ProductsView(): React.ReactElement {
   const { query, setSearch, setCategory, setStatus, setPage, setPageSize, toggleSort } =

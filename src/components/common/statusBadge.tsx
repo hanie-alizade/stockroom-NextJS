@@ -1,7 +1,7 @@
 import { STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
 import { cn } from "@/lib/utils";
 import { CheckIcon, WarningIcon, CircleAlertIcon } from "@/components/icons";
-import type { StockStatus } from "@/lib/types/product";
+import type { StockStatus } from "@/types";
 
 interface StatusBadgeProps {
   status: StockStatus;

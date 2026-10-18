@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
-import type { PageSize } from "@/lib/types/common";
+import type { PageSize } from "@/types";
 
 import { PAGE_SIZE_OPTIONS } from "@/constants";
 

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { withApi } from "@/lib/server/http/with-api";
-import { productListQuerySchema } from "@/lib/domain/schemas";
+import { productListQuerySchema } from "@/schemas";
 import { listProducts } from "@/lib/server/services/products";
 
 export async function GET(request: Request): Promise<Response> {

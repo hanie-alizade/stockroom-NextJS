@@ -1,8 +1,8 @@
 import "server-only";
 
 import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/constants";
-import type { Repository, Movement } from "@/lib/server/repo";
-import type { MovementWithUser, ProductMovementsResult } from "./types";
+import type { Repository } from "@/lib/server/repo";
+import type { MovementWithUser, ProductMovementsResult } from "@/types";
 
 function isValidPageSize(size: number): boolean {
   return (PAGE_SIZE_OPTIONS as readonly number[]).includes(size);

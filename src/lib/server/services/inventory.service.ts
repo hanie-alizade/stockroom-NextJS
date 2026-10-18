@@ -25,14 +25,8 @@ import {
 } from "./inventory/types";
 
 import type { Repository } from "@/lib/server/repo";
-import type { Store } from "@/lib/server/repo/types";
-import type {
-  AdjustmentContext,
-  AdjustmentInput,
-  AdjustmentResult,
-  ExecutionContext,
-  SavedMovement,
-} from "./inventory/types";
+import type { AdjustmentInput, AdjustmentResult, SavedMovement, StoreRecord } from "@/types";
+import type { AdjustmentContext, ExecutionContext } from "./inventory/types";
 
 export type { AdjustmentContext, AdjustmentInput, AdjustmentResult, SavedMovement };
 
@@ -98,7 +92,10 @@ export async function createAdjustment(
       role: ROLE.MANAGER,
       idempotencyKey: "",
     };
-    productId = ctx.productId ?? input.productId ?? "";
+    productId =
+      ctx.productId ??
+      ("productId" in (input as object) ? ((input as Record<string, unknown>).productId as string) : undefined) ??
+      "";
     repo = ctx.repo ?? createRepository();
   }
 
@@ -137,10 +134,10 @@ export async function createAdjustment(
     ]);
   }
 
-  const note = input.reason ?? input.note ?? null;
+  const note = input.note ?? null;
   if (input.type === ADJUSTMENT_TYPE.WRITE_OFF && (!note || note.trim().length < 3)) {
-    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Write-off requires a reason", [
-      { field: "reason", code: FIELD_ERROR_CODE.REQUIRED, message: "Reason must be at least 3 characters" },
+    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Write-off requires a note", [
+      { field: "note", code: FIELD_ERROR_CODE.REQUIRED, message: "Note must be at least 3 characters" },
     ]);
   }
 
@@ -175,7 +172,7 @@ export async function createAdjustment(
       );
     }
 
-    const storeMap = new Map<string, Store>(txRepo.getStores().map((s) => [s.id, s]));
+    const storeMap = new Map<string, StoreRecord>(txRepo.getStores().map((s) => [s.id, s]));
     const now = new Date().toISOString();
     const users = txRepo.getUsers();
     const user =

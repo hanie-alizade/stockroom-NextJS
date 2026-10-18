@@ -1,8 +1,8 @@
 import { apiClient } from "./client";
-import type { MetaResponse, SessionResponse } from "@/lib/types/meta";
-import { metaResponseSchema, sessionResponseSchema } from "@/lib/types/meta";
+import type { MetaResponse, SessionResponse } from "@/types";
+import { metaResponseSchema, sessionResponseSchema } from "@/schemas";
 
-export type { MetaResponse, SessionResponse } from "@/lib/types/meta";
+export type { MetaResponse, SessionResponse } from "@/types";
 
 export async function getMeta(): Promise<MetaResponse> {
   const response = await apiClient.get("/api/meta");

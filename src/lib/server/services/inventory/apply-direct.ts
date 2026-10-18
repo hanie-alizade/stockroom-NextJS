@@ -11,11 +11,11 @@ import { AppError } from "@/lib/domain/errors";
 import type { Repository } from "@/lib/server/repo";
 import type {
   AdjustmentResult,
-  ExecutionContext,
   ReceiveAdjustment,
   SellAdjustment,
   WriteOffAdjustment,
-} from "./types";
+} from "@/types";
+import type { ExecutionContext } from "./types";
 
 export type DirectAdjustment = ReceiveAdjustment | SellAdjustment | WriteOffAdjustment;
 

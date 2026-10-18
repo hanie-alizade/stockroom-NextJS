@@ -1,9 +1,12 @@
-import type { MovementType } from "@/lib/domain/stock-rules";
+import type {
+  MovementRecord,
+  MovementType,
+  ProductRecord,
+  StockRecord,
+  StoreRecord,
+  UserRecord,
+} from "@/types";
 
-export type Store = {
-  id: string;
-  name: string;
-};
 
 export type Category = {
   name: string;
@@ -13,40 +16,6 @@ export type Supplier = {
   name: string;
 };
 
-export type User = {
-  id: string;
-  name: string;
-  initials: string;
-  role: "manager" | "staff";
-};
-
-export type Product = {
-  sku: string;
-  name: string;
-  category: string;
-  supplier: string;
-  unitCostSen: number;
-};
-
-export type Stock = {
-  storeId: string;
-  onHand: number;
-  reorderLevel: number;
-};
-
-export type Movement = {
-  id: string;
-  productId: string;
-  storeId: string;
-  type: MovementType;
-  quantity: number;
-  balanceAfter: number;
-  reason: string | null;
-  transferId: string | null;
-  createdAt: string;
-  userId: string;
-};
-
 export type IdempotencyRecord = {
   idempotencyKey: string;
   requestHash: string;
@@ -54,16 +23,23 @@ export type IdempotencyRecord = {
   body: unknown;
 };
 
+// Aliases for compatibility
+export type Store = StoreRecord;
+export type User = UserRecord;
+export type Product = ProductRecord;
+export type Stock = StockRecord;
+export type Movement = MovementRecord;
+
 export interface Repository {
   // Reads
-  getStores(): Store[];
+  getStores(): StoreRecord[];
   getCategories(): Category[];
   getSuppliers(): Supplier[];
-  getUsers(): User[];
-  getProduct(sku: string): Product | null;
-  listProducts(): Product[];
-  getStock(productId: string, storeId: string): Stock | null;
-  listStock(productId: string): Stock[];
+  getUsers(): UserRecord[];
+  getProduct(sku: string): ProductRecord | null;
+  listProducts(): ProductRecord[];
+  getStock(productId: string, storeId: string): StockRecord | null;
+  listStock(productId: string): StockRecord[];
   getMovements(
     productId: string,
     storeId: string,
@@ -73,14 +49,14 @@ export interface Repository {
       to?: string;
       limit?: number;
     },
-  ): Movement[];
+  ): MovementRecord[];
   getIdempotency(key: string): IdempotencyRecord | null;
 
   // Writes
-  createProduct(product: Product): void;
-  updateProduct(sku: string, product: Partial<Product>): void;
+  createProduct(product: ProductRecord): void;
+  updateProduct(sku: string, product: Partial<ProductRecord>): void;
   setStock(productId: string, storeId: string, onHand: number, reorderLevel: number): void;
-  addMovement(movement: Omit<Movement, "id">): Movement;
+  addMovement(movement: Omit<MovementRecord, "id">): MovementRecord;
   setIdempotency(record: IdempotencyRecord): void;
 
   // Transaction: fn runs synchronously, touched rows are restored if it throws

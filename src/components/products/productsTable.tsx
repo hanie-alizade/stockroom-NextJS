@@ -13,9 +13,9 @@ import { ALL_STORES, PRODUCT_SORT_KEY } from "@/constants";
 import type {
   ProductListItem,
   ProductSortKey,
-} from "@/lib/types/product";
-import type { SortDirection } from "@/lib/types/common";
-import type { StoreScope } from "@/lib/types/store";
+  SortDirection,
+  StoreScope,
+} from "@/types";
 
 interface ProductsTableProps {
   items: ProductListItem[];

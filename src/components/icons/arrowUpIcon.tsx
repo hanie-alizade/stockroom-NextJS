@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import type { IconProps } from "@/lib/types/common";
+import type { IconProps } from "@/types";
 
 export function ArrowUpIcon(props: IconProps): ReactElement {
   return (

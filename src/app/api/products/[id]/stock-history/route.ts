@@ -2,13 +2,8 @@ import "server-only";
 
 import { ALL_STORES } from "@/constants";
 import { withApi } from "@/lib/server/http/with-api";
-import { z } from "zod";
+import { stockHistoryQuerySchema } from "@/schemas";
 import { getStockHistory } from "@/lib/server/services/products";
-
-const stockHistoryQuerySchema = z.object({
-  store: z.union([z.literal(ALL_STORES), z.string()]).optional(),
-  days: z.coerce.number().int().positive().optional(),
-});
 
 export async function GET(
   request: Request,

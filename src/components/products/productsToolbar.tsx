@@ -9,8 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { StockStatus } from "@/lib/types/product";
-import { productListQuerySchema } from "@/lib/domain/schemas";
+import type { StockStatus } from "@/types";
 import { ALL_STORES, STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
 
 interface ProductsToolbarProps {

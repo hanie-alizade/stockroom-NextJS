@@ -13,9 +13,15 @@ import {
   STOCK_STATUS_ORDER,
 } from "@/constants";
 import { getStatus } from "@/lib/domain/status";
-import type { StockStatus } from "@/lib/domain/status";
-import type { Repository, Product, Stock } from "@/lib/server/repo";
-import type { ProductListItem, ProductSummary, ProductListResult } from "./types";
+import type { Repository } from "@/lib/server/repo";
+import type {
+  ProductListItem,
+  ProductListResponse,
+  ProductListSummary,
+  ProductRecord,
+  StockRecord,
+  StockStatus,
+} from "@/types";
 
 function isValidPageSize(size: number): boolean {
   return (PAGE_SIZE_OPTIONS as readonly number[]).includes(size);
@@ -25,7 +31,7 @@ function sortKeyToStatusOrder(key: StockStatus): number {
   return STOCK_STATUS_ORDER[key] ?? 2;
 }
 
-function searchMatches(product: Product, query: string): boolean {
+function searchMatches(product: ProductRecord, query: string): boolean {
   const lowerQuery = query.toLowerCase();
   return (
     product.sku.toLowerCase().includes(lowerQuery) ||
@@ -33,7 +39,7 @@ function searchMatches(product: Product, query: string): boolean {
   );
 }
 
-function calculateStockAggregate(stocks: Stock[]): { onHand: number; reorderLevel: number } {
+function calculateStockAggregate(stocks: StockRecord[]): { onHand: number; reorderLevel: number } {
   return stocks.reduce(
     (acc, stock) => ({
       onHand: acc.onHand + stock.onHand,
@@ -43,7 +49,7 @@ function calculateStockAggregate(stocks: Stock[]): { onHand: number; reorderLeve
   );
 }
 
-function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): Stock[] {
+function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): StockRecord[] {
   if (storeId === ALL_STORES) {
     return repo.listStock(productId);
   }
@@ -63,7 +69,7 @@ export async function listProducts(
     page?: number;
     pageSize?: number;
   },
-): Promise<ProductListResult> {
+): Promise<ProductListResponse> {
   const {
     store = ALL_STORES,
     q,
@@ -179,7 +185,7 @@ export async function listProducts(
       (item): item is { onHand: number; unitCostSen: number; status: StockStatus } => item !== null,
     );
 
-  const summary: ProductSummary = {
+  const summary: ProductListSummary = {
     totalProducts: summaryItems.length,
     stockValueSen: summaryItems.reduce((sum, item) => sum + item.onHand * item.unitCostSen, 0),
     lowStock: summaryItems.filter((item) => item.status === STOCK_STATUS.LOW).length,
