@@ -97,3 +97,62 @@ export function formatDateTime(date: Date | string): string {
   const minute = String(parts.minute).padStart(2, "0");
   return `${parts.day} ${monthName}, ${hour}:${minute}`;
 }
+
+/**
+ * Format a date as "D Mon" (e.g. "9 Oct") in the app time zone.
+ */
+export function formatDay(date: Date | string): string {
+  const dateObj = parseDate(date);
+  const parts = getCalendarParts(dateObj);
+  return `${parts.day} ${MONTHS[parts.month]}`;
+}
+
+/**
+ * Format a chart axis/tooltip date: "Today" if on the same calendar day
+ * in Asia/Kuala_Lumpur as now, otherwise "D Mon" (e.g. "9 Oct").
+ */
+export function formatChartDay(date: Date | string, now: Date = new Date()): string {
+  const dateObj = parseDate(date);
+  const nowObj = parseDate(now);
+  const partsDate = getCalendarParts(dateObj);
+  const partsNow = getCalendarParts(nowObj);
+
+  if (
+    partsDate.year === partsNow.year &&
+    partsDate.month === partsNow.month &&
+    partsDate.day === partsNow.day
+  ) {
+    return "Today";
+  }
+  return formatDay(dateObj);
+}
+
+/**
+ * Format timestamp relative to now for "synced N min ago".
+ * Returns "just now" for under 1 minute, "N min ago" under 60 minutes, and "N h ago" otherwise.
+ */
+export function formatRelativeTime(
+  timestamp: number | Date,
+  now: Date | number = new Date(),
+): string {
+  const timeMs = typeof timestamp === "number" ? timestamp : timestamp.getTime();
+  const nowMs = typeof now === "number" ? now : now.getTime();
+
+  if (Number.isNaN(timeMs) || Number.isNaN(nowMs)) {
+    throw new RangeError("Invalid date");
+  }
+
+  const diffMs = Math.max(0, nowMs - timeMs);
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+
+  if (diffMinutes < 1) {
+    return "just now";
+  }
+
+  if (diffHours < 1) {
+    return `${diffMinutes} min ago`;
+  }
+
+  return `${diffHours} h ago`;
+}

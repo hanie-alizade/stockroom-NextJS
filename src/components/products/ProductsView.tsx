@@ -2,19 +2,20 @@
 
 import { useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useProductListUrlState } from "@/hooks/useProductListUrlState";
-import { useProductSelection } from "@/hooks/useProductSelection";
+import {
+  useProductListUrlState,
+  useProductSelection,
+  useProductsExport,
+} from "@/hooks";
 import { useQueryMeta, useQueryProductList } from "@/apiHooks";
 import { Banner, Pagination } from "@/components/common";
-import { buildCsv, downloadCsv, cn } from "@/helpers";
-import type { CsvColumn } from "@/helpers";
+import { buildCsv, downloadCsv, cn, productCsvColumns, normalizePageSize } from "@/helpers";
 import {
   ALL_STORES,
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
-  STOCK_STATUS_LABEL,
 } from "@/constants";
-import { useCan, useCurrentUser } from "@/providers";
+import { useCurrentUser } from "@/providers";
 import { ProductsHeader } from "./ProductsHeader";
 import { ProductsSummary } from "./ProductsSummary";
 import { ProductsToolbar } from "./ProductsToolbar";
@@ -23,7 +24,6 @@ import { ProductsChips } from "./ProductsChips";
 import { ProductsTable } from "./ProductsTable";
 import type {
   PageSize,
-  ProductListItem,
   ProductListSummary,
 } from "@/types";
 
@@ -52,8 +52,10 @@ export function ProductsView(): React.ReactElement {
     isError,
     error,
     refetch,
+    dataUpdatedAt,
   } = useQueryProductList(query);
   const { data: meta } = useQueryMeta();
+  const { exportAll, isExporting } = useProductsExport(query);
 
   const summary: ProductListSummary = productsData?.summary ?? {
     totalProducts: 0,
@@ -88,16 +90,6 @@ export function ProductsView(): React.ReactElement {
   });
 
   const handleExportSelected = useCallback(() => {
-    const columns: CsvColumn<ProductListItem>[] = [
-      { header: "SKU", accessor: (r) => r.sku },
-      { header: "Name", accessor: (r) => r.name },
-      { header: "Category", accessor: (r) => r.category },
-      { header: "Status", accessor: (r) => STOCK_STATUS_LABEL[r.status] },
-      { header: "On hand", accessor: (r) => r.onHand },
-      { header: "Reorder level", accessor: (r) => r.reorderLevel },
-      { header: "Unit cost", accessor: (r) => (r.unitCostSen / 100).toFixed(2) },
-    ];
-
     const sort = query.sort ?? "updatedAt";
     const dir = query.dir ?? "desc";
 
@@ -123,7 +115,7 @@ export function ProductsView(): React.ReactElement {
       return dir === "desc" ? -cmp : cmp;
     });
 
-    const content = buildCsv(columns, sortedItems);
+    const content = buildCsv(productCsvColumns, sortedItems);
     const dateStr = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Kuala_Lumpur",
     }).format(new Date());
@@ -160,7 +152,14 @@ export function ProductsView(): React.ReactElement {
         />
       )}
 
-      <ProductsHeader totalProducts={summary.totalProducts} store={store} />
+      <ProductsHeader
+        totalProducts={summary.totalProducts}
+        store={store}
+        dataUpdatedAt={dataUpdatedAt}
+        onExport={() => void exportAll()}
+        isExporting={isExporting}
+      />
+
 
       <ProductsSummary
         summary={summary}
@@ -236,7 +235,7 @@ export function ProductsView(): React.ReactElement {
         {!showErrorEmpty && (
           <Pagination
             page={query.page ?? DEFAULT_PAGE}
-            pageSize={(query.pageSize ?? DEFAULT_PAGE_SIZE) as PageSize}
+            pageSize={normalizePageSize(query.pageSize)}
             total={total}
             onPageChange={setPage}
             onPageSizeChange={setPageSize}

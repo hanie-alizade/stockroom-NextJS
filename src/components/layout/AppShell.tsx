@@ -10,7 +10,7 @@ export function AppShell({ children }: AppShellProps): React.ReactElement {
   return (
     <div className="bg-bg-canvas flex min-h-screen">
       {/* Desktop sidebar - hidden on mobile/tablet */}
-      <div className="hidden md:block">
+      <div className="hidden md:block sticky top-0 h-dvh">
         <Sidebar />
       </div>
 

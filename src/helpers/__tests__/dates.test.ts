@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatWhen, formatDateTime } from "../dates";
+import { formatWhen, formatDateTime, formatDay, formatChartDay, formatRelativeTime } from "../dates";
 
 const MORNING = new Date("2026-10-16T10:00:00+08:00");
 const EVENING = new Date("2026-10-16T22:00:00+08:00");
@@ -237,5 +237,52 @@ describe("formatDateTime", () => {
 
   it("throws RangeError for an invalid input", () => {
     expect(() => formatDateTime("not a date")).toThrow(RangeError);
+  });
+});
+
+describe("formatDay", () => {
+  it("formats date as 'D Mon' in app time zone", () => {
+    const input = "2026-10-09T14:30:00+08:00";
+    expect(formatDay(input)).toBe("9 Oct");
+  });
+});
+
+describe("formatChartDay", () => {
+  it("returns 'Today' for the same calendar day in Asia/Kuala_Lumpur", () => {
+    const input = "2026-10-14T02:00:00+08:00";
+    const now = new Date("2026-10-14T23:00:00+08:00");
+    expect(formatChartDay(input, now)).toBe("Today");
+  });
+
+  it("returns 'D Mon' for a different calendar day", () => {
+    const input = "2026-09-14T10:00:00+08:00";
+    const now = new Date("2026-10-14T23:00:00+08:00");
+    expect(formatChartDay(input, now)).toBe("14 Sep");
+  });
+});
+
+describe("formatRelativeTime", () => {
+  it("returns 'just now' for under 1 minute", () => {
+    const now = new Date("2026-10-16T10:00:30+08:00");
+    const timestamp = new Date("2026-10-16T10:00:00+08:00");
+    expect(formatRelativeTime(timestamp, now)).toBe("just now");
+  });
+
+  it("returns 'N min ago' for 1 to 59 minutes", () => {
+    const now = new Date("2026-10-16T10:05:00+08:00");
+    const timestamp = new Date("2026-10-16T10:00:00+08:00");
+    expect(formatRelativeTime(timestamp, now)).toBe("5 min ago");
+  });
+
+  it("returns 'N h ago' for 60+ minutes", () => {
+    const now = new Date("2026-10-16T12:30:00+08:00");
+    const timestamp = new Date("2026-10-16T10:00:00+08:00");
+    expect(formatRelativeTime(timestamp, now)).toBe("2 h ago");
+  });
+
+  it("accepts timestamp as number in ms", () => {
+    const now = 1000 * 60 * 10; // 10 min
+    const timestamp = 1000 * 60 * 2; // 2 min
+    expect(formatRelativeTime(timestamp, now)).toBe("8 min ago");
   });
 });

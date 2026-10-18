@@ -27,7 +27,7 @@ Source: the Figma screenshots (Screens and Components pages). This file holds st
 ## Products list
 
 - **Title and subtitle:** "Products"; all stores `248 products across 6 stores`; one store `212 products at Mont Kiara`. (The design also shows `· synced 2 min ago`; optional, Phase 7.)
-- **Header button:** "Import CSV" (Managers only). The design also has an "Export" button here; we do not build it (selected-rows export is the one the brief asks for).
+- **Header buttons:** "Export" (secondary, exports all filtered rows in the current sort, visible for every role) placed before "Import CSV" (Managers only).
 - **Cards** (title / value / subtitle): Products / `248` / "Across 6 categories" (one store: "Active at this store"); Stock value / `RM 182,430.50` / "At unit cost, all stores" (one store: "At unit cost"); Low stock / `17` in amber / "At or below reorder level"; Out of stock / `6` in red / "Needs a reorder". Loading: value is the dash placeholder (U+2014), subtitles stay.
 - **Toolbar:** search placeholder "Search name or SKU"; dropdowns "All categories", "All statuses"; right side `248 results`. Status options: All statuses, In stock, Low, Out of stock (own wording).
 - **Columns, in order:** checkbox (select all), SKU, Product (name, with the supplier on a second line), Category, On hand, Reorder at, Status, Unit cost, Updated, `···`. Sortable: SKU, Product, Category, On hand, Reorder at, Unit cost, Updated. Status has no sort icon in the design; we still sort it (see DECISIONS).

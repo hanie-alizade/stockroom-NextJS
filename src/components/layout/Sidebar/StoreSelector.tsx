@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -11,15 +11,17 @@ import {
 } from "@/components/ui/select";
 import { SupplierIcon } from "@/components/icons";
 import { ALL_STORES } from "@/constants";
+import { setStoreScopeParam } from "@/helpers";
 import { useQueryMeta } from "@/apiHooks";
+import type { StoreScope } from "@/types";
 
 export function StoreSelector(): React.ReactElement {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: meta, isLoading, isError } = useQueryMeta();
 
-  const currentStore = searchParams.get("store");
+  const currentStore = searchParams.get("store") ?? ALL_STORES;
 
   if (isLoading) {
     return (
@@ -47,17 +49,13 @@ export function StoreSelector(): React.ReactElement {
   const validStoreIds = new Set(meta.stores.map((s) => s.id));
   const isValidStore = currentStore && validStoreIds.has(currentStore);
   const value = isValidStore ? currentStore : ALL_STORES;
+  const selectedStore = meta.stores.find((s) => s.id === value);
+  const storeLabel = selectedStore ? selectedStore.name : `All stores (${meta.stores.length})`;
 
   const handleValueChange = (newValue: string): void => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (newValue === ALL_STORES) {
-      params.delete("store");
-    } else {
-      params.set("store", newValue);
-    }
-    params.delete("page");
-    const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname);
+    const scope: StoreScope =
+      newValue === ALL_STORES || validStoreIds.has(newValue) ? newValue : ALL_STORES;
+    setStoreScopeParam(router, pathname, searchParams, scope);
   };
 
   return (
@@ -65,7 +63,7 @@ export function StoreSelector(): React.ReactElement {
       <Select value={value} onValueChange={handleValueChange}>
         <SelectTrigger className="h-8 w-full" data-size="sm">
           <SupplierIcon className="shrink-0" />
-          <SelectValue className="flex-1 text-left" />
+          <SelectValue className="flex-1 text-left">{storeLabel}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL_STORES}>All stores ({meta.stores.length})</SelectItem>
@@ -79,3 +77,4 @@ export function StoreSelector(): React.ReactElement {
     </div>
   );
 }
+

@@ -20,7 +20,7 @@ function SidebarContent(): React.ReactElement {
 
 export function Sidebar(): React.ReactElement {
   return (
-    <aside className="border-border-default bg-bg-surface flex h-screen w-[248px] flex-col border-r px-[12px] py-[20px]">
+    <aside className="border-border-default bg-bg-surface flex h-full w-[248px] flex-col border-r px-[12px] py-[20px]">
       <Suspense
         fallback={
           <>
