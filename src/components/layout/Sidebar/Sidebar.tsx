@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Brand } from "./brand";
-import { Navigation } from "./navigation";
-import { StoreSelector } from "./storeSelector";
-import { UserProfileCard } from "./userProfileCard";
+import { Brand } from "./Brand";
+import { Navigation } from "./Navigation";
+import { StoreSelector } from "./StoreSelector";
+import { UserProfileCard } from "./UserProfileCard";
 
 function SidebarContent(): React.ReactElement {
   return (

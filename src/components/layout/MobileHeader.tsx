@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { InfoIcon } from "@/components/icons";
-import { Sidebar } from "./sideBar/sidebar";
+import { Sidebar } from "./Sidebar";
 
 export function MobileHeader(): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);

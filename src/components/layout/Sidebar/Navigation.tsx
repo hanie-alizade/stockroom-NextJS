@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { BoxIcon, UploadIcon, SupplierIcon, ReportIcon } from "@/components/icons";
-import { NavItem } from "./navItem";
+import { NavItem } from "./NavItem";
 import { useCan } from "@/providers";
 
 export function Navigation(): React.ReactElement {

@@ -3,7 +3,7 @@ import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import { QueryClient, dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers, SessionProvider } from "@/providers";
-import { AppShell } from "@/components/layout/appShell";
+import { AppShell } from "@/components/layout/AppShell";
 import { getCurrentUser } from "@/server/session";
 import { getMeta } from "@/server/services/meta";
 import { createRepository } from "@/server/repositories";

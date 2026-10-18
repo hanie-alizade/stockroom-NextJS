@@ -2,11 +2,11 @@
 
 import { useProductListUrlState } from "@/hooks/useProductListUrlState";
 import { useQueryMeta, useQueryProductList } from "@/apiHooks";
-import { ProductsHeader } from "./productsHeader";
-import { ProductsSummary } from "./productsSummary";
-import { ProductsToolbar } from "./productsToolbar";
-import { ProductsTable } from "./productsTable";
-import { Pagination } from "@/components/common/pagination";
+import { ProductsHeader } from "./ProductsHeader";
+import { ProductsSummary } from "./ProductsSummary";
+import { ProductsToolbar } from "./ProductsToolbar";
+import { ProductsTable } from "./ProductsTable";
+import { Pagination } from "@/components/common";
 import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/constants";
 import type { PageSize, ProductListSummary } from "@/types";
 

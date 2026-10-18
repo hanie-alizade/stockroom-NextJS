@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
-import { ProductsView } from "@/components/products/productsView";
+import { ProductsView } from "@/components/products";
 import { parseProductListParams } from "@/helpers";
 import { queryKeys } from "@/constants";
 import { createRepository } from "@/server/repositories";

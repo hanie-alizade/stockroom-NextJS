@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { StatusBadge } from "@/components/common/statusBadge";
-import { ProductsSortHeader } from "./productsSortHeader";
+import { StatusBadge } from "@/components/common";
+import { ProductsSortHeader } from "./ProductsSortHeader";
 import { cn, formatMoney, formatWhen } from "@/helpers";
 import { ALL_STORES, PRODUCT_SORT_KEY } from "@/constants";
 import type {

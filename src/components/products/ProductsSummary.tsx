@@ -1,5 +1,5 @@
 import { ALL_STORES } from "@/constants";
-import { StatCard } from "@/components/common/statCard";
+import { StatCard } from "@/components/common";
 import { formatMoney } from "@/helpers";
 import type { ProductListSummary, StoreScope } from "@/types";
 

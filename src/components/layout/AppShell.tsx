@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { Sidebar } from "./sideBar/sidebar";
-import { MobileHeader } from "./mobileHeader";
+import { Sidebar } from "./Sidebar";
+import { MobileHeader } from "./MobileHeader";
 
 interface AppShellProps {
   children: ReactNode;
