@@ -11,3 +11,4 @@ export * from "./http";
 export * from "./cookies";
 export * from "./queryKeys";
 export * from "./period";
+export * from "./tabs";

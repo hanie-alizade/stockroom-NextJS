@@ -10,6 +10,7 @@ export const movementListQuerySchema = z.object({
   period: z.nativeEnum(PERIOD).optional(),
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().optional(),
+  fail: z.string().optional(),
 });
 
 export const productMovementsQuerySchema = movementListQuerySchema;

@@ -14,9 +14,11 @@ export const productListQuerySchema = paginationQuerySchema.extend({
 
 export const productDetailQuerySchema = z.object({
   store: storeScopeSchema.optional(),
+  fail: z.string().optional(),
 });
 
 export const stockHistoryQuerySchema = z.object({
   store: storeScopeSchema.optional(),
   days: z.coerce.number().int().positive().optional(),
+  fail: z.string().optional(),
 });

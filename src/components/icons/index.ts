@@ -17,3 +17,4 @@ export { InfoIcon } from "./InfoIcon";
 export { ReportIcon } from "./ReportIcon";
 export { SupplierIcon } from "./SupplierIcon";
 export { BoxIcon } from "./BoxIcon";
+export { TransferIcon } from "./TransferIcon";

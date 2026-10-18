@@ -11,3 +11,9 @@ export const PERIOD_DAYS = {
 } as const;
 
 export const DEFAULT_PERIOD = PERIOD.DAYS_30;
+
+export const PERIOD_LABEL = {
+  [PERIOD.DAYS_7]: "Last 7 days",
+  [PERIOD.DAYS_30]: "Last 30 days",
+  [PERIOD.DAYS_90]: "Last 90 days",
+} as const;
