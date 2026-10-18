@@ -2,8 +2,8 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { ERROR_CODE, FIELD_ERROR_CODE, HTTP_STATUS, SESSION_COOKIE } from "@/constants";
-import { AppError } from "@/lib/domain/errors";
-import { withApi } from "@/lib/server/http/with-api";
+import { AppError } from "@/domain";
+import { withApi } from "@/server/http/withApi";
 import { sessionBodySchema } from "@/schemas";
 
 export async function POST(request: Request): Promise<Response> {

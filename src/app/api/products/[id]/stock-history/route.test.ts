@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET } from "./route";
-import { createRepository } from "@/lib/server/repo";
+import { createRepository } from "@/server/repositories";
 import { cookies } from "next/headers";
-import type { Product, Stock } from "@/lib/server/repo";
+import type { Product, Stock } from "@/server/repositories";
 
 import { mockCookies, mockRepository } from "tests/helpers";
 
-vi.mock("@/lib/server/repo", () => ({
+vi.mock("@/server/repositories", () => ({
   createRepository: vi.fn(),
 }));
 

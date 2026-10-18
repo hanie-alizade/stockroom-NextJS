@@ -1,9 +1,9 @@
 import "server-only";
 
 import { ALL_STORES } from "@/constants";
-import { withApi } from "@/lib/server/http/with-api";
+import { withApi } from "@/server/http/withApi";
 import { stockHistoryQuerySchema } from "@/schemas";
-import { getStockHistory } from "@/lib/server/services/products";
+import { getStockHistory } from "@/server/services/products";
 
 export async function GET(
   request: Request,

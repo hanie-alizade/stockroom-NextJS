@@ -1,8 +1,8 @@
 import "server-only";
 
-import { withApi } from "@/lib/server/http/with-api";
+import { withApi } from "@/server/http/withApi";
 import { productListQuerySchema } from "@/schemas";
-import { listProducts } from "@/lib/server/services/products";
+import { listProducts } from "@/server/services/products";
 
 export async function GET(request: Request): Promise<Response> {
   return withApi(async ({ repo }) => {

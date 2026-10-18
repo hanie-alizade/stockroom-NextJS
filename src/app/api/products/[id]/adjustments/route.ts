@@ -6,10 +6,10 @@ import {
   IDEMPOTENCY_KEY_HEADER,
   REPLAY_HEADER,
 } from "@/constants";
-import { AppError } from "@/lib/domain/errors";
+import { AppError } from "@/domain";
 import { adjustmentSchema } from "@/schemas";
-import { withApi } from "@/lib/server/http/with-api";
-import { createAdjustment } from "@/lib/server/services/inventory.service";
+import { withApi } from "@/server/http/withApi";
+import { createAdjustment } from "@/server/services/inventory";
 
 export async function POST(
   request: Request,

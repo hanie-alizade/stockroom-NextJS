@@ -1,7 +1,7 @@
 import "server-only";
 
 import { env } from "@/config/env";
-import { withApi } from "@/lib/server/http/with-api";
+import { withApi } from "@/server/http/withApi";
 
 const isDev = env.NODE_ENV === "development";
 const isE2E = env.E2E === "1";

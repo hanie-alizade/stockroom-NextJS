@@ -5,9 +5,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { AppShell } from "@/components/layout/appShell";
-import { getCurrentUser } from "@/lib/server/session";
-import { getMeta } from "@/lib/server/services/meta";
-import { createRepository } from "@/lib/server/repo";
+import { getCurrentUser } from "@/server/session";
+import { getMeta } from "@/server/services/meta";
+import { createRepository } from "@/server/repositories";
 import { queryKeys } from "@/constants";
 import "./globals.css";
 

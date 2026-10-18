@@ -6,7 +6,7 @@ import type {
   Stock,
   Movement,
   IdempotencyRecord,
-} from "@/lib/server/repo";
+} from "@/server/repositories";
 
 const DEFAULT_USERS: User[] = [
   { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },

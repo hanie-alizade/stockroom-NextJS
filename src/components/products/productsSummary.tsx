@@ -1,6 +1,6 @@
 import { ALL_STORES } from "@/constants";
 import { StatCard } from "@/components/common/statCard";
-import { formatMoney } from "@/lib/domain/money";
+import { formatMoney } from "@/helpers";
 import type { ProductListSummary, StoreScope } from "@/types";
 
 interface ProductsSummaryProps {

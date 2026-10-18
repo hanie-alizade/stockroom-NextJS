@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helpers";
 import { Dialog as SheetPrimitive } from "radix-ui";
 import { CloseIcon } from "@/components/icons";
 

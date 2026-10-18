@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { cookies } from "next/headers";
 
-import { createRepository } from "@/lib/server/repo";
+import { createRepository } from "@/server/repositories";
 import { mockCookies } from "tests/helpers";
 
 import { POST } from "./route";

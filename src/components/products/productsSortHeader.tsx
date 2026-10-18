@@ -1,5 +1,5 @@
 import { DEFAULT_SORT_DIRECTION, SORT_DIRECTION } from "@/constants";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helpers";
 import { ArrowDownIcon, ArrowUpIcon, SortIcon } from "@/components/icons";
 import type { ProductSortKey, SortDirection } from "@/types";
 
