@@ -56,7 +56,8 @@ export function StoreSelector(): React.ReactElement {
       params.set("store", newValue);
     }
     params.delete("page");
-    router.push(`${pathname}?${params.toString()}`);
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname);
   };
 
   return (

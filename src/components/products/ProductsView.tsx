@@ -14,6 +14,7 @@ import {
   DEFAULT_PAGE_SIZE,
   STOCK_STATUS_LABEL,
 } from "@/constants";
+import { useCan, useCurrentUser } from "@/providers";
 import { ProductsHeader } from "./ProductsHeader";
 import { ProductsSummary } from "./ProductsSummary";
 import { ProductsToolbar } from "./ProductsToolbar";
@@ -30,6 +31,7 @@ export function ProductsView(): React.ReactElement {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const currentUser = useCurrentUser();
 
   const {
     query,
@@ -46,6 +48,7 @@ export function ProductsView(): React.ReactElement {
   const {
     data: productsData,
     isLoading,
+    isFetching,
     isError,
     error,
     refetch,
@@ -81,6 +84,7 @@ export function ProductsView(): React.ReactElement {
     q: query.q,
     category: query.category,
     status: query.status,
+    userId: currentUser.id,
   });
 
   const handleExportSelected = useCallback(() => {
@@ -94,13 +98,38 @@ export function ProductsView(): React.ReactElement {
       { header: "Unit cost", accessor: (r) => (r.unitCostSen / 100).toFixed(2) },
     ];
 
-    const content = buildCsv(columns, selectedItems);
+    const sort = query.sort ?? "updatedAt";
+    const dir = query.dir ?? "desc";
+
+    const sortedItems = [...selectedItems].sort((a, b) => {
+      if (sort === "status") {
+        const orderMap: Record<string, number> = { out: 0, low: 1, in_stock: 2 };
+        const diff = (orderMap[a.status] ?? 2) - (orderMap[b.status] ?? 2);
+        if (diff !== 0) {
+          return dir === "desc" ? diff : -diff;
+        }
+        return dir === "desc" ? a.sku.localeCompare(b.sku) : b.sku.localeCompare(a.sku);
+      }
+
+      let cmp = 0;
+      if (sort === "sku") cmp = a.sku.localeCompare(b.sku);
+      else if (sort === "name") cmp = a.name.localeCompare(b.name);
+      else if (sort === "category") cmp = a.category.localeCompare(b.category);
+      else if (sort === "onHand") cmp = a.onHand - b.onHand;
+      else if (sort === "reorderLevel") cmp = a.reorderLevel - b.reorderLevel;
+      else if (sort === "unitCostSen") cmp = a.unitCostSen - b.unitCostSen;
+      else if (sort === "updatedAt") cmp = a.updatedAt.localeCompare(b.updatedAt);
+
+      return dir === "desc" ? -cmp : cmp;
+    });
+
+    const content = buildCsv(columns, sortedItems);
     const dateStr = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Kuala_Lumpur",
     }).format(new Date());
 
     downloadCsv(`stockroom-products-${dateStr}.csv`, content);
-  }, [selectedItems]);
+  }, [selectedItems, query.sort, query.dir]);
 
   const notice = searchParams.get("notice");
   const showNotice = notice === "managers-only";
@@ -114,8 +143,8 @@ export function ProductsView(): React.ReactElement {
 
   const hasFilters = Boolean(
     (query.q && query.q.trim()) ||
-      (query.category && query.category !== ALL_STORES) ||
-      query.status,
+    (query.category && query.category !== ALL_STORES) ||
+    query.status,
   );
 
   const showErrorEmpty = isError && items.length === 0;
@@ -185,6 +214,7 @@ export function ProductsView(): React.ReactElement {
         <ProductsTable
           items={items}
           isLoading={isLoading}
+          isFetching={isFetching}
           isError={isError}
           error={error}
           store={store}

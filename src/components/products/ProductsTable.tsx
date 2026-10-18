@@ -21,6 +21,7 @@ import type {
 interface ProductsTableProps {
   items: ProductListItem[];
   isLoading: boolean;
+  isFetching?: boolean;
   isError: boolean;
   error?: Error | null;
   store: StoreScope;
@@ -42,6 +43,7 @@ interface ProductsTableProps {
 export function ProductsTable({
   items,
   isLoading,
+  isFetching,
   isError,
   error,
   store,
@@ -89,7 +91,7 @@ export function ProductsTable({
 
       <div className="overflow-x-auto">
         <table
-          aria-busy={isLoading}
+          aria-busy={isFetching ?? isLoading}
           className="w-full min-w-[900px] border-collapse text-left"
         >
           <ProductsTableHead

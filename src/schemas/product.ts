@@ -9,6 +9,7 @@ export const productListQuerySchema = paginationQuerySchema.extend({
   status: z.nativeEnum(STOCK_STATUS).optional(),
   sort: z.nativeEnum(PRODUCT_SORT_KEY).optional(),
   dir: z.nativeEnum(SORT_DIRECTION).optional(),
+  fail: z.string().optional(),
 });
 
 export const productDetailQuerySchema = z.object({

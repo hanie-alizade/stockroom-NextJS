@@ -9,14 +9,13 @@ import {
 import { AppError } from "@/domain";
 import { adjustmentSchema } from "@/schemas";
 import { withApi } from "@/server/http/withApi";
+import { readJsonBody } from "@/server/http/readJsonBody";
 import { createAdjustment } from "@/server/services/inventory";
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> | { id: string } },
 ): Promise<Response> {
-  globalThis.url = request.url;
-
   return withApi(
     async ({ user, repo }) => {
       const idempotencyKey = request.headers.get(IDEMPOTENCY_KEY_HEADER);
@@ -29,17 +28,7 @@ export async function POST(
         );
       }
 
-      let rawBody: unknown;
-      try {
-        rawBody = await request.json();
-      } catch {
-        throw new AppError(
-          ERROR_CODE.INVALID_JSON,
-          HTTP_STATUS.BAD_REQUEST,
-          "Invalid JSON body",
-        );
-      }
-
+      const rawBody = await readJsonBody(request);
       const parsed = adjustmentSchema.parse(rawBody);
       const { id } = await params;
 

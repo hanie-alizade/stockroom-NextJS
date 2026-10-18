@@ -8,6 +8,7 @@ export interface ProductSelectionFilterDeps {
   q?: string;
   category?: string;
   status?: string;
+  userId?: string;
 }
 
 export function useProductSelection(deps?: ProductSelectionFilterDeps) {
@@ -19,12 +20,14 @@ export function useProductSelection(deps?: ProductSelectionFilterDeps) {
   const q = deps?.q;
   const category = deps?.category;
   const status = deps?.status;
+  const userId = deps?.userId;
 
   const prevDepsRef = useRef<{
     store?: string;
     q?: string;
     category?: string;
     status?: string;
+    userId?: string;
   } | undefined>(undefined);
 
   useEffect(() => {
@@ -34,12 +37,13 @@ export function useProductSelection(deps?: ProductSelectionFilterDeps) {
       (prev.store !== store ||
         prev.q !== q ||
         prev.category !== category ||
-        prev.status !== status)
+        prev.status !== status ||
+        prev.userId !== userId)
     ) {
       setSelectedMap(new Map());
     }
-    prevDepsRef.current = { store, q, category, status };
-  }, [store, q, category, status]);
+    prevDepsRef.current = { store, q, category, status, userId };
+  }, [store, q, category, status, userId]);
 
   const selectedItems = useMemo(() => Array.from(selectedMap.values()), [selectedMap]);
   const count = selectedMap.size;

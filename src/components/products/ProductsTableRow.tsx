@@ -92,7 +92,7 @@ export function ProductsTableRow({
         {formatMoney(item.unitCostSen)}
       </td>
 
-      <td className="text-body-small text-text-secondary px-md align-middle whitespace-nowrap">
+      <td suppressHydrationWarning className="text-body-small text-text-secondary px-md align-middle whitespace-nowrap">
         {formatWhen(item.updatedAt, now)}
       </td>
 

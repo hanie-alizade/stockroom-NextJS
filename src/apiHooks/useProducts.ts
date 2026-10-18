@@ -10,5 +10,7 @@ export function useQueryProductList(
     queryKey: queryKeys.products.list(query),
     queryFn: () => getProductList(query),
     placeholderData: (previousData) => previousData,
+    staleTime: 30_000,
+    retry: 2,
   });
 }
