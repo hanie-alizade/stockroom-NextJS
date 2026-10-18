@@ -2,7 +2,10 @@ import axios from "axios";
 import type { ApiErrorBody } from "@/types";
 
 export class ApiError extends Error {
-  constructor(public body: ApiErrorBody) {
+  constructor(
+    public body: ApiErrorBody,
+    public status?: number,
+  ) {
     super(body.message);
     this.name = "ApiError";
   }
@@ -18,7 +21,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.data) {
-      throw new ApiError(error.response.data);
+      throw new ApiError(error.response.data, error.response.status);
     }
     throw error;
   },

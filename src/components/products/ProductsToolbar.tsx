@@ -65,15 +65,31 @@ export function ProductsToolbar({
   };
 
 
-  const itemList = [
+  const statusOptions = [
     { value: ALL_STORES, label: "All statuses" },
     { value: STOCK_STATUS.IN_STOCK, label: STOCK_STATUS_LABEL[STOCK_STATUS.IN_STOCK] },
     { value: STOCK_STATUS.LOW, label: STOCK_STATUS_LABEL[STOCK_STATUS.LOW] },
     { value: STOCK_STATUS.OUT, label: STOCK_STATUS_LABEL[STOCK_STATUS.OUT] },
-  ];
+  ] as const;
+
+  const handleCategoryChange = (val: string): void => {
+    onCategoryChange(val === ALL_STORES ? undefined : val);
+  };
+
+  const handleStatusChange = (val: string): void => {
+    if (
+      val === STOCK_STATUS.IN_STOCK ||
+      val === STOCK_STATUS.LOW ||
+      val === STOCK_STATUS.OUT
+    ) {
+      onStatusChange(val);
+    } else {
+      onStatusChange(undefined);
+    }
+  };
 
   return (
-    <div className="gap-md p-lg flex items-center">
+    <div className="gap-md p-md flex h-[60px] items-center">
       <div className="relative w-[288px]">
         <SearchIcon className="text-text-tertiary pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
         <input
@@ -86,34 +102,28 @@ export function ProductsToolbar({
       </div>
 
       <div className="w-[168px]">
-        <Select value={category || ALL_STORES} onValueChange={(val) => onCategoryChange(val === ALL_STORES ? undefined : val)}>
+        <Select value={category ?? ALL_STORES} onValueChange={handleCategoryChange}>
           <SelectTrigger className="h-9 w-full justify-between">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_STORES}>All categories</SelectItem>
-            {categories.map((cat) => {
-              const name = typeof cat === "string" ? cat : (cat as { name: string }).name;
-              return (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              );
-            })}
+            {categories.map((cat) => (
+              <SelectItem key={cat.name} value={cat.name}>
+                {cat.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
 
       <div className="w-[152px]">
-        <Select
-          value={status ?? ALL_STORES}
-          onValueChange={(val) => onStatusChange(val === ALL_STORES ? undefined : (val as StockStatus))}
-        >
+        <Select value={status ?? ALL_STORES} onValueChange={handleStatusChange}>
           <SelectTrigger className="h-9 w-full justify-between">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
           <SelectContent>
-            {itemList.map((item) => (
+            {statusOptions.map((item) => (
               <SelectItem key={item.value} value={item.value}>
                 {item.label}
               </SelectItem>

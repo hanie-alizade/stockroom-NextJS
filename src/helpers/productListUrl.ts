@@ -124,11 +124,11 @@ export function setProductListSearch(
   router: RouterInstance,
   pathname: string,
   current: ProductListQuery,
-  q: string,
+  q?: string,
 ): void {
   const next: ProductListQuery = {
     ...current,
-    q: q.trim() || undefined,
+    q: q?.trim() || undefined,
     page: DEFAULT_PAGE,
   };
   router.replace(buildProductListUrl(pathname, next));
@@ -157,6 +157,35 @@ export function setProductListStatus(
   const next: ProductListQuery = {
     ...current,
     status,
+    page: DEFAULT_PAGE,
+  };
+  router.push(buildProductListUrl(pathname, next));
+}
+
+export function setProductListStore(
+  router: RouterInstance,
+  pathname: string,
+  current: ProductListQuery,
+  store?: StoreScope,
+): void {
+  const next: ProductListQuery = {
+    ...current,
+    store: store && store !== ALL_STORES ? store : ALL_STORES,
+    page: DEFAULT_PAGE,
+  };
+  router.push(buildProductListUrl(pathname, next));
+}
+
+export function clearProductListFilters(
+  router: RouterInstance,
+  pathname: string,
+  current: ProductListQuery,
+): void {
+  const next: ProductListQuery = {
+    ...current,
+    q: undefined,
+    category: undefined,
+    status: undefined,
     page: DEFAULT_PAGE,
   };
   router.push(buildProductListUrl(pathname, next));

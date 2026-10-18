@@ -7,11 +7,13 @@ import {
   setProductListSearch,
   setProductListCategory,
   setProductListStatus,
+  setProductListStore,
+  clearProductListFilters,
   setProductListPage,
   setProductListPageSize,
   toggleProductListSort,
 } from "@/helpers";
-import type { StockStatus, ProductSortKey, PageSize } from "@/types";
+import type { StockStatus, ProductSortKey, PageSize, StoreScope } from "@/types";
 
 export function useProductListUrlState() {
   const router = useRouter();
@@ -21,7 +23,7 @@ export function useProductListUrlState() {
   const query = useMemo(() => parseProductListParams(searchParams), [searchParams]);
 
   const setSearch = useCallback(
-    (q: string) => {
+    (q?: string) => {
       setProductListSearch(router, pathname, query, q);
     },
     [router, pathname, query],
@@ -40,6 +42,17 @@ export function useProductListUrlState() {
     },
     [router, pathname, query],
   );
+
+  const setStore = useCallback(
+    (store?: StoreScope) => {
+      setProductListStore(router, pathname, query, store);
+    },
+    [router, pathname, query],
+  );
+
+  const clearFilters = useCallback(() => {
+    clearProductListFilters(router, pathname, query);
+  }, [router, pathname, query]);
 
   const setPage = useCallback(
     (page: number) => {
@@ -67,6 +80,8 @@ export function useProductListUrlState() {
     setSearch,
     setCategory,
     setStatus,
+    setStore,
+    clearFilters,
     setPage,
     setPageSize,
     toggleSort,

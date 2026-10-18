@@ -1,33 +1,35 @@
 "use client";
 
+import Link from "next/link";
 import { ACTION, ALL_STORES } from "@/constants";
-import { DownloadIcon, UploadIcon } from "@/components/icons";
+import { UploadIcon } from "@/components/icons";
 import { useCan } from "@/providers";
 import { useQueryMeta } from "@/apiHooks";
-import type { MetaResponse, StoreScope } from "@/types";
+import type { StoreScope } from "@/types";
 
 interface ProductsHeaderProps {
   totalProducts: number;
   store: StoreScope;
 }
 
-const SYNCED_TEXT = "synced 2 min ago"; // TODO(hanie): wire to the last update time
-
 export function ProductsHeader({ totalProducts, store }: ProductsHeaderProps): React.ReactElement {
   const canImport = useCan(ACTION.IMPORT);
   const { data: meta } = useQueryMeta();
 
-  let storeContextText = "across 6 stores";
+  const storeCount = meta?.stores.length;
+  let storeContextText = storeCount ? `across ${storeCount} stores` : "";
   if (meta) {
     if (store === ALL_STORES) {
       storeContextText = `across ${meta.stores.length} stores`;
     } else {
       const currentStore = meta.stores.find((s) => s.id === store);
-      storeContextText = currentStore ? `at ${currentStore.name}` : "";
+      storeContextText = currentStore ? `at ${currentStore.name}` : `at ${store}`;
     }
   }
 
-  const subtitle = `${totalProducts} products ${storeContextText} · ${SYNCED_TEXT}`;
+  const subtitle = storeContextText
+    ? `${totalProducts} products ${storeContextText}`
+    : `${totalProducts} products`;
 
   return (
     <div className="flex items-start justify-between">
@@ -37,22 +39,14 @@ export function ProductsHeader({ totalProducts, store }: ProductsHeaderProps): R
       </div>
 
       <div className="gap-md flex items-center">
-        <button
-          type="button"
-          className="border-border-default bg-bg-surface hover:bg-bg-subtle text-text-primary text-label inline-flex h-9 items-center gap-2 rounded-md border px-3 transition-colors"
-        >
-          <DownloadIcon className="size-4 shrink-0" />
-          <span>Export</span>
-        </button>
-
         {canImport && (
-          <button
-            type="button"
+          <Link
+            href="/import"
             className="bg-accent-default hover:bg-accent-hover text-text-on-accent text-label inline-flex h-9 items-center gap-2 rounded-md px-3 transition-colors"
           >
             <UploadIcon className="size-4 shrink-0" />
             <span>Import CSV</span>
-          </button>
+          </Link>
         )}
       </div>
     </div>

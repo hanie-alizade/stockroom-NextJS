@@ -11,6 +11,7 @@ interface ProductsSortHeaderProps {
   onSort: (column: ProductSortKey) => void;
   align?: "left" | "right";
   className?: string;
+  hideInactiveIcon?: boolean;
 }
 
 export function ProductsSortHeader({
@@ -21,13 +22,25 @@ export function ProductsSortHeader({
   onSort,
   align = "left",
   className,
+  hideInactiveIcon = false,
 }: ProductsSortHeaderProps): React.ReactElement {
   const isActive = currentSort === column;
-  const ariaSort = isActive
-    ? currentDir === SORT_DIRECTION.DESC
-      ? "descending"
-      : "ascending"
-    : undefined;
+  let ariaSort: "descending" | "ascending" | undefined;
+  if (isActive) {
+    ariaSort = currentDir === SORT_DIRECTION.DESC ? "descending" : "ascending";
+  }
+
+  let sortIcon: React.ReactNode = null;
+  if (isActive) {
+    sortIcon =
+      currentDir === SORT_DIRECTION.DESC ? (
+        <ArrowDownIcon className="text-text-primary size-3.5 shrink-0" />
+      ) : (
+        <ArrowUpIcon className="text-text-primary size-3.5 shrink-0" />
+      );
+  } else if (!hideInactiveIcon) {
+    sortIcon = <SortIcon className="text-text-tertiary size-3.5 shrink-0" />;
+  }
 
   return (
     <th
@@ -51,15 +64,7 @@ export function ProductsSortHeader({
         )}
       >
         <span>{label}</span>
-        {isActive ? (
-          currentDir === SORT_DIRECTION.DESC ? (
-            <ArrowDownIcon className="text-text-primary size-3.5 shrink-0" />
-          ) : (
-            <ArrowUpIcon className="text-text-primary size-3.5 shrink-0" />
-          )
-        ) : (
-          <SortIcon className="text-text-tertiary size-3.5 shrink-0" />
-        )}
+        {sortIcon}
       </button>
     </th>
   );
