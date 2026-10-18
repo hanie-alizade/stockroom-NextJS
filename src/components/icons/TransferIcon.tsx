@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import type { IconProps } from "@/types";
+import type { IconProps } from "./types";
 
 // TODO(hanie): replace the path with the Figma export
 export function TransferIcon(props: IconProps): ReactElement {

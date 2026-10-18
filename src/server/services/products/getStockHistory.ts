@@ -3,7 +3,8 @@ import "server-only";
 import { ALL_STORES, ERROR_CODE, HTTP_STATUS } from "@/constants";
 import { AppError } from "@/domain";
 import type { Repository } from "@/server/repositories";
-import type { StockHistoryPoint, StockHistoryResult, StockRecord } from "@/types";
+import type { StockHistoryPoint, StockHistoryResult } from "@/types";
+import { getStockForScope, sumStock } from "./stockScope";
 
 const APP_TIME_ZONE = "Asia/Kuala_Lumpur";
 
@@ -34,24 +35,6 @@ function getCalendarPartsInTz(date: Date): { year: number; month: number; day: n
   };
 }
 
-function calculateStockAggregate(stocks: StockRecord[]): { onHand: number; reorderLevel: number } {
-  return stocks.reduce(
-    (acc, stock) => ({
-      onHand: acc.onHand + stock.onHand,
-      reorderLevel: acc.reorderLevel + stock.reorderLevel,
-    }),
-    { onHand: 0, reorderLevel: 0 },
-  );
-}
-
-function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): StockRecord[] {
-  if (storeId === ALL_STORES) {
-    return repo.listStock(productId);
-  }
-  const stock = repo.getStock(productId, storeId);
-  return stock ? [stock] : [];
-}
-
 export async function getStockHistory(
   repo: Repository,
   sku: string,
@@ -67,7 +50,7 @@ export async function getStockHistory(
   const days = validDays.includes(daysInput) ? daysInput : 30;
 
   const stocks = getStockForScope(repo, sku, storeId);
-  const { onHand: currentOnHand, reorderLevel } = calculateStockAggregate(stocks);
+  const { onHand: currentOnHand, reorderLevel } = sumStock(stocks);
 
   const movements =
     storeId === ALL_STORES

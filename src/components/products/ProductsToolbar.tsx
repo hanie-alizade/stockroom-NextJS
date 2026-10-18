@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { StockStatus } from "@/types/product";
+import type { StockStatus } from "@/types";
 import { ALL_OPTION, STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
 import { useDebouncedCallback } from "@/lib/client/useDebouncedCallback";
 
@@ -44,12 +44,12 @@ export function ProductsToolbar({
     }
   }, [search]);
 
-  const statusOptions = [
+  const statusOptions: { value: string; label: string }[] = [
     { value: ALL_OPTION, label: "All statuses" },
     { value: STOCK_STATUS.IN_STOCK, label: STOCK_STATUS_LABEL[STOCK_STATUS.IN_STOCK] },
     { value: STOCK_STATUS.LOW, label: STOCK_STATUS_LABEL[STOCK_STATUS.LOW] },
     { value: STOCK_STATUS.OUT, label: STOCK_STATUS_LABEL[STOCK_STATUS.OUT] },
-  ] as const;
+  ];
 
   const handleCategoryChange = (val: string): void => {
     onCategoryChange(val === ALL_OPTION ? undefined : val);
@@ -66,6 +66,9 @@ export function ProductsToolbar({
       onStatusChange(undefined);
     }
   };
+
+  const categoryLabel = category ?? "All categories";
+  const statusLabel = status ? STOCK_STATUS_LABEL[status] : "All statuses";
 
   return (
     <div className="gap-md p-md flex h-[60px] items-center">
@@ -84,10 +87,13 @@ export function ProductsToolbar({
       <div className="w-[168px]">
         <Select value={category ?? ALL_OPTION} onValueChange={handleCategoryChange}>
           <SelectTrigger className="h-9 w-full justify-between">
-            <SelectValue placeholder="All categories" />
+            <SelectValue placeholder="All categories">{categoryLabel}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_OPTION}>All categories</SelectItem>
+            {category && !categories.some((c) => c.name === category) && (
+              <SelectItem value={category}>{category}</SelectItem>
+            )}
             {categories.map((cat) => (
               <SelectItem key={cat.name} value={cat.name}>
                 {cat.name}
@@ -100,7 +106,7 @@ export function ProductsToolbar({
       <div className="w-[152px]">
         <Select value={status ?? ALL_OPTION} onValueChange={handleStatusChange}>
           <SelectTrigger className="h-9 w-full justify-between">
-            <SelectValue placeholder="All statuses" />
+            <SelectValue placeholder="All statuses">{statusLabel}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {statusOptions.map((item) => (

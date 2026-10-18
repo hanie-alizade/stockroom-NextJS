@@ -3,10 +3,10 @@ import "server-only";
 import {
   ALL_STORES,
   DEFAULT_PAGE,
-  DEFAULT_PAGE_SIZE,
   DEFAULT_PERIOD,
   PERIOD_DAYS,
 } from "@/constants";
+import { normalizePageSize, paginate } from "@/helpers";
 import type { Repository } from "@/server/repositories";
 import type {
   Movement,
@@ -93,7 +93,7 @@ export async function getProductMovements(
         },
         ...(m.reason ? { note: m.reason } : {}),
         ...(m.transferId ? { transferId: m.transferId } : {}),
-        ...(counterpartStoreId ? { counterpartStoreId: counterpartStoreId as StoreId } : {}),
+        ...(counterpartStoreId ? { counterpartStoreId } : {}),
       };
 
       allMovements.push(item);
@@ -103,15 +103,15 @@ export async function getProductMovements(
   allMovements.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   const total = allMovements.length;
+  const validatedPageSize =
+    typeof pageSize === "number" && pageSize > 0 ? pageSize : normalizePageSize(pageSize);
   const items =
-    pageSize !== undefined
-      ? allMovements.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
-      : allMovements;
+    pageSize !== undefined ? paginate(allMovements, page, validatedPageSize) : allMovements;
 
   return {
     items,
     page,
-    pageSize: pageSize ?? DEFAULT_PAGE_SIZE,
+    pageSize: validatedPageSize,
     total,
   };
 }

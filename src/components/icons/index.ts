@@ -1,3 +1,4 @@
+export type { IconComponent, IconProps } from "./types";
 export { SearchIcon } from "./SearchIcon";
 export { ChevronDownIcon } from "./ChevronDownIcon";
 export { ChevronRightIcon } from "./ChevronRightIcon";

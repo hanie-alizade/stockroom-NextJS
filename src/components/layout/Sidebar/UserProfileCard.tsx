@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CheckIcon } from "@/components/icons";
 import { ROLE_LABEL } from "@/constants";
+import { ApiError } from "@/api";
 import { useQueryMeta, useMutationSwitchUser } from "@/apiHooks";
 import { useCurrentUser } from "@/providers";
 
@@ -35,8 +36,8 @@ export function UserProfileCard(): React.ReactElement | null {
         router.refresh();
       },
       onError: (error) => {
-        const apiError = error as unknown as { body: { message: string } };
-        toast.error(apiError.body?.message || "An error occurred");
+        const message = error instanceof ApiError ? error.body.message : "An error occurred";
+        toast.error(message);
       },
     });
   };

@@ -18,12 +18,18 @@ import type {
   StoreScope,
 } from "@/types";
 
+import { normalizePageSize } from "./pagination";
+
 export interface RouterInstance {
   push: (href: string) => void;
   replace: (href: string) => void;
 }
 
-const VALID_SORT_KEYS = new Set<ProductSortKey>(Object.values(PRODUCT_SORT_KEY));
+const VALID_SORT_KEYS = new Set<string>(Object.values(PRODUCT_SORT_KEY));
+
+function isProductSortKey(key: string): key is ProductSortKey {
+  return VALID_SORT_KEYS.has(key);
+}
 
 function getParam(
   source: URLSearchParams | Record<string, string | string[] | undefined>,
@@ -59,9 +65,9 @@ export function parseProductListParams(
       ? statusRaw
       : undefined;
 
-  const sortRaw = getParam(source, "sort") as ProductSortKey | undefined;
+  const sortRaw = getParam(source, "sort");
   const sort: ProductSortKey | undefined =
-    sortRaw && VALID_SORT_KEYS.has(sortRaw) ? sortRaw : undefined;
+    sortRaw && isProductSortKey(sortRaw) ? sortRaw : undefined;
 
   const dirRaw = getParam(source, "dir");
   let dir: SortDirection | undefined;
@@ -76,9 +82,7 @@ export function parseProductListParams(
   const page = Number.isInteger(pageRaw) && pageRaw >= 1 ? pageRaw : DEFAULT_PAGE;
 
   const pageSizeRaw = Number(getParam(source, "pageSize"));
-  const pageSize: PageSize = (PAGE_SIZE_OPTIONS as readonly number[]).includes(pageSizeRaw)
-    ? (pageSizeRaw as PageSize)
-    : DEFAULT_PAGE_SIZE;
+  const pageSize = normalizePageSize(pageSizeRaw);
 
   const failRaw = getParam(source, "fail");
   const fail = failRaw === "1" ? "1" : undefined;

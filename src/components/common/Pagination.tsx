@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/select";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 import type { PageSize } from "@/types";
-
 import { PAGE_SIZE_OPTIONS } from "@/constants";
+import { getRangeText, normalizePageSize } from "@/helpers";
 
 interface PaginationProps {
   page: number;
@@ -29,10 +29,7 @@ export function Pagination({
 }: PaginationProps): React.ReactElement {
   const isFirstPage = page <= 1;
   const isLastPage = total === 0 || page * pageSize >= total;
-
-  const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const end = Math.min(page * pageSize, total);
-  const rangeText = `${start}–${end} of ${total}`;
+  const rangeText = getRangeText(page, pageSize, total);
 
   return (
     <div className="border-border-default flex items-center justify-between border-t p-lg">
@@ -40,10 +37,10 @@ export function Pagination({
         <span className="text-body-small text-text-secondary">Rows per page</span>
         <Select
           value={String(pageSize)}
-          onValueChange={(val) => onPageSizeChange(Number(val) as PageSize)}
+          onValueChange={(val) => onPageSizeChange(normalizePageSize(Number(val)))}
         >
           <SelectTrigger className="h-8 w-18 px-2 text-center" size="sm">
-            <SelectValue />
+            <SelectValue>{pageSize}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {PAGE_SIZE_OPTIONS.map((size) => (

@@ -1,6 +1,7 @@
 import { STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
 import { cn } from "@/helpers";
 import { CheckIcon, WarningIcon, CircleAlertIcon } from "@/components/icons";
+import type { IconComponent } from "@/components/icons";
 import type { StockStatus } from "@/types";
 
 interface StatusBadgeProps {
@@ -8,44 +9,41 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-export function StatusBadge({ status, className }: StatusBadgeProps): React.ReactElement {
-  if (status === STOCK_STATUS.IN_STOCK) {
-    return (
-      <span
-        className={cn(
-          "bg-status-ok-bg text-status-ok-fg text-label inline-flex h-[22px] items-center gap-xs rounded-full px-sm whitespace-nowrap",
-          className,
-        )}
-      >
-        <CheckIcon className="size-3.5 shrink-0" />
-        <span>{STOCK_STATUS_LABEL[STOCK_STATUS.IN_STOCK]}</span>
-      </span>
-    );
+const STATUS_CONFIG: Record<
+  StockStatus,
+  {
+    icon: IconComponent;
+    className: string;
   }
+> = {
+  [STOCK_STATUS.IN_STOCK]: {
+    icon: CheckIcon,
+    className: "bg-status-ok-bg text-status-ok-fg",
+  },
+  [STOCK_STATUS.LOW]: {
+    icon: WarningIcon,
+    className: "bg-status-warn-bg text-status-warn-fg border-status-warn-border border",
+  },
+  [STOCK_STATUS.OUT]: {
+    icon: CircleAlertIcon,
+    className: "bg-status-danger-bg text-status-danger-fg border-status-danger-border border",
+  },
+};
 
-  if (status === STOCK_STATUS.LOW) {
-    return (
-      <span
-        className={cn(
-          "bg-status-warn-bg text-status-warn-fg border-status-warn-border text-label inline-flex h-[22px] items-center gap-xs rounded-full border px-sm whitespace-nowrap",
-          className,
-        )}
-      >
-        <WarningIcon className="size-3.5 shrink-0" />
-        <span>{STOCK_STATUS_LABEL[STOCK_STATUS.LOW]}</span>
-      </span>
-    );
-  }
+export function StatusBadge({ status, className }: StatusBadgeProps): React.ReactElement {
+  const config = STATUS_CONFIG[status];
+  const Icon = config.icon;
 
   return (
     <span
       className={cn(
-        "bg-status-danger-bg text-status-danger-fg border-status-danger-border text-label inline-flex h-[22px] items-center gap-xs rounded-full border px-sm whitespace-nowrap",
+        "text-label inline-flex h-[22px] items-center gap-xs rounded-full px-sm whitespace-nowrap",
+        config.className,
         className,
       )}
     >
-      <CircleAlertIcon className="size-3.5 shrink-0" />
-      <span>{STOCK_STATUS_LABEL[STOCK_STATUS.OUT]}</span>
+      <Icon className="size-3.5 shrink-0" />
+      <span>{STOCK_STATUS_LABEL[status]}</span>
     </span>
   );
 }

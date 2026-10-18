@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { IconComponent } from "@/types";
+import type { IconComponent } from "@/components/icons";
 import { cn } from "@/helpers";
 
 export interface StateBlockProps {

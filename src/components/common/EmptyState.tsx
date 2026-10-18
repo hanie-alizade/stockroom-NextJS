@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { IconComponent } from "@/types";
+import type { IconComponent } from "@/components/icons";
 import { StateBlock } from "./StateBlock";
 
 export interface EmptyStateProps {

@@ -1,4 +1,3 @@
-import type { ReactElement, SVGProps } from "react";
 import type { z } from "zod";
 import type { ERROR_CODE, PAGE_SIZE_OPTIONS, SORT_DIRECTION } from "@/constants";
 import type { paginationQuerySchema } from "@/schemas";
@@ -29,6 +28,3 @@ export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 export type SortDirection = (typeof SORT_DIRECTION)[keyof typeof SORT_DIRECTION];
 
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
-
-export type IconProps = SVGProps<SVGSVGElement>;
-export type IconComponent = (props: IconProps) => ReactElement;

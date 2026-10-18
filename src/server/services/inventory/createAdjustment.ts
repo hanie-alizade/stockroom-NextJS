@@ -7,20 +7,13 @@ import {
   ERROR_CODE,
   FIELD_ERROR_CODE,
   HTTP_STATUS,
-  ROLE,
 } from "@/constants";
 import { AppError, can, isValidQuantity } from "@/domain";
-import { createRepository, type Repository } from "@/server/repositories";
+import type { Repository } from "@/server/repositories";
 
 import { applyDirectAdjustment } from "./applyDirectAdjustment";
 import { applyTransfer } from "./applyTransfer";
-import {
-  isAdjustment,
-  isAdjustmentContext,
-  isRecord,
-  isRepository,
-  isStoredAdjustmentBody,
-} from "./types";
+import { isRecord, isStoredAdjustmentBody } from "./types";
 
 import type { AdjustmentInput, AdjustmentResult, SavedMovement, StoreRecord } from "@/types";
 import type { AdjustmentContext, ExecutionContext } from "./types";
@@ -46,56 +39,11 @@ function canonicalJsonString(obj: unknown): string {
 }
 
 export async function createAdjustment(
-  input: AdjustmentInput,
-  ctx: AdjustmentContext,
-): Promise<AdjustmentResult>;
-export async function createAdjustment(
-  productId: string,
-  input: AdjustmentInput,
-  ctx: AdjustmentContext,
-): Promise<AdjustmentResult>;
-export async function createAdjustment(
   repo: Repository,
   productId: string,
   input: AdjustmentInput,
   ctx: AdjustmentContext,
-): Promise<AdjustmentResult>;
-export async function createAdjustment(
-  inputOrRepo: AdjustmentInput | Repository | string,
-  ctxOrProductId?: AdjustmentContext | string | AdjustmentInput,
-  maybeInput?: AdjustmentInput | AdjustmentContext,
-  maybeCtx?: AdjustmentContext,
 ): Promise<AdjustmentResult> {
-  let repo = createRepository();
-  let productId = "";
-  let input: AdjustmentInput;
-  let ctx: AdjustmentContext;
-
-  if (isRepository(inputOrRepo)) {
-    repo = inputOrRepo;
-    productId = typeof ctxOrProductId === "string" ? ctxOrProductId : "";
-    input = isAdjustment(maybeInput) ? maybeInput : { type: ADJUSTMENT_TYPE.RECEIVE, storeId: "", quantity: 0 };
-    ctx = maybeCtx ?? { role: ROLE.MANAGER, idempotencyKey: "" };
-  } else if (typeof inputOrRepo === "string") {
-    productId = inputOrRepo;
-    input = isAdjustment(ctxOrProductId)
-      ? ctxOrProductId
-      : { type: ADJUSTMENT_TYPE.RECEIVE, storeId: "", quantity: 0 };
-    ctx = isAdjustmentContext(maybeInput) ? maybeInput : { role: ROLE.MANAGER, idempotencyKey: "" };
-    repo = ctx.repo ?? createRepository();
-  } else {
-    input = inputOrRepo;
-    ctx = (ctxOrProductId && isAdjustmentContext(ctxOrProductId) ? ctxOrProductId : undefined) ?? {
-      role: ROLE.MANAGER,
-      idempotencyKey: "",
-    };
-    productId =
-      ctx.productId ??
-      ("productId" in (input as object) ? ((input as Record<string, unknown>).productId as string) : undefined) ??
-      "";
-    repo = ctx.repo ?? createRepository();
-  }
-
   if (!ctx.idempotencyKey || ctx.idempotencyKey.trim() === "") {
     throw new AppError(ERROR_CODE.IDEMPOTENCY_KEY_REQUIRED, HTTP_STATUS.BAD_REQUEST, "Missing Idempotency-Key header");
   }
@@ -104,18 +52,7 @@ export async function createAdjustment(
     throw new AppError(ERROR_CODE.FORBIDDEN, HTTP_STATUS.FORBIDDEN, "You do not have permission to perform this action");
   }
 
-  if (!productId || productId.trim() === "") {
-    throw new AppError(ERROR_CODE.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Product not found");
-  }
-
-  let product = repo.getProduct(productId);
-  if (!product) {
-    product = repo.getProduct(productId.toUpperCase());
-  }
-  if (!product) {
-    const allProducts = repo.listProducts();
-    product = allProducts.find((p) => p.sku.toLowerCase() === productId.toLowerCase()) ?? null;
-  }
+  const product = repo.getProduct(productId);
   if (!product) {
     throw new AppError(ERROR_CODE.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Product not found");
   }

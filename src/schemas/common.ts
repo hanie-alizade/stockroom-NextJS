@@ -15,7 +15,7 @@ export const paginationQuerySchema = z.object({
     .number()
     .int()
     .positive()
-    .refine((size) => (PAGE_SIZE_OPTIONS as readonly number[]).includes(size), {
+    .refine((size) => PAGE_SIZE_OPTIONS.some((opt) => opt === size), {
       message: `Page size must be one of ${PAGE_SIZE_OPTIONS.join(", ")}`,
     })
     .optional(),
