@@ -1,11 +1,26 @@
 import { describe, it, expect, beforeEach } from "vitest";
 
 import { createRepository } from "@/server/repositories";
+import type { User } from "@/types";
 
 import { createAdjustment } from "../createAdjustment";
 
 describe("createAdjustment", () => {
   const repo = createRepository();
+
+  const managerUser: User = {
+    id: "aina-rahman",
+    name: "Aina Rahman",
+    initials: "AR",
+    role: "manager",
+  };
+
+  const staffUser: User = {
+    id: "faiz-hakim",
+    name: "Faiz Hakim",
+    initials: "FH",
+    role: "staff",
+  };
 
   beforeEach(() => {
     repo.reset();
@@ -16,7 +31,7 @@ describe("createAdjustment", () => {
       repo,
       "KL-1042",
       { type: "receive", storeId: "mont-kiara", quantity: 5 },
-      { role: "manager", idempotencyKey: "svc-receive-1" },
+      { user: managerUser, idempotencyKey: "svc-receive-1" },
     );
 
     expect(result.movements).toHaveLength(1);
@@ -32,7 +47,7 @@ describe("createAdjustment", () => {
       repo,
       "KL-1042",
       { type: "sell", storeId: "mont-kiara", quantity: 3 },
-      { role: "manager", idempotencyKey: "svc-sell-1" },
+      { user: managerUser, idempotencyKey: "svc-sell-1" },
     );
 
     expect(result.movements).toHaveLength(1);
@@ -48,7 +63,7 @@ describe("createAdjustment", () => {
       repo,
       "KL-1042",
       { type: "write_off", storeId: "mont-kiara", quantity: 2, note: "Damaged box" },
-      { role: "manager", idempotencyKey: "svc-write-off-1" },
+      { user: managerUser, idempotencyKey: "svc-write-off-1" },
     );
 
     expect(result.movements).toHaveLength(1);
@@ -69,7 +84,7 @@ describe("createAdjustment", () => {
       repo,
       "KL-1042",
       { type: "transfer", fromStoreId: "mont-kiara", toStoreId: "subang", quantity: 5 },
-      { role: "manager", idempotencyKey: "svc-transfer-1" },
+      { user: managerUser, idempotencyKey: "svc-transfer-1" },
     );
 
     expect(result.movements).toHaveLength(2);
@@ -96,7 +111,7 @@ describe("createAdjustment", () => {
         repo,
         "KL-1042",
         { type: "sell", storeId: "mont-kiara", quantity: 20 },
-        { role: "manager", idempotencyKey: "svc-insufficient-1" },
+        { user: managerUser, idempotencyKey: "svc-insufficient-1" },
       ),
     ).rejects.toMatchObject({
       code: "INSUFFICIENT_STOCK",
@@ -112,7 +127,7 @@ describe("createAdjustment", () => {
         repo,
         "KL-1042",
         { type: "transfer", fromStoreId: "mont-kiara", toStoreId: "mont-kiara", quantity: 5 },
-        { role: "manager", idempotencyKey: "svc-same-store-1" },
+        { user: managerUser, idempotencyKey: "svc-same-store-1" },
       ),
     ).rejects.toMatchObject({
       status: 422,
@@ -127,7 +142,7 @@ describe("createAdjustment", () => {
         repo,
         "KL-1000",
         { type: "receive", storeId: "cheras", quantity: 5 },
-        { role: "manager", idempotencyKey: "svc-not-stocked-1" },
+        { user: managerUser, idempotencyKey: "svc-not-stocked-1" },
       ),
     ).rejects.toMatchObject({
       code: "NOT_STOCKED_AT_STORE",
@@ -137,7 +152,7 @@ describe("createAdjustment", () => {
 
   it("applies adjustment once and replays existing result for same idempotency key and payload", async () => {
     const input = { type: "receive" as const, storeId: "mont-kiara", quantity: 5 };
-    const ctx = { role: "manager" as const, idempotencyKey: "svc-replay-1" };
+    const ctx = { user: managerUser, idempotencyKey: "svc-replay-1" };
 
     const first = await createAdjustment(repo, "KL-1042", input, ctx);
     const second = await createAdjustment(repo, "KL-1042", input, ctx);
@@ -149,7 +164,7 @@ describe("createAdjustment", () => {
   });
 
   it("rejects with 422 IDEMPOTENCY_KEY_REUSED when same key is used with different payload", async () => {
-    const ctx = { role: "manager" as const, idempotencyKey: "svc-reused-1" };
+    const ctx = { user: managerUser, idempotencyKey: "svc-reused-1" };
 
     await createAdjustment(
       repo,
@@ -177,7 +192,7 @@ describe("createAdjustment", () => {
         repo,
         "KL-1042",
         { type: "write_off", storeId: "mont-kiara", quantity: 1, note: "Damaged box" },
-        { role: "staff", idempotencyKey: "svc-staff-write-off" },
+        { user: staffUser, idempotencyKey: "svc-staff-write-off" },
       ),
     ).rejects.toMatchObject({
       code: "FORBIDDEN",
@@ -189,7 +204,7 @@ describe("createAdjustment", () => {
         repo,
         "KL-1042",
         { type: "transfer", fromStoreId: "mont-kiara", toStoreId: "subang", quantity: 1 },
-        { role: "staff", idempotencyKey: "svc-staff-transfer" },
+        { user: staffUser, idempotencyKey: "svc-staff-transfer" },
       ),
     ).rejects.toMatchObject({
       code: "FORBIDDEN",
@@ -203,7 +218,7 @@ describe("createAdjustment", () => {
         repo,
         "KL-1042",
         { type: "receive", storeId: "mont-kiara", quantity: 5 },
-        { role: "manager", idempotencyKey: "" },
+        { user: managerUser, idempotencyKey: "" },
       ),
     ).rejects.toMatchObject({
       code: "IDEMPOTENCY_KEY_REQUIRED",
@@ -221,7 +236,7 @@ describe("createAdjustment", () => {
         repo,
         "KL-1000",
         { type: "transfer", fromStoreId: "mont-kiara", toStoreId: "cheras", quantity: 5 },
-        { role: "manager", idempotencyKey: "svc-transfer-dest-fail" },
+        { user: managerUser, idempotencyKey: "svc-transfer-dest-fail" },
       ),
     ).rejects.toMatchObject({
       code: "NOT_STOCKED_AT_STORE",

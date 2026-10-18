@@ -1,8 +1,7 @@
 import "server-only";
 
-import { createHash } from "node:crypto";
-
 import {
+  ADJUSTMENT_ACTION,
   ADJUSTMENT_TYPE,
   ERROR_CODE,
   FIELD_ERROR_CODE,
@@ -10,34 +9,18 @@ import {
 } from "@/constants";
 import { AppError, can, isValidQuantity } from "@/domain";
 import type { Repository } from "@/server/repositories";
+import type { AdjustmentInput, AdjustmentResult } from "@/types";
 
 import { applyDirectAdjustment } from "./applyDirectAdjustment";
 import { applyTransfer } from "./applyTransfer";
-import { isRecord, isStoredAdjustmentBody } from "./types";
+import { hashRequest, isStoredAdjustmentBody } from "./idempotency";
+import type { AdjustmentContext } from "./types";
 
-import type { AdjustmentInput, AdjustmentResult, SavedMovement, StoreRecord } from "@/types";
-import type { AdjustmentContext, ExecutionContext } from "./types";
+export type { AdjustmentContext, AdjustmentInput, AdjustmentResult };
 
-export type { AdjustmentContext, AdjustmentInput, AdjustmentResult, SavedMovement };
-
-function canonicalJsonString(obj: unknown): string {
-  if (obj === null || typeof obj !== "object") {
-    return JSON.stringify(obj);
-  }
-  if (Array.isArray(obj)) {
-    return "[" + obj.map(canonicalJsonString).join(",") + "]";
-  }
-  if (isRecord(obj)) {
-    const keys = Object.keys(obj).sort();
-    return (
-      "{" +
-      keys.map((key) => JSON.stringify(key) + ":" + canonicalJsonString(obj[key])).join(",") +
-      "}"
-    );
-  }
-  return JSON.stringify(obj);
-}
-
+/**
+ * Creates and processes a stock adjustment with validation, authorization, and idempotency checks.
+ */
 export async function createAdjustment(
   repo: Repository,
   productId: string,
@@ -45,11 +28,20 @@ export async function createAdjustment(
   ctx: AdjustmentContext,
 ): Promise<AdjustmentResult> {
   if (!ctx.idempotencyKey || ctx.idempotencyKey.trim() === "") {
-    throw new AppError(ERROR_CODE.IDEMPOTENCY_KEY_REQUIRED, HTTP_STATUS.BAD_REQUEST, "Missing Idempotency-Key header");
+    throw new AppError(
+      ERROR_CODE.IDEMPOTENCY_KEY_REQUIRED,
+      HTTP_STATUS.BAD_REQUEST,
+      "Missing Idempotency-Key header",
+    );
   }
 
-  if (!can(ctx.role, input.type)) {
-    throw new AppError(ERROR_CODE.FORBIDDEN, HTTP_STATUS.FORBIDDEN, "You do not have permission to perform this action");
+  const action = ADJUSTMENT_ACTION[input.type];
+  if (!can(ctx.user.role, action)) {
+    throw new AppError(
+      ERROR_CODE.FORBIDDEN,
+      HTTP_STATUS.FORBIDDEN,
+      "You do not have permission to perform this action",
+    );
   }
 
   const product = repo.getProduct(productId);
@@ -59,35 +51,52 @@ export async function createAdjustment(
   const canonicalSku = product.sku;
 
   if (!isValidQuantity(input.quantity)) {
-    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Invalid quantity", [
-      {
-        field: "quantity",
-        code: FIELD_ERROR_CODE.MUST_BE_POSITIVE,
-        message: "Quantity must be a positive whole number",
-      },
-    ]);
+    throw new AppError(
+      ERROR_CODE.VALIDATION_ERROR,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      "Invalid quantity",
+      [
+        {
+          field: "quantity",
+          code: FIELD_ERROR_CODE.MUST_BE_POSITIVE,
+          message: "Quantity must be a positive whole number",
+        },
+      ],
+    );
   }
 
   const note = input.note ?? null;
   if (input.type === ADJUSTMENT_TYPE.WRITE_OFF && (!note || note.trim().length < 3)) {
-    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Write-off requires a note", [
-      { field: "note", code: FIELD_ERROR_CODE.REQUIRED, message: "Note must be at least 3 characters" },
-    ]);
+    throw new AppError(
+      ERROR_CODE.VALIDATION_ERROR,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      "Write-off requires a note",
+      [
+        {
+          field: "note",
+          code: FIELD_ERROR_CODE.REQUIRED,
+          message: "Note must be at least 3 characters",
+        },
+      ],
+    );
   }
 
   if (input.type === ADJUSTMENT_TYPE.TRANSFER && input.fromStoreId === input.toStoreId) {
-    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Cannot transfer to the same store", [
-      {
-        field: "to",
-        code: FIELD_ERROR_CODE.SAME_STORE,
-        message: "Source and destination stores must be different",
-      },
-    ]);
+    throw new AppError(
+      ERROR_CODE.VALIDATION_ERROR,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      "Cannot transfer to the same store",
+      [
+        {
+          field: "to",
+          code: FIELD_ERROR_CODE.SAME_STORE,
+          message: "Source and destination stores must be different",
+        },
+      ],
+    );
   }
 
-  const requestHash = createHash("sha256")
-    .update(canonicalJsonString({ productId: canonicalSku, ...input }))
-    .digest("hex");
+  const requestHash = hashRequest(canonicalSku, input);
 
   return repo.transaction((txRepo) => {
     const existing = txRepo.getIdempotency(ctx.idempotencyKey);
@@ -106,26 +115,19 @@ export async function createAdjustment(
       );
     }
 
-    const storeMap = new Map<string, StoreRecord>(txRepo.getStores().map((s) => [s.id, s]));
-    const now = new Date().toISOString();
-    const users = txRepo.getUsers();
-    const user =
-      users.find((u) => u.id === ctx.userId) ?? users.find((u) => u.role === ctx.role) ?? users[0];
+    const nowIso = (ctx.now ?? new Date()).toISOString();
+    const userMap = new Map(txRepo.getUsers().map((u) => [u.id, u]));
+    userMap.set(ctx.user.id, ctx.user);
 
-    const execCtx: ExecutionContext = {
-      storeMap,
+    const callCtx: AdjustmentContext = {
+      ...ctx,
       requestHash,
-      idempotencyKey: ctx.idempotencyKey,
-      now,
-      userName: user ? user.name : "Unknown",
-      userId: user ? user.id : "unknown",
-      note,
     };
 
     if (input.type === ADJUSTMENT_TYPE.TRANSFER) {
-      return applyTransfer(txRepo, canonicalSku, input, execCtx);
+      return applyTransfer(txRepo, canonicalSku, input, callCtx, nowIso, userMap);
     }
 
-    return applyDirectAdjustment(txRepo, canonicalSku, input, execCtx);
+    return applyDirectAdjustment(txRepo, canonicalSku, input, callCtx, nowIso, userMap);
   });
 }

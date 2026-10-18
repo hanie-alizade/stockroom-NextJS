@@ -51,7 +51,7 @@ On success, the cookie `stockroom_user` is set with the user id (path `/`, httpO
 | 422    | `IMPORT_TOO_LARGE`         | More rows than the limit (default 2000)                                                                           |
 | 500    | `INTERNAL_ERROR`           | Unexpected error, or forced with `?fail=1`                                                                        |
 
-Field error codes used inside `fieldErrors`: `REQUIRED`, `NOT_A_WHOLE_NUMBER`, `MUST_BE_POSITIVE`, `TOO_MANY`, `SAME_STORE`, `UNKNOWN_STORE`, `TOO_LONG`, `TOO_SHORT`.
+Field error codes used inside `fieldErrors`: `REQUIRED` (missing value), `NOT_A_WHOLE_NUMBER` (non-integer number), `MUST_BE_POSITIVE` (number <= 0), `TOO_MANY`, `SAME_STORE`, `UNKNOWN_STORE`, `TOO_LONG` (string too long), `TOO_SHORT` (string too short), `VALIDATION_ERROR` (other).
 
 ## Routes
 
@@ -63,7 +63,7 @@ Response: `{ stores, categories, users, currentUser }`. `currentUser` is the use
 
 ### GET `/api/products`
 
-Query: `store` (`all` or a store id, default `all`), `q`, `category`, `status` (`in_stock` | `low` | `out`), `sort` (`updatedAt` | `sku` | `name` | `category` | `onHand` | `reorderLevel` | `unitCostSen` | `status`), `dir` (`asc` | `desc`), `page`, `pageSize` (25, 50 or 100; default 25). Default is `sort=updatedAt&dir=desc`. The client turns "sort off" into omitting both params.
+Query: `store` (`all` or a store id, default `all`), `q`, `category`, `status` (`in_stock` | `low` | `out`), `sort` (`updatedAt` | `sku` | `name` | `category` | `onHand` | `reorderLevel` | `unitCostSen` | `status`), `dir` (`asc` | `desc`), `page`, `pageSize` (25, 50 or 100; default 25). Always paginated. Default is `sort=updatedAt&dir=desc`. The client turns "sort off" into omitting both params.
 
 Response:
 
@@ -84,7 +84,7 @@ Response:
     }
   ],
   "page": 1,
-  "pageSize": 10,
+  "pageSize": 25,
   "total": 247,
   "summary": { "totalProducts": 250, "stockValueSen": 18452300, "lowStock": 31, "outOfStock": 9 }
 }
@@ -99,11 +99,11 @@ Response:
 
 ### GET `/api/products/:id`
 
-Query: `store`. Returns product details (including `supplier`, `stockValueSen` and `lastMovementAt` for the scope), totals for the scope, and `stockByStore`: one entry per store that carries the product, with `storeId`, `onHand`, `reorderLevel`, `status`, `lastMovementAt`.
+Query: `store`. Returns product details (including `supplier`, `stockValueSen` and `lastMovementAt` for the scope), totals for the scope, and `stockByStore`: one entry per store that carries the product, with `storeId`, `onHand`, `reorderLevel`, `status`, `lastMovementAt`. Unknown product returns 404 `PRODUCT_NOT_FOUND`.
 
 ### GET `/api/products/:id/movements`
 
-Query: `store`, `type` (`receive` | `sell` | `write_off` | `transfer_out` | `transfer_in` | `import`), `period` (`7d` | `30d` | `90d`, default `30d`), `page`, `pageSize` (25, 50 or 100). Newest first. The response also has `total` (the count shown on the tab).
+Query: `store`, `type` (`receive` | `sell` | `write_off` | `transfer_out` | `transfer_in` | `import`), `period` (`7d` | `30d` | `90d`, default `30d`), `page`, `pageSize` (25, 50 or 100; default 25; invalid pageSize is 422 `VALIDATION_ERROR`). Always paginated. Newest first. The response also has `total` (the count shown on the tab). Unknown product returns 404 `PRODUCT_NOT_FOUND`.
 
 Movement:
 
@@ -125,9 +125,9 @@ Movement:
 
 ### GET `/api/products/:id/stock-history`
 
-Query: `store`, `days` (`7`, `30` or `90`; default 30). Daily end-of-day stock rebuilt from movements, going backwards from the current stock. Only real points are returned (a brand new product returns one point).
+Query: `store`, `days` (`7`, `30` or `90`; default 30; anything else is 422 `VALIDATION_ERROR`). Daily end-of-day stock rebuilt from movements, going backwards from the current stock. Only real points are returned (a brand new product returns one point). Unknown product returns 404 `PRODUCT_NOT_FOUND`.
 
-Response: `{ "points": [ { "date": "2026-10-14", "onHand": 18 } ], "reorderLevel": 40 }`. `reorderLevel` is the sum of the reorder levels of the stores in the scope (the dashed line).
+Response: `{ "points": [ { "date": "2026-10-14", "onHand": 18 } ], "reorderLevel": 40, "days": 30 }`. `reorderLevel` is the sum of the reorder levels of the stores in the scope (the dashed line).
 
 ### POST `/api/products/:id/adjustments`
 
