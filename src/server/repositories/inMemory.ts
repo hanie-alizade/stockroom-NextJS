@@ -68,6 +68,7 @@ function getStore(): StoreData {
     ),
     movements: seedJson.movements.map((m, i: number) => ({
       ...m,
+      type: m.type as MovementType,
       id: `m_${i}`,
     })),
     idempotency: new Map(),
@@ -298,6 +299,7 @@ class InMemoryRepository implements Repository {
       ),
       movements: seedJson.movements.map((m, i: number) => ({
         ...m,
+        type: m.type as MovementType,
         id: `m_${i}`,
       })),
       idempotency: new Map(),

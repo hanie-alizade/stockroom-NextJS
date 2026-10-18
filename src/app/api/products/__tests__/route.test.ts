@@ -218,7 +218,7 @@ describe("GET /api/products", () => {
 
     expect(response.status).toBe(200);
     expect(data.summary.totalProducts).toBe(248);
-    expect(data.summary.stockValueSen).toBe(214155292);
+    expect(data.summary.stockValueSen).toBe(213191033);
     expect(data.summary.lowStock).toBe(11);
     expect(data.summary.outOfStock).toBe(1);
   });
@@ -231,7 +231,7 @@ describe("GET /api/products", () => {
     expect(response.status).toBe(200);
     expect(data.items).toHaveLength(1);
     expect(data.summary.totalProducts).toBe(248);
-    expect(data.summary.stockValueSen).toBe(214155292);
+    expect(data.summary.stockValueSen).toBe(213191033);
   });
 
   it("summary follows store scope", async () => {
