@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CheckIcon } from "@/components/icons";
 import { ROLE_LABEL } from "@/constants";
-import { useQueryMeta, useMutationSwitchUser } from "@/lib/client/apiHooks";
-import { useCurrentUser } from "@/components/providers/session-provider";
+import { useQueryMeta, useMutationSwitchUser } from "@/apiHooks";
+import { useCurrentUser } from "@/providers";
 
 export function UserProfileCard(): React.ReactElement | null {
   const router = useRouter();

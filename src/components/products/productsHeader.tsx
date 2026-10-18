@@ -2,8 +2,8 @@
 
 import { ACTION, ALL_STORES } from "@/constants";
 import { DownloadIcon, UploadIcon } from "@/components/icons";
-import { useCan } from "@/components/providers/session-provider";
-import { useQueryMeta } from "@/lib/client/apiHooks";
+import { useCan } from "@/providers";
+import { useQueryMeta } from "@/apiHooks";
 import type { MetaResponse, StoreScope } from "@/types";
 
 interface ProductsHeaderProps {

@@ -1,8 +1,7 @@
 "use client";
 
-import { useProductListUrlState } from "@/lib/client/products/useProductListUrlState";
-import { useProductList } from "@/lib/client/products/useProductList";
-import { useQueryMeta } from "@/lib/client/apiHooks";
+import { useProductListUrlState } from "@/hooks/useProductListUrlState";
+import { useQueryMeta, useQueryProductList } from "@/apiHooks";
 import { ProductsHeader } from "./productsHeader";
 import { ProductsSummary } from "./productsSummary";
 import { ProductsToolbar } from "./productsToolbar";
@@ -15,7 +14,7 @@ export function ProductsView(): React.ReactElement {
   const { query, setSearch, setCategory, setStatus, setPage, setPageSize, toggleSort } =
     useProductListUrlState();
 
-  const { data: productsData, isLoading, isError } = useProductList(query);
+  const { data: productsData, isLoading, isError } = useQueryProductList(query);
   const { data: meta } = useQueryMeta();
 
   const summary: ProductListSummary = productsData?.summary ?? {

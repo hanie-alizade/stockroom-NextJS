@@ -3,7 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { BoxIcon, UploadIcon, SupplierIcon, ReportIcon } from "@/components/icons";
 import { NavItem } from "./navItem";
-import { useCan } from "@/components/providers/session-provider";
+import { useCan } from "@/providers";
 
 export function Navigation(): React.ReactElement {
   const pathname = usePathname();

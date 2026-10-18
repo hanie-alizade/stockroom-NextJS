@@ -1,4 +1,4 @@
-import { axiosInstance } from "./client";
+import { axiosInstance } from "./axiosConfig";
 import type { MetaResponse, SessionResponse } from "@/types";
 import { metaResponseSchema, sessionResponseSchema } from "@/schemas";
 

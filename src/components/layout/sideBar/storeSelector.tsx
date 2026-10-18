@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { SupplierIcon } from "@/components/icons";
 import { ALL_STORES } from "@/constants";
-import { useQueryMeta } from "@/lib/client/apiHooks/useCommonAPIs";
+import { useQueryMeta } from "@/apiHooks";
 
 export function StoreSelector(): React.ReactElement {
   const searchParams = useSearchParams();
