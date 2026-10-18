@@ -4,28 +4,28 @@
  */
 export function parseMoneyToSen(input: string): number | null {
   const trimmed = input.trim();
-
-  const withoutPrefix = trimmed.replace(/^RM\s*/i, "");
-  const cleaned = withoutPrefix.replace(/,/g, "");
-
-  const parsed = parseFloat(cleaned);
-
-  if (Number.isNaN(parsed)) {
+  if (!trimmed) {
     return null;
   }
 
-  if (parsed < 0) {
+  const match = trimmed.match(/^(?:rm\s*)?([0-9,]+)(?:\.([0-9]{1,2}))?$/i);
+  if (!match) {
     return null;
   }
 
-  const decimalIndex = cleaned.indexOf(".");
-  if (decimalIndex !== -1 && cleaned.length - decimalIndex - 1 > 2) {
-    return null;
+  const wholeStr = match[1];
+  const decStr = match[2];
+
+  if (wholeStr.includes(",")) {
+    if (!/^\d{1,3}(?:,\d{3})+$/.test(wholeStr)) {
+      return null;
+    }
   }
 
-  const sen = Math.round(parsed * 100);
+  const whole = Number.parseInt(wholeStr.replace(/,/g, ""), 10);
+  const dec = Number.parseInt((decStr ?? "").padEnd(2, "0"), 10);
 
-  return sen;
+  return whole * 100 + dec;
 }
 
 /**
