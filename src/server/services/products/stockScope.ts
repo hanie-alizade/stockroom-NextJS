@@ -1,9 +1,11 @@
 import "server-only";
 
 import { ALL_STORES } from "@/constants";
-import type { Repository } from "@/server/repositories";
-import type { StockRecord } from "@/types";
+import type { Repository, StockRecord } from "@/server/repositories";
 
+/**
+ * Calculates aggregate on-hand quantity and reorder level across a collection of stock records.
+ */
 export function sumStock(stocks: StockRecord[]): { onHand: number; reorderLevel: number } {
   return stocks.reduce(
     (acc, stock) => ({
@@ -14,6 +16,9 @@ export function sumStock(stocks: StockRecord[]): { onHand: number; reorderLevel:
   );
 }
 
+/**
+ * Retrieves stock records for a product matching a specific store or all stores.
+ */
 export function getStockForScope(
   repo: Repository,
   productId: string,

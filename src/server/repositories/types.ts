@@ -1,12 +1,4 @@
-import type {
-  MovementRecord,
-  MovementType,
-  ProductRecord,
-  StockRecord,
-  StoreRecord,
-  UserRecord,
-} from "@/types";
-
+import type { MovementType, Role } from "@/types";
 
 export type Category = {
   name: string;
@@ -16,19 +8,51 @@ export type Supplier = {
   name: string;
 };
 
+export type ProductRecord = {
+  sku: string;
+  name: string;
+  category: string;
+  supplier: string;
+  unitCostSen: number;
+};
+
+export type StockRecord = {
+  storeId: string;
+  onHand: number;
+  reorderLevel: number;
+};
+
+export type StoreRecord = {
+  id: string;
+  name: string;
+};
+
+export type UserRecord = {
+  id: string;
+  name: string;
+  initials: string;
+  role: Role;
+};
+
+export type MovementRecord = {
+  id: string;
+  productId: string;
+  storeId: string;
+  type: MovementType;
+  quantity: number;
+  balanceAfter: number;
+  reason: string | null;
+  transferId: string | null;
+  createdAt: string;
+  userId: string;
+};
+
 export type IdempotencyRecord = {
   idempotencyKey: string;
   requestHash: string;
   status: number;
   body: unknown;
 };
-
-// Aliases for compatibility
-export type Store = StoreRecord;
-export type User = UserRecord;
-export type Product = ProductRecord;
-export type Stock = StockRecord;
-export type Movement = MovementRecord;
 
 export interface Repository {
   // Reads

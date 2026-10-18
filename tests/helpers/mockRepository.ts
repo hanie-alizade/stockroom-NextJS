@@ -1,14 +1,14 @@
 import { vi } from "vitest";
 import type {
   Repository,
-  User,
-  Product,
-  Stock,
-  Movement,
+  UserRecord,
+  ProductRecord,
+  StockRecord,
+  MovementRecord,
   IdempotencyRecord,
 } from "@/server/repositories";
 
-const DEFAULT_USERS: User[] = [
+const DEFAULT_USERS: UserRecord[] = [
   { id: "aina-rahman", name: "Aina Rahman", initials: "AR", role: "manager" },
   { id: "faiz-hakim", name: "Faiz Hakim", initials: "FH", role: "staff" },
 ];
@@ -19,16 +19,16 @@ export function mockRepository(overrides: Partial<Repository> = {}): Repository 
     getCategories: vi.fn(() => []),
     getSuppliers: vi.fn(() => []),
     getUsers: vi.fn(() => DEFAULT_USERS),
-    getProduct: vi.fn((_sku: string): Product | null => null),
+    getProduct: vi.fn((_sku: string): ProductRecord | null => null),
     listProducts: vi.fn(() => []),
-    getStock: vi.fn((_productId: string, _storeId: string): Stock | null => null),
-    listStock: vi.fn((_productId: string): Stock[] => []),
+    getStock: vi.fn((_productId: string, _storeId: string): StockRecord | null => null),
+    listStock: vi.fn((_productId: string): StockRecord[] => []),
     getMovements: vi.fn(() => []),
     getIdempotency: vi.fn((_key: string): IdempotencyRecord | null => null),
     createProduct: vi.fn(),
     updateProduct: vi.fn(),
     setStock: vi.fn(),
-    addMovement: vi.fn((movement: Omit<Movement, "id">): Movement => ({
+    addMovement: vi.fn((movement: Omit<MovementRecord, "id">): MovementRecord => ({
       id: "mock_movement_id",
       ...movement,
     })),
@@ -55,10 +55,10 @@ export function createProductMovementsMockRepo(): Repository {
   const makeMove = (
     id: string,
     storeId: string,
-    type: Movement["type"],
+    type: MovementRecord["type"],
     createdAt: string,
     reason: string | null = null,
-  ): Movement => ({
+  ): MovementRecord => ({
     id,
     productId: "KL-1042",
     storeId,
@@ -72,7 +72,7 @@ export function createProductMovementsMockRepo(): Repository {
   });
 
   const now = Date.now();
-  const base45: Movement[] = Array.from({ length: 45 }, (_, i) =>
+  const base45: MovementRecord[] = Array.from({ length: 45 }, (_, i) =>
     makeMove(
       `m_${i}`,
       i === 0 ? "mont-kiara" : STORES[i % STORES.length].id,
@@ -82,7 +82,7 @@ export function createProductMovementsMockRepo(): Repository {
     ),
   );
 
-  const fromAug1: Movement[] = Array.from({ length: 35 }, (_, i) =>
+  const fromAug1: MovementRecord[] = Array.from({ length: 35 }, (_, i) =>
     makeMove(
       `m_aug_${i}`,
       STORES[i % STORES.length].id,
@@ -91,7 +91,7 @@ export function createProductMovementsMockRepo(): Repository {
     ),
   );
 
-  const toJuly31: Movement[] = Array.from({ length: 17 }, (_, i) =>
+  const toJuly31: MovementRecord[] = Array.from({ length: 17 }, (_, i) =>
     makeMove(
       `m_jul_${i}`,
       STORES[i % STORES.length].id,
@@ -100,7 +100,7 @@ export function createProductMovementsMockRepo(): Repository {
     ),
   );
 
-  const kl1196Transfers: Movement[] = [
+  const kl1196Transfers: MovementRecord[] = [
     {
       id: "m_trans_out",
       productId: "KL-1196",
@@ -128,12 +128,25 @@ export function createProductMovementsMockRepo(): Repository {
   ];
 
   return mockRepository({
+    getProduct: vi.fn((sku: string) => {
+      if (sku === "KL-1042" || sku === "KL-1196") {
+        return {
+          sku,
+          name: "Mock Product",
+          category: "Coffee",
+          supplier: "Highland Roasters",
+          unitCostSen: 6800,
+          createdAt: "2026-01-01T00:00:00Z",
+        };
+      }
+      return null;
+    }),
     getStores: vi.fn(() => STORES),
     getMovements: vi.fn(
       (
         productId: string,
         storeId: string,
-        options?: { type?: Movement["type"]; from?: string; to?: string },
+        options?: { type?: MovementRecord["type"]; from?: string; to?: string },
       ) => {
         if (productId === "KL-1196") {
           return kl1196Transfers.filter((m) => m.storeId === storeId);
@@ -171,4 +184,3 @@ export function createProductMovementsMockRepo(): Repository {
     ),
   });
 }
-

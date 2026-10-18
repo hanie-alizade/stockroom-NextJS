@@ -6,6 +6,9 @@ import type { Repository } from "@/server/repositories";
 import type { ProductDetail } from "@/types";
 import { getStockForScope, sumStock } from "./stockScope";
 
+/**
+ * Retrieves full product details, stock by store, and totals for a given store scope.
+ */
 export async function getProductDetail(
   repo: Repository,
   sku: string,

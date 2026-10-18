@@ -32,26 +32,3 @@ export type MovementPeriod = (typeof PERIOD)[keyof typeof PERIOD];
 export type MovementListQuery = z.infer<typeof movementListQuerySchema>;
 
 export type MovementListResponse = Paginated<Movement>;
-
-// Repository internal type
-export type MovementRecord = {
-  id: string;
-  productId: string;
-  storeId: string;
-  type: MovementType;
-  quantity: number;
-  balanceAfter: number;
-  reason: string | null;
-  transferId: string | null;
-  createdAt: string;
-  userId: string;
-};
-
-export type MovementWithUser = MovementRecord & { createdBy: string };
-
-export type ProductMovementsResult = {
-  items: MovementWithUser[];
-  page: number;
-  pageSize: number;
-  total: number;
-};
