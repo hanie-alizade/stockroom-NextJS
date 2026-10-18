@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { GET } from "./route";
+import { GET } from "../route";
 import { createRepository } from "@/server/repositories";
 import { cookies } from "next/headers";
 import type { Product, Stock } from "@/server/repositories";

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { can, type Role, type Action } from "./policy";
+import { can, type Role, type Action } from "../policy";
 
 describe("can", () => {
   describe("staff role", () => {

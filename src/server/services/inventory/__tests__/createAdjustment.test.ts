@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 
 import { createRepository } from "@/server/repositories";
 
-import { createAdjustment } from "./createAdjustment";
+import { createAdjustment } from "../createAdjustment";
 
 describe("createAdjustment", () => {
   const repo = createRepository();

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getStatus, type StockStatus } from "./status";
+import { getStatus, type StockStatus } from "../status";
 
 describe("getStatus", () => {
   it("returns 'out' when on hand is 0", () => {

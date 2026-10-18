@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseMoneyToSen, formatMoney } from "./money";
+import { parseMoneyToSen, formatMoney } from "../money";
 
 describe("parseMoneyToSen", () => {
   it("parses simple decimal to sen", () => {

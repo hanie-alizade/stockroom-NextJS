@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { withApi } from "./withApi";
+import { withApi } from "../withApi";
 import { cookies } from "next/headers";
 import { createRepository } from "@/server/repositories";
 import { mockCookies, mockRepository } from "tests/helpers";

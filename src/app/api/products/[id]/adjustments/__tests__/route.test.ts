@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { createRepository } from "@/server/repositories";
 import { mockCookies } from "tests/helpers";
 
-import { POST } from "./route";
+import { POST } from "../route";
 
 // next/headers has no request scope in vitest; withApi reads the cookie here.
 vi.mock("next/headers", () => ({

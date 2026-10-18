@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { getCurrentUser } from "./session";
+import { getCurrentUser } from "../session";
 import { cookies } from "next/headers";
 import { createRepository } from "@/server/repositories";
 import { mockCookies, mockRepository } from "tests/helpers";

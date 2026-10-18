@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { isValidQuantity, canRemoveStock, planTransfer } from "./stockRules";
-import { AppError } from "./errors";
+import { isValidQuantity, canRemoveStock, planTransfer } from "../stockRules";
+import { AppError } from "../errors";
 
 describe("isValidQuantity", () => {
   it("returns true for positive whole numbers", () => {

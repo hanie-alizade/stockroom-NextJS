@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { GET } from "./route";
+import { GET } from "../route";
 import { cookies } from "next/headers";
 
 import { mockCookies } from "tests/helpers";

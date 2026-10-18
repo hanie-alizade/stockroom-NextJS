@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatWhen, formatDateTime } from "./dates";
+import { formatWhen, formatDateTime } from "../dates";
 
 const MORNING = new Date("2026-10-16T10:00:00+08:00");
 const EVENING = new Date("2026-10-16T22:00:00+08:00");
