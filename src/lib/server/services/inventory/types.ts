@@ -1,3 +1,4 @@
+import { ADJUSTMENT_TYPE } from "@/constants";
 import type { Role } from "@/lib/domain/policy";
 import type { Movement, Repository } from "@/lib/server/repo";
 import type { Store } from "@/lib/server/repo/types";
@@ -92,7 +93,12 @@ export function isAdjustment(value: unknown): value is AdjustmentInput {
     return false;
   }
   const type = value.type;
-  return type === "receive" || type === "sell" || type === "write_off" || type === "transfer";
+  return (
+    type === ADJUSTMENT_TYPE.RECEIVE ||
+    type === ADJUSTMENT_TYPE.SELL ||
+    type === ADJUSTMENT_TYPE.WRITE_OFF ||
+    type === ADJUSTMENT_TYPE.TRANSFER
+  );
 }
 
 export function isAdjustmentContext(value: unknown): value is AdjustmentContext {

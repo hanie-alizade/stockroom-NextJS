@@ -1,11 +1,12 @@
 import "server-only";
 
+import { ALL_STORES } from "@/constants";
 import { withApi } from "@/lib/server/http/with-api";
 import { z } from "zod";
 import { getStockHistory } from "@/lib/server/services/products";
 
 const stockHistoryQuerySchema = z.object({
-  store: z.union([z.literal("all"), z.string()]).optional(),
+  store: z.union([z.literal(ALL_STORES), z.string()]).optional(),
   days: z.coerce.number().int().positive().optional(),
 });
 
@@ -20,7 +21,7 @@ export async function GET(
 
     const parsed = stockHistoryQuerySchema.parse(rawParams);
 
-    const result = await getStockHistory(repo, id, parsed.store ?? "all", parsed.days ?? 30);
+    const result = await getStockHistory(repo, id, parsed.store ?? ALL_STORES, parsed.days ?? 30);
 
     return result;
   });

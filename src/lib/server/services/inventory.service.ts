@@ -2,6 +2,13 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 
+import {
+  ADJUSTMENT_TYPE,
+  ERROR_CODE,
+  FIELD_ERROR_CODE,
+  HTTP_STATUS,
+  ROLE,
+} from "@/constants";
 import { AppError } from "@/lib/domain/errors";
 import { can } from "@/lib/domain/policy";
 import { isValidQuantity } from "@/lib/domain/stock-rules";
@@ -76,19 +83,19 @@ export async function createAdjustment(
   if (isRepository(inputOrRepo)) {
     repo = inputOrRepo;
     productId = typeof ctxOrProductId === "string" ? ctxOrProductId : "";
-    input = isAdjustment(maybeInput) ? maybeInput : { type: "receive", storeId: "", quantity: 0 };
-    ctx = maybeCtx ?? { role: "manager", idempotencyKey: "" };
+    input = isAdjustment(maybeInput) ? maybeInput : { type: ADJUSTMENT_TYPE.RECEIVE, storeId: "", quantity: 0 };
+    ctx = maybeCtx ?? { role: ROLE.MANAGER, idempotencyKey: "" };
   } else if (typeof inputOrRepo === "string") {
     productId = inputOrRepo;
     input = isAdjustment(ctxOrProductId)
       ? ctxOrProductId
-      : { type: "receive", storeId: "", quantity: 0 };
-    ctx = isAdjustmentContext(maybeInput) ? maybeInput : { role: "manager", idempotencyKey: "" };
+      : { type: ADJUSTMENT_TYPE.RECEIVE, storeId: "", quantity: 0 };
+    ctx = isAdjustmentContext(maybeInput) ? maybeInput : { role: ROLE.MANAGER, idempotencyKey: "" };
     repo = ctx.repo ?? createRepository();
   } else {
     input = inputOrRepo;
     ctx = (ctxOrProductId && isAdjustmentContext(ctxOrProductId) ? ctxOrProductId : undefined) ?? {
-      role: "manager",
+      role: ROLE.MANAGER,
       idempotencyKey: "",
     };
     productId = ctx.productId ?? input.productId ?? "";
@@ -96,15 +103,15 @@ export async function createAdjustment(
   }
 
   if (!ctx.idempotencyKey || ctx.idempotencyKey.trim() === "") {
-    throw new AppError("IDEMPOTENCY_KEY_REQUIRED", 400, "Missing Idempotency-Key header");
+    throw new AppError(ERROR_CODE.IDEMPOTENCY_KEY_REQUIRED, HTTP_STATUS.BAD_REQUEST, "Missing Idempotency-Key header");
   }
 
   if (!can(ctx.role, input.type)) {
-    throw new AppError("FORBIDDEN", 403, "You do not have permission to perform this action");
+    throw new AppError(ERROR_CODE.FORBIDDEN, HTTP_STATUS.FORBIDDEN, "You do not have permission to perform this action");
   }
 
   if (!productId || productId.trim() === "") {
-    throw new AppError("PRODUCT_NOT_FOUND", 404, "Product not found");
+    throw new AppError(ERROR_CODE.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Product not found");
   }
 
   let product = repo.getProduct(productId);
@@ -116,32 +123,32 @@ export async function createAdjustment(
     product = allProducts.find((p) => p.sku.toLowerCase() === productId.toLowerCase()) ?? null;
   }
   if (!product) {
-    throw new AppError("PRODUCT_NOT_FOUND", 404, "Product not found");
+    throw new AppError(ERROR_CODE.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Product not found");
   }
   const canonicalSku = product.sku;
 
   if (!isValidQuantity(input.quantity)) {
-    throw new AppError("VALIDATION_ERROR", 422, "Invalid quantity", [
+    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Invalid quantity", [
       {
         field: "quantity",
-        code: "MUST_BE_POSITIVE",
+        code: FIELD_ERROR_CODE.MUST_BE_POSITIVE,
         message: "Quantity must be a positive whole number",
       },
     ]);
   }
 
   const note = input.reason ?? input.note ?? null;
-  if (input.type === "write_off" && (!note || note.trim().length < 3)) {
-    throw new AppError("VALIDATION_ERROR", 422, "Write-off requires a reason", [
-      { field: "reason", code: "REQUIRED", message: "Reason must be at least 3 characters" },
+  if (input.type === ADJUSTMENT_TYPE.WRITE_OFF && (!note || note.trim().length < 3)) {
+    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Write-off requires a reason", [
+      { field: "reason", code: FIELD_ERROR_CODE.REQUIRED, message: "Reason must be at least 3 characters" },
     ]);
   }
 
-  if (input.type === "transfer" && input.fromStoreId === input.toStoreId) {
-    throw new AppError("VALIDATION_ERROR", 422, "Cannot transfer to the same store", [
+  if (input.type === ADJUSTMENT_TYPE.TRANSFER && input.fromStoreId === input.toStoreId) {
+    throw new AppError(ERROR_CODE.VALIDATION_ERROR, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Cannot transfer to the same store", [
       {
         field: "to",
-        code: "SAME_STORE",
+        code: FIELD_ERROR_CODE.SAME_STORE,
         message: "Source and destination stores must be different",
       },
     ]);
@@ -162,8 +169,8 @@ export async function createAdjustment(
         };
       }
       throw new AppError(
-        "IDEMPOTENCY_KEY_REUSED",
-        422,
+        ERROR_CODE.IDEMPOTENCY_KEY_REUSED,
+        HTTP_STATUS.UNPROCESSABLE_ENTITY,
         "Idempotency key has already been used with a different request payload",
       );
     }
@@ -184,7 +191,7 @@ export async function createAdjustment(
       note,
     };
 
-    if (input.type === "transfer") {
+    if (input.type === ADJUSTMENT_TYPE.TRANSFER) {
       return applyTransfer(txRepo, canonicalSku, input, execCtx);
     }
 

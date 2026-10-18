@@ -1,5 +1,11 @@
 import "server-only";
 
+import {
+  ERROR_CODE,
+  HTTP_STATUS,
+  IDEMPOTENCY_KEY_HEADER,
+  REPLAY_HEADER,
+} from "@/constants";
 import { AppError } from "@/lib/domain/errors";
 import { adjustmentSchema } from "@/lib/domain/schemas";
 import { withApi } from "@/lib/server/http/with-api";
@@ -13,18 +19,25 @@ export async function POST(
 
   return withApi(
     async ({ user, repo }) => {
-      const idempotencyKey =
-        request.headers.get("idempotency-key") ?? request.headers.get("Idempotency-Key");
+      const idempotencyKey = request.headers.get(IDEMPOTENCY_KEY_HEADER);
 
       if (!idempotencyKey || idempotencyKey.trim() === "") {
-        throw new AppError("IDEMPOTENCY_KEY_REQUIRED", 400, "Missing Idempotency-Key header");
+        throw new AppError(
+          ERROR_CODE.IDEMPOTENCY_KEY_REQUIRED,
+          HTTP_STATUS.BAD_REQUEST,
+          "Missing Idempotency-Key header",
+        );
       }
 
       let rawBody: unknown;
       try {
         rawBody = await request.json();
       } catch {
-        throw new AppError("INVALID_JSON", 400, "Invalid JSON body");
+        throw new AppError(
+          ERROR_CODE.INVALID_JSON,
+          HTTP_STATUS.BAD_REQUEST,
+          "Invalid JSON body",
+        );
       }
 
       const parsed = adjustmentSchema.parse(rawBody);
@@ -40,7 +53,7 @@ export async function POST(
         "content-type": "application/json",
       };
       if (result.replay) {
-        headers["Idempotent-Replay"] = "true";
+        headers[REPLAY_HEADER] = "true";
       }
 
       return new Response(
@@ -49,7 +62,7 @@ export async function POST(
           stock: result.stock,
         }),
         {
-          status: 201,
+          status: HTTP_STATUS.CREATED,
           headers,
         },
       );

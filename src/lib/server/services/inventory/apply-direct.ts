@@ -1,5 +1,11 @@
 import "server-only";
 
+import {
+  ADJUSTMENT_TYPE,
+  ERROR_CODE,
+  FIELD_ERROR_CODE,
+  HTTP_STATUS,
+} from "@/constants";
 import { AppError } from "@/lib/domain/errors";
 
 import type { Repository } from "@/lib/server/repo";
@@ -21,22 +27,22 @@ export function applyDirectAdjustment(
 ): AdjustmentResult {
   const store = ctx.storeMap.get(input.storeId);
   if (!store) {
-    throw new AppError("STORE_NOT_FOUND", 404, "Store not found");
+    throw new AppError(ERROR_CODE.STORE_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Store not found");
   }
   const stock = txRepo.getStock(canonicalSku, input.storeId);
   if (!stock) {
-    throw new AppError("NOT_STOCKED_AT_STORE", 422, "Product is not stocked at this store");
+    throw new AppError(ERROR_CODE.NOT_STOCKED_AT_STORE, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Product is not stocked at this store");
   }
-  if ((input.type === "sell" || input.type === "write_off") && stock.onHand < input.quantity) {
+  if ((input.type === ADJUSTMENT_TYPE.SELL || input.type === ADJUSTMENT_TYPE.WRITE_OFF) && stock.onHand < input.quantity) {
     throw new AppError(
-      "INSUFFICIENT_STOCK",
-      409,
+      ERROR_CODE.INSUFFICIENT_STOCK,
+      HTTP_STATUS.CONFLICT,
       `${store.name} only has ${stock.onHand} on hand. Enter ${stock.onHand} or less.`,
-      [{ field: "quantity", code: "TOO_MANY", message: `Only ${stock.onHand} on hand.` }],
+      [{ field: "quantity", code: FIELD_ERROR_CODE.TOO_MANY, message: `Only ${stock.onHand} on hand.` }],
     );
   }
 
-  const delta = input.type === "receive" ? input.quantity : -input.quantity;
+  const delta = input.type === ADJUSTMENT_TYPE.RECEIVE ? input.quantity : -input.quantity;
   const newOnHand = stock.onHand + delta;
   txRepo.setStock(canonicalSku, input.storeId, newOnHand, stock.reorderLevel);
 
@@ -68,7 +74,7 @@ export function applyDirectAdjustment(
   txRepo.setIdempotency({
     idempotencyKey: ctx.idempotencyKey,
     requestHash: ctx.requestHash,
-    status: 201,
+    status: HTTP_STATUS.CREATED,
     body: { movements: adjustmentResult.movements, stock: adjustmentResult.stock },
   });
 

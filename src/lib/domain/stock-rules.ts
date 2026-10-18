@@ -1,3 +1,9 @@
+import {
+  ERROR_CODE,
+  FIELD_ERROR_CODE,
+  HTTP_STATUS,
+  MOVEMENT_TYPE,
+} from "@/constants";
 import { AppError } from "./errors";
 
 export type MovementType =
@@ -42,13 +48,13 @@ export function planTransfer(input: {
 
   if (from.storeId === to.storeId) {
     throw new AppError(
-      "VALIDATION_ERROR",
-      422,
+      ERROR_CODE.VALIDATION_ERROR,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
       "VALIDATION_ERROR: Cannot transfer to the same store",
       [
         {
           field: "to",
-          code: "SAME_STORE",
+          code: FIELD_ERROR_CODE.SAME_STORE,
           message: "Source and destination stores must be different",
         },
       ],
@@ -57,8 +63,8 @@ export function planTransfer(input: {
 
   if (!canRemoveStock(from.onHand, quantity)) {
     throw new AppError(
-      "INSUFFICIENT_STOCK",
-      409,
+      ERROR_CODE.INSUFFICIENT_STOCK,
+      HTTP_STATUS.CONFLICT,
       `INSUFFICIENT_STOCK: Cannot transfer ${quantity}. Only ${from.onHand} on hand at ${from.storeId}.`,
     );
   }
@@ -66,7 +72,7 @@ export function planTransfer(input: {
   const out: MovementDraft = {
     productId,
     storeId: from.storeId,
-    type: "transfer_out",
+    type: MOVEMENT_TYPE.TRANSFER_OUT,
     quantity: -quantity,
     balanceAfter: from.onHand - quantity,
     transferId,
@@ -75,7 +81,7 @@ export function planTransfer(input: {
   const inMovement: MovementDraft = {
     productId,
     storeId: to.storeId,
-    type: "transfer_in",
+    type: MOVEMENT_TYPE.TRANSFER_IN,
     quantity,
     balanceAfter: to.onHand + quantity,
     transferId,

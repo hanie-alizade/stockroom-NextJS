@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { ProductsView } from "@/components/products/productsView";
 import { parseProductListParams } from "@/lib/client/products/productListUrlState";
-import { queryKeys } from "@/lib/constants/query-keys";
+import { queryKeys } from "@/constants";
 import { createRepository } from "@/lib/server/repo";
 import { listProducts } from "@/lib/server/services/products";
 

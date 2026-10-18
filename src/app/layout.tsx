@@ -8,7 +8,7 @@ import { AppShell } from "@/components/layout/appShell";
 import { getCurrentUser } from "@/lib/server/session";
 import { getMeta } from "@/lib/server/services/meta";
 import { createRepository } from "@/lib/server/repo";
-import { queryKeys } from "@/lib/constants/query-keys";
+import { queryKeys } from "@/constants";
 import "./globals.css";
 
 const plexSans = IBM_Plex_Sans({

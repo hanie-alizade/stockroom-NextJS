@@ -1,6 +1,6 @@
 import type { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/constants/query-keys";
+import { queryKeys } from "@/constants";
 import type { MetaResponse, SessionResponse } from "../api";
 import { getMeta, switchUser } from "../api";
 

@@ -1,3 +1,5 @@
+import { STOCK_STATUS } from "@/constants";
+
 export type StockStatus = "in_stock" | "low" | "out";
 
 /**
@@ -7,12 +9,12 @@ export type StockStatus = "in_stock" | "low" | "out";
  */
 export function getStatus(onHand: number, reorderLevel: number): StockStatus {
   if (onHand === 0) {
-    return "out";
+    return STOCK_STATUS.OUT;
   }
 
   if (onHand > 0 && onHand <= reorderLevel) {
-    return "low";
+    return STOCK_STATUS.LOW;
   }
 
-  return "in_stock";
+  return STOCK_STATUS.IN_STOCK;
 }

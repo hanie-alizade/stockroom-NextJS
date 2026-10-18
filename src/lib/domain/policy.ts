@@ -1,3 +1,5 @@
+import { ACTION, ROLE } from "@/constants";
+
 export type Role = "manager" | "staff";
 
 export type User = {
@@ -9,14 +11,14 @@ export type User = {
 
 export type Action = "view" | "receive" | "sell" | "write_off" | "transfer" | "import";
 
-const STAFF_ACTIONS: Set<Action> = new Set(["view", "receive", "sell"]);
+const STAFF_ACTIONS: Set<Action> = new Set([ACTION.VIEW, ACTION.RECEIVE, ACTION.SELL]);
 const MANAGER_ACTIONS: Set<Action> = new Set([
-  "view",
-  "receive",
-  "sell",
-  "write_off",
-  "transfer",
-  "import",
+  ACTION.VIEW,
+  ACTION.RECEIVE,
+  ACTION.SELL,
+  ACTION.WRITE_OFF,
+  ACTION.TRANSFER,
+  ACTION.IMPORT,
 ]);
 
 /**
@@ -24,7 +26,7 @@ const MANAGER_ACTIONS: Set<Action> = new Set([
  * Staff can view, receive, sell. Manager can do everything.
  */
 export function can(role: Role, action: Action): boolean {
-  if (role === "staff") {
+  if (role === ROLE.STAFF) {
     return STAFF_ACTIONS.has(action);
   }
 

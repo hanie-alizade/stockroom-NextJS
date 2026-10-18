@@ -11,6 +11,7 @@ import type {
   Movement,
   IdempotencyRecord,
 } from "./types";
+import { ROLE } from "@/constants";
 import type { MovementType } from "@/lib/domain/stock-rules";
 import seedJson from "@data/seed.json";
 
@@ -19,7 +20,7 @@ function toUser(u: { id: string; name: string; initials: string; role: string })
     id: u.id,
     name: u.name,
     initials: u.initials,
-    role: u.role === "manager" ? "manager" : "staff",
+    role: u.role === ROLE.MANAGER ? ROLE.MANAGER : ROLE.STAFF,
   };
 }
 

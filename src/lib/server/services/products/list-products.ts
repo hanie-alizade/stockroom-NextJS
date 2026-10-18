@@ -1,22 +1,28 @@
 import "server-only";
 
-import type { Repository, Product, Stock } from "@/lib/server/repo";
+import {
+  ALL_STORES,
+  DEFAULT_DIR,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_SORT,
+  PAGE_SIZE_OPTIONS,
+  PRODUCT_SORT_KEY,
+  SORT_DIRECTION,
+  STOCK_STATUS,
+  STOCK_STATUS_ORDER,
+} from "@/constants";
 import { getStatus } from "@/lib/domain/status";
 import type { StockStatus } from "@/lib/domain/status";
+import type { Repository, Product, Stock } from "@/lib/server/repo";
 import type { ProductListItem, ProductSummary, ProductListResult } from "./types";
 
-const DEFAULT_PAGE_SIZE = 25;
-const DEFAULT_SORT = "updatedAt";
-const DEFAULT_DIR = "desc";
-
 function isValidPageSize(size: number): boolean {
-  return size === 25 || size === 50 || size === 100;
+  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(size);
 }
 
-function sortKeyToStatusOrder(key: string): number {
-  if (key === "out") return 0;
-  if (key === "low") return 1;
-  return 2;
+function sortKeyToStatusOrder(key: StockStatus): number {
+  return STOCK_STATUS_ORDER[key] ?? 2;
 }
 
 function searchMatches(product: Product, query: string): boolean {
@@ -37,8 +43,8 @@ function calculateStockAggregate(stocks: Stock[]): { onHand: number; reorderLeve
   );
 }
 
-function getStockForScope(repo: Repository, productId: string, storeId: string | "all"): Stock[] {
-  if (storeId === "all") {
+function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): Stock[] {
+  if (storeId === ALL_STORES) {
     return repo.listStock(productId);
   }
   const stock = repo.getStock(productId, storeId);
@@ -48,7 +54,7 @@ function getStockForScope(repo: Repository, productId: string, storeId: string |
 export async function listProducts(
   repo: Repository,
   params: {
-    store?: string | "all";
+    store?: string | typeof ALL_STORES;
     q?: string;
     category?: string;
     status?: StockStatus;
@@ -59,13 +65,13 @@ export async function listProducts(
   },
 ): Promise<ProductListResult> {
   const {
-    store = "all",
+    store = ALL_STORES,
     q,
     category,
     status,
     sort = DEFAULT_SORT,
     dir = DEFAULT_DIR,
-    page = 1,
+    page = DEFAULT_PAGE,
     pageSize = DEFAULT_PAGE_SIZE,
   } = params;
 
@@ -79,7 +85,7 @@ export async function listProducts(
   for (const product of allProducts) {
     const stocks = getStockForScope(repo, product.sku, store);
 
-    if (store !== "all" && stocks.length === 0) {
+    if (store !== ALL_STORES && stocks.length === 0) {
       continue;
     }
 
@@ -124,30 +130,30 @@ export async function listProducts(
   filteredItems.sort((a, b) => {
     let comparison = 0;
 
-    if (sort === "status") {
+    if (sort === PRODUCT_SORT_KEY.STATUS) {
       const aOrder = sortKeyToStatusOrder(a.status);
       const bOrder = sortKeyToStatusOrder(b.status);
       comparison = aOrder - bOrder;
       if (comparison === 0) {
         comparison = a.sku.localeCompare(b.sku);
       }
-    } else if (sort === "sku") {
+    } else if (sort === PRODUCT_SORT_KEY.SKU) {
       comparison = a.sku.localeCompare(b.sku);
-    } else if (sort === "name") {
+    } else if (sort === PRODUCT_SORT_KEY.NAME) {
       comparison = a.name.localeCompare(b.name);
-    } else if (sort === "category") {
+    } else if (sort === PRODUCT_SORT_KEY.CATEGORY) {
       comparison = a.category.localeCompare(b.category);
-    } else if (sort === "onHand") {
+    } else if (sort === PRODUCT_SORT_KEY.ON_HAND) {
       comparison = a.onHand - b.onHand;
-    } else if (sort === "reorderLevel") {
+    } else if (sort === PRODUCT_SORT_KEY.REORDER_LEVEL) {
       comparison = a.reorderLevel - b.reorderLevel;
-    } else if (sort === "unitCostSen") {
+    } else if (sort === PRODUCT_SORT_KEY.UNIT_COST_SEN) {
       comparison = a.unitCostSen - b.unitCostSen;
-    } else if (sort === "updatedAt") {
+    } else if (sort === PRODUCT_SORT_KEY.UPDATED_AT) {
       comparison = a.updatedAt.localeCompare(b.updatedAt);
     }
 
-    return dir === "desc" ? -comparison : comparison;
+    return dir === SORT_DIRECTION.DESC ? -comparison : comparison;
   });
 
   const total = filteredItems.length;
@@ -158,7 +164,7 @@ export async function listProducts(
   const summaryItems = allProducts
     .map((product) => {
       const scopeStocks = getStockForScope(repo, product.sku, store);
-      if (store !== "all" && scopeStocks.length === 0) {
+      if (store !== ALL_STORES && scopeStocks.length === 0) {
         return null;
       }
       const { onHand, reorderLevel } = calculateStockAggregate(scopeStocks);
@@ -176,8 +182,8 @@ export async function listProducts(
   const summary: ProductSummary = {
     totalProducts: summaryItems.length,
     stockValueSen: summaryItems.reduce((sum, item) => sum + item.onHand * item.unitCostSen, 0),
-    lowStock: summaryItems.filter((item) => item.status === "low").length,
-    outOfStock: summaryItems.filter((item) => item.status === "out").length,
+    lowStock: summaryItems.filter((item) => item.status === STOCK_STATUS.LOW).length,
+    outOfStock: summaryItems.filter((item) => item.status === STOCK_STATUS.OUT).length,
   };
 
   return {

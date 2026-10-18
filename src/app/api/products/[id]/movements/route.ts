@@ -1,14 +1,13 @@
 import "server-only";
 
+import { ALL_STORES, DEFAULT_PAGE, MOVEMENT_TYPE } from "@/constants";
 import { withApi } from "@/lib/server/http/with-api";
 import { z } from "zod";
 import { getProductMovements } from "@/lib/server/services/products";
 
 const productMovementsQuerySchema = z.object({
-  store: z.union([z.literal("all"), z.string()]).optional(),
-  type: z
-    .enum(["receive", "sell", "write_off", "transfer_out", "transfer_in", "import"])
-    .optional(),
+  store: z.union([z.literal(ALL_STORES), z.string()]).optional(),
+  type: z.nativeEnum(MOVEMENT_TYPE).optional(),
   from: z.string().optional(),
   to: z.string().optional(),
   page: z.coerce.number().int().positive().optional(),
@@ -27,11 +26,11 @@ export async function GET(
     const parsed = productMovementsQuerySchema.parse(rawParams);
 
     const result = await getProductMovements(repo, id, {
-      store: parsed.store ?? "all",
+      store: parsed.store ?? ALL_STORES,
       type: parsed.type,
       from: parsed.from,
       to: parsed.to,
-      page: parsed.page ?? 1,
+      page: parsed.page ?? DEFAULT_PAGE,
       pageSize: parsed.pageSize,
     });
 

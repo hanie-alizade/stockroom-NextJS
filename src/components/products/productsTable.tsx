@@ -9,6 +9,7 @@ import { ProductsSortHeader } from "./productsSortHeader";
 import { formatMoney } from "@/lib/domain/money";
 import { formatWhen } from "@/lib/domain/dates";
 import { cn } from "@/lib/utils";
+import { ALL_STORES, PRODUCT_SORT_KEY } from "@/constants";
 import type {
   ProductListItem,
   ProductSortKey,
@@ -37,7 +38,7 @@ export function ProductsTable({
 }: ProductsTableProps): React.ReactElement {
   const router = useRouter();
   const now = useMemo(() => new Date(), []);
-  const storeParam = store && store !== "all" ? `?store=${store}` : "";
+  const storeParam = store && store !== ALL_STORES ? `?store=${store}` : "";
 
   const handleRowClick = (id: string): void => {
     router.push(`/products/${id}${storeParam}`);
@@ -58,7 +59,7 @@ export function ProductsTable({
             </th>
 
             <ProductsSortHeader
-              column="sku"
+              column={PRODUCT_SORT_KEY.SKU}
               label="SKU"
               currentSort={sort}
               currentDir={dir}
@@ -67,7 +68,7 @@ export function ProductsTable({
             />
 
             <ProductsSortHeader
-              column="name"
+              column={PRODUCT_SORT_KEY.NAME}
               label="Product"
               currentSort={sort}
               currentDir={dir}
@@ -75,7 +76,7 @@ export function ProductsTable({
             />
 
             <ProductsSortHeader
-              column="category"
+              column={PRODUCT_SORT_KEY.CATEGORY}
               label="Category"
               currentSort={sort}
               currentDir={dir}
@@ -84,7 +85,7 @@ export function ProductsTable({
             />
 
             <ProductsSortHeader
-              column="onHand"
+              column={PRODUCT_SORT_KEY.ON_HAND}
               label="On hand"
               currentSort={sort}
               currentDir={dir}
@@ -93,7 +94,7 @@ export function ProductsTable({
             />
 
             <ProductsSortHeader
-              column="reorderLevel"
+              column={PRODUCT_SORT_KEY.REORDER_LEVEL}
               label="Reorder at"
               currentSort={sort}
               currentDir={dir}
@@ -109,7 +110,7 @@ export function ProductsTable({
             </th>
 
             <ProductsSortHeader
-              column="unitCostSen"
+              column={PRODUCT_SORT_KEY.UNIT_COST_SEN}
               label="Unit cost"
               currentSort={sort}
               currentDir={dir}
@@ -118,7 +119,7 @@ export function ProductsTable({
             />
 
             <ProductsSortHeader
-              column="updatedAt"
+              column={PRODUCT_SORT_KEY.UPDATED_AT}
               label="Updated"
               currentSort={sort}
               currentDir={dir}

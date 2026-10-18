@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CheckIcon } from "@/components/icons";
+import { ROLE_LABEL } from "@/constants";
 import { useQueryMeta, useMutationSwitchUser } from "@/lib/client/apiHooks";
 import { useCurrentUser } from "@/components/providers/session-provider";
 
@@ -53,7 +54,7 @@ export function UserProfileCard(): React.ReactElement | null {
     );
   }
 
-  const roleLabel = currentUser.role === "manager" ? "Manager" : "Staff";
+  const roleLabel = ROLE_LABEL[currentUser.role];
 
   return (
     <div className="border-border-default bg-bg-surface flex items-center gap-3 rounded-lg border p-3">
@@ -81,7 +82,7 @@ export function UserProfileCard(): React.ReactElement | null {
           {meta ? (
             meta.users.map((user) => {
               const isCurrent = user.id === currentUser.id;
-              const userRoleLabel = user.role === "manager" ? "Manager" : "Staff";
+              const userRoleLabel = ROLE_LABEL[user.role];
 
               return (
                 <DropdownMenuItem

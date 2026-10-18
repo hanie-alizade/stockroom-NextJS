@@ -1,3 +1,4 @@
+import { ALL_STORES } from "@/constants";
 import { StatCard } from "@/components/common/statCard";
 import { formatMoney } from "@/lib/domain/money";
 import type { ProductListSummary } from "@/lib/types/product";
@@ -12,7 +13,7 @@ export function ProductsSummary({
   summary,
   store,
 }: ProductsSummaryProps): React.ReactElement {
-  const isAllStores = store === "all";
+  const isAllStores = store === ALL_STORES;
 
   return (
     <div className="grid grid-cols-1 gap-lg sm:grid-cols-2 lg:grid-cols-4">

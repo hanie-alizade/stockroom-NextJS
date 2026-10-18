@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ROLE } from "@/constants";
 
 export const metaResponseSchema = z.object({
   stores: z.array(
@@ -17,14 +18,14 @@ export const metaResponseSchema = z.object({
       id: z.string(),
       name: z.string(),
       initials: z.string(),
-      role: z.enum(["manager", "staff"]),
+      role: z.nativeEnum(ROLE),
     }),
   ),
   currentUser: z.object({
     id: z.string(),
     name: z.string(),
     initials: z.string(),
-    role: z.enum(["manager", "staff"]),
+    role: z.nativeEnum(ROLE),
   }),
 });
 
@@ -35,7 +36,7 @@ export const sessionResponseSchema = z.object({
     id: z.string(),
     name: z.string(),
     initials: z.string(),
-    role: z.enum(["manager", "staff"]),
+    role: z.nativeEnum(ROLE),
   }),
 });
 

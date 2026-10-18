@@ -2,8 +2,9 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { withApi } from "@/lib/server/http/with-api";
+import { ERROR_CODE, FIELD_ERROR_CODE, HTTP_STATUS, SESSION_COOKIE } from "@/constants";
 import { AppError } from "@/lib/domain/errors";
+import { withApi } from "@/lib/server/http/with-api";
 
 const sessionSchema = z.object({
   userId: z.string(),
@@ -17,13 +18,16 @@ export async function POST(request: Request): Promise<Response> {
 
       const targetUser = repo.getUsers().find((u) => u.id === userId);
       if (!targetUser) {
-        throw new AppError("VALIDATION_ERROR", 422, "Validation failed", [
-          { field: "userId", code: "UNKNOWN_USER", message: "Unknown user." },
-        ]);
+        throw new AppError(
+          ERROR_CODE.VALIDATION_ERROR,
+          HTTP_STATUS.UNPROCESSABLE_ENTITY,
+          "Validation failed",
+          [{ field: "userId", code: FIELD_ERROR_CODE.UNKNOWN_USER, message: "Unknown user." }],
+        );
       }
 
       const cookieStore = await cookies();
-      cookieStore.set("stockroom_user", userId, {
+      cookieStore.set(SESSION_COOKIE, userId, {
         path: "/",
         httpOnly: true,
         sameSite: "lax",

@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/select";
 import type { StockStatus } from "@/lib/types/product";
 import { productListQuerySchema } from "@/lib/domain/schemas";
-
-const ALL_VALUE = "all";
+import { ALL_STORES, STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
 
 interface ProductsToolbarProps {
   search?: string;
@@ -66,6 +65,14 @@ export function ProductsToolbar({
     }, 300);
   };
 
+
+  const itemList = [
+    { value: ALL_STORES, label: "All statuses" },
+    { value: STOCK_STATUS.IN_STOCK, label: STOCK_STATUS_LABEL[STOCK_STATUS.IN_STOCK] },
+    { value: STOCK_STATUS.LOW, label: STOCK_STATUS_LABEL[STOCK_STATUS.LOW] },
+    { value: STOCK_STATUS.OUT, label: STOCK_STATUS_LABEL[STOCK_STATUS.OUT] },
+  ];
+
   return (
     <div className="gap-md p-lg flex items-center">
       <div className="relative w-[288px]">
@@ -80,12 +87,12 @@ export function ProductsToolbar({
       </div>
 
       <div className="w-[168px]">
-        <Select value={category || "all"} onValueChange={(val) => onCategoryChange(val)}>
+        <Select value={category || ALL_STORES} onValueChange={(val) => onCategoryChange(val === ALL_STORES ? undefined : val)}>
           <SelectTrigger className="h-9 w-full justify-between">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
+            <SelectItem value={ALL_STORES}>All categories</SelectItem>
             {categories.map((cat) => {
               const name = typeof cat === "string" ? cat : (cat as { name: string }).name;
               return (
@@ -100,17 +107,18 @@ export function ProductsToolbar({
 
       <div className="w-[152px]">
         <Select
-          value={status}
-          onValueChange={(val) => onStatusChange(val as StockStatus | undefined)}
+          value={status ?? ALL_STORES}
+          onValueChange={(val) => onStatusChange(val === ALL_STORES ? undefined : (val as StockStatus))}
         >
           <SelectTrigger className="h-9 w-full justify-between">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="in_stock">In stock</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="out">Out of stock</SelectItem>
+            {itemList.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

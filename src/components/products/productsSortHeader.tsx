@@ -1,3 +1,4 @@
+import { DEFAULT_SORT_DIRECTION, SORT_DIRECTION } from "@/constants";
 import { cn } from "@/lib/utils";
 import { ArrowDownIcon, ArrowUpIcon, SortIcon } from "@/components/icons";
 import type { ProductSortKey } from "@/lib/types/product";
@@ -17,14 +18,14 @@ export function ProductsSortHeader({
   column,
   label,
   currentSort,
-  currentDir = "desc",
+  currentDir = DEFAULT_SORT_DIRECTION,
   onSort,
   align = "left",
   className,
 }: ProductsSortHeaderProps): React.ReactElement {
   const isActive = currentSort === column;
   const ariaSort = isActive
-    ? currentDir === "desc"
+    ? currentDir === SORT_DIRECTION.DESC
       ? "descending"
       : "ascending"
     : undefined;
@@ -52,7 +53,7 @@ export function ProductsSortHeader({
       >
         <span>{label}</span>
         {isActive ? (
-          currentDir === "desc" ? (
+          currentDir === SORT_DIRECTION.DESC ? (
             <ArrowDownIcon className="text-text-primary size-3.5 shrink-0" />
           ) : (
             <ArrowUpIcon className="text-text-primary size-3.5 shrink-0" />

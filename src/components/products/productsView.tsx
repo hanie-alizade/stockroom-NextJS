@@ -8,6 +8,7 @@ import { ProductsSummary } from "./productsSummary";
 import { ProductsToolbar } from "./productsToolbar";
 import { ProductsTable } from "./productsTable";
 import { Pagination } from "@/components/common/pagination";
+import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/constants";
 import type { ProductListSummary } from "@/lib/types/product";
 import type { PageSize } from "@/lib/types/common";
 
@@ -28,7 +29,7 @@ export function ProductsView(): React.ReactElement {
   const items = productsData?.items ?? [];
   const total = productsData?.total ?? 0;
   const categories = meta?.categories ?? [];
-  const store = query.store ?? "all";
+  const store = query.store ?? ALL_STORES;
 
   return (
     <div className="bg-bg-canvas gap-2xl p-3xl flex flex-col">
@@ -59,8 +60,8 @@ export function ProductsView(): React.ReactElement {
         />
 
         <Pagination
-          page={query.page ?? 1}
-          pageSize={(query.pageSize ?? 25) as PageSize}
+          page={query.page ?? DEFAULT_PAGE}
+          pageSize={(query.pageSize ?? DEFAULT_PAGE_SIZE) as PageSize}
           total={total}
           onPageChange={setPage}
           onPageSizeChange={setPageSize}

@@ -1,19 +1,18 @@
 import "server-only";
 
+import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/constants";
 import type { Repository, Movement } from "@/lib/server/repo";
 import type { MovementWithUser, ProductMovementsResult } from "./types";
 
-const DEFAULT_PAGE_SIZE = 25;
-
 function isValidPageSize(size: number): boolean {
-  return size === 25 || size === 50 || size === 100;
+  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(size);
 }
 
 export async function getProductMovements(
   repo: Repository,
   sku: string,
   params: {
-    store?: string | "all";
+    store?: string | typeof ALL_STORES;
     type?: "receive" | "sell" | "write_off" | "transfer_out" | "transfer_in" | "import";
     from?: string;
     to?: string;
@@ -21,12 +20,12 @@ export async function getProductMovements(
     pageSize?: number;
   },
 ): Promise<ProductMovementsResult> {
-  const { store = "all", type, from, to, page = 1, pageSize = DEFAULT_PAGE_SIZE } = params;
+  const { store = ALL_STORES, type, from, to, page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE } = params;
 
   const validatedPageSize = isValidPageSize(pageSize) ? pageSize : DEFAULT_PAGE_SIZE;
 
   const stores =
-    store === "all" ? repo.getStores() : repo.getStores().filter((s) => s.id === store);
+    store === ALL_STORES ? repo.getStores() : repo.getStores().filter((s) => s.id === store);
 
   const allMovements: MovementWithUser[] = [];
   for (const s of stores) {

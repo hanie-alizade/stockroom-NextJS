@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SupplierIcon } from "@/components/icons";
+import { ALL_STORES } from "@/constants";
 import { useQueryMeta } from "@/lib/client/apiHooks/useCommonAPIs";
 
 export function StoreSelector(): React.ReactElement {
@@ -45,11 +46,11 @@ export function StoreSelector(): React.ReactElement {
 
   const validStoreIds = new Set(meta.stores.map((s) => s.id));
   const isValidStore = currentStore && validStoreIds.has(currentStore);
-  const value = isValidStore ? currentStore : "all";
+  const value = isValidStore ? currentStore : ALL_STORES;
 
   const handleValueChange = (newValue: string): void => {
     const params = new URLSearchParams(searchParams.toString());
-    if (newValue === "all") {
+    if (newValue === ALL_STORES) {
       params.delete("store");
     } else {
       params.set("store", newValue);
@@ -66,7 +67,7 @@ export function StoreSelector(): React.ReactElement {
           <SelectValue className="flex-1 text-left" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All stores ({meta.stores.length})</SelectItem>
+          <SelectItem value={ALL_STORES}>All stores ({meta.stores.length})</SelectItem>
           {meta.stores.map((store) => (
             <SelectItem key={store.id} value={store.id}>
               {store.name}

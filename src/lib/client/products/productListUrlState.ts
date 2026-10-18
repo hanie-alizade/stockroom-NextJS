@@ -1,3 +1,14 @@
+import {
+  ALL_STORES,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_PRODUCT_SORT_KEY,
+  DEFAULT_SORT_DIRECTION,
+  PAGE_SIZE_OPTIONS,
+  PRODUCT_SORT_KEY,
+  SORT_DIRECTION,
+  STOCK_STATUS,
+} from "@/constants";
 import type { ProductListQuery, StockStatus, ProductSortKey } from "@/lib/types/product";
 import type { PageSize, SortDirection } from "@/lib/types/common";
 import type { StoreScope } from "@/lib/types/store";
@@ -7,16 +18,7 @@ export interface RouterInstance {
   replace: (href: string) => void;
 }
 
-const VALID_SORT_KEYS = new Set<ProductSortKey>([
-  "sku",
-  "name",
-  "category",
-  "onHand",
-  "reorderLevel",
-  "unitCostSen",
-  "status",
-  "updatedAt",
-]);
+const VALID_SORT_KEYS = new Set<ProductSortKey>(Object.values(PRODUCT_SORT_KEY));
 
 function getParam(
   source: URLSearchParams | Record<string, string | string[] | undefined>,
@@ -36,29 +38,37 @@ export function parseProductListParams(
   source: URLSearchParams | Record<string, string | string[] | undefined>,
 ): ProductListQuery {
   const storeRaw = getParam(source, "store");
-  const store: StoreScope = storeRaw && storeRaw !== "all" ? storeRaw : "all";
+  const store: StoreScope = storeRaw && storeRaw !== ALL_STORES ? storeRaw : ALL_STORES;
 
   const qRaw = getParam(source, "q")?.trim();
   const q = qRaw ? qRaw : undefined;
 
   const categoryRaw = getParam(source, "category");
-  const category = categoryRaw && categoryRaw !== "all" ? categoryRaw : undefined;
+  const category = categoryRaw && categoryRaw !== ALL_STORES ? categoryRaw : undefined;
 
   const statusRaw = getParam(source, "status");
   const status: StockStatus | undefined =
-    statusRaw === "in_stock" || statusRaw === "low" || statusRaw === "out" ? statusRaw : undefined;
+    statusRaw === STOCK_STATUS.IN_STOCK ||
+    statusRaw === STOCK_STATUS.LOW ||
+    statusRaw === STOCK_STATUS.OUT
+      ? statusRaw
+      : undefined;
 
   const sortRaw = getParam(source, "sort") as ProductSortKey | undefined;
-  const sort: ProductSortKey = sortRaw && VALID_SORT_KEYS.has(sortRaw) ? sortRaw : "updatedAt";
+  const sort: ProductSortKey =
+    sortRaw && VALID_SORT_KEYS.has(sortRaw) ? sortRaw : DEFAULT_PRODUCT_SORT_KEY;
 
   const dirRaw = getParam(source, "dir");
-  const dir: SortDirection = dirRaw === "asc" ? "asc" : "desc";
+  const dir: SortDirection =
+    dirRaw === SORT_DIRECTION.ASC ? SORT_DIRECTION.ASC : SORT_DIRECTION.DESC;
 
   const pageRaw = Number(getParam(source, "page"));
-  const page = Number.isInteger(pageRaw) && pageRaw >= 1 ? pageRaw : 1;
+  const page = Number.isInteger(pageRaw) && pageRaw >= 1 ? pageRaw : DEFAULT_PAGE;
 
   const pageSizeRaw = Number(getParam(source, "pageSize"));
-  const pageSize: PageSize = pageSizeRaw === 50 || pageSizeRaw === 100 ? pageSizeRaw : 25;
+  const pageSize: PageSize = (PAGE_SIZE_OPTIONS as readonly number[]).includes(pageSizeRaw)
+    ? (pageSizeRaw as PageSize)
+    : DEFAULT_PAGE_SIZE;
 
   return {
     store,
@@ -75,26 +85,29 @@ export function parseProductListParams(
 export function buildProductListUrl(pathname: string, query: ProductListQuery): string {
   const params = new URLSearchParams();
 
-  if (query.store && query.store !== "all") {
+  if (query.store && query.store !== ALL_STORES) {
     params.set("store", query.store);
   }
   if (query.q && query.q.trim()) {
     params.set("q", query.q.trim());
   }
-  if (query.category && query.category !== "all") {
+  if (query.category && query.category !== ALL_STORES) {
     params.set("category", query.category);
   }
   if (query.status) {
     params.set("status", query.status);
   }
-  if (query.sort && (query.sort !== "updatedAt" || query.dir !== "desc")) {
+  if (
+    query.sort &&
+    (query.sort !== DEFAULT_PRODUCT_SORT_KEY || query.dir !== DEFAULT_SORT_DIRECTION)
+  ) {
     params.set("sort", query.sort);
-    params.set("dir", query.dir ?? "desc");
+    params.set("dir", query.dir ?? DEFAULT_SORT_DIRECTION);
   }
-  if (query.page && query.page > 1) {
+  if (query.page && query.page > DEFAULT_PAGE) {
     params.set("page", String(query.page));
   }
-  if (query.pageSize && query.pageSize !== 25) {
+  if (query.pageSize && query.pageSize !== DEFAULT_PAGE_SIZE) {
     params.set("pageSize", String(query.pageSize));
   }
 
@@ -111,7 +124,7 @@ export function setProductListSearch(
   const next: ProductListQuery = {
     ...current,
     q: q.trim() || undefined,
-    page: 1,
+    page: DEFAULT_PAGE,
   };
   router.replace(buildProductListUrl(pathname, next));
 }
@@ -125,7 +138,7 @@ export function setProductListCategory(
   const next: ProductListQuery = {
     ...current,
     category,
-    page: 1,
+    page: DEFAULT_PAGE,
   };
   router.push(buildProductListUrl(pathname, next));
 }
@@ -139,7 +152,7 @@ export function setProductListStatus(
   const next: ProductListQuery = {
     ...current,
     status,
-    page: 1,
+    page: DEFAULT_PAGE,
   };
   router.push(buildProductListUrl(pathname, next));
 }
@@ -166,7 +179,7 @@ export function setProductListPageSize(
   const next: ProductListQuery = {
     ...current,
     pageSize,
-    page: 1,
+    page: DEFAULT_PAGE,
   };
   router.push(buildProductListUrl(pathname, next));
 }
@@ -178,14 +191,14 @@ export function toggleProductListSort(
   column: ProductSortKey,
 ): void {
   let nextSort: ProductSortKey = column;
-  let nextDir: SortDirection = "desc";
+  let nextDir: SortDirection = SORT_DIRECTION.DESC;
 
   if (current.sort === column) {
-    if (current.dir === "desc") {
-      nextDir = "asc";
+    if (current.dir === SORT_DIRECTION.DESC) {
+      nextDir = SORT_DIRECTION.ASC;
     } else {
-      nextSort = "updatedAt";
-      nextDir = "desc";
+      nextSort = DEFAULT_PRODUCT_SORT_KEY;
+      nextDir = DEFAULT_SORT_DIRECTION;
     }
   }
 

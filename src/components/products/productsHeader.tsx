@@ -1,5 +1,6 @@
 "use client";
 
+import { ACTION, ALL_STORES } from "@/constants";
 import { DownloadIcon, UploadIcon } from "@/components/icons";
 import { useCan } from "@/components/providers/session-provider";
 import { useQueryMeta } from "@/lib/client/apiHooks";
@@ -14,12 +15,12 @@ interface ProductsHeaderProps {
 const SYNCED_TEXT = "synced 2 min ago"; // TODO(hanie): wire to the last update time
 
 export function ProductsHeader({ totalProducts, store }: ProductsHeaderProps): React.ReactElement {
-  const canImport = useCan("import");
+  const canImport = useCan(ACTION.IMPORT);
   const { data: meta } = useQueryMeta();
 
   let storeContextText = "across 6 stores";
   if (meta) {
-    if (store === "all") {
+    if (store === ALL_STORES) {
       storeContextText = `across ${meta.stores.length} stores`;
     } else {
       const currentStore = meta.stores.find((s) => s.id === store);

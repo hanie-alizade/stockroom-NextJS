@@ -1,7 +1,14 @@
 import { z } from "zod";
+import {
+  ADJUSTMENT_TYPE,
+  ALL_STORES,
+  PRODUCT_SORT_KEY,
+  SORT_DIRECTION,
+  STOCK_STATUS,
+} from "@/constants";
 
 const receiveSchema = z.object({
-  type: z.literal("receive"),
+  type: z.literal(ADJUSTMENT_TYPE.RECEIVE),
   storeId: z.string(),
   quantity: z.number().int().positive(),
   note: z.string().optional(),
@@ -9,7 +16,7 @@ const receiveSchema = z.object({
 });
 
 const sellSchema = z.object({
-  type: z.literal("sell"),
+  type: z.literal(ADJUSTMENT_TYPE.SELL),
   storeId: z.string(),
   quantity: z.number().int().positive(),
   note: z.string().optional(),
@@ -17,7 +24,7 @@ const sellSchema = z.object({
 });
 
 const writeOffSchema = z.object({
-  type: z.literal("write_off"),
+  type: z.literal(ADJUSTMENT_TYPE.WRITE_OFF),
   storeId: z.string(),
   quantity: z.number().int().positive(),
   reason: z.string().trim().min(3).max(200),
@@ -25,7 +32,7 @@ const writeOffSchema = z.object({
 });
 
 const transferSchema = z.object({
-  type: z.literal("transfer"),
+  type: z.literal(ADJUSTMENT_TYPE.TRANSFER),
   fromStoreId: z.string(),
   toStoreId: z.string(),
   quantity: z.number().int().positive(),
@@ -43,14 +50,12 @@ export const adjustmentSchema = z.discriminatedUnion("type", [
 export type Adjustment = z.infer<typeof adjustmentSchema>;
 
 export const productListQuerySchema = z.object({
-  store: z.union([z.literal("all"), z.string()]).optional(),
+  store: z.union([z.literal(ALL_STORES), z.string()]).optional(),
   q: z.string().optional(),
   category: z.string().optional(),
-  status: z.enum(["in_stock", "low", "out"]).optional(),
-  sort: z
-    .enum(["sku", "name", "category", "onHand", "reorderLevel", "unitCostSen", "status", "updatedAt"])
-    .optional(),
-  dir: z.enum(["asc", "desc"]).optional(),
+  status: z.nativeEnum(STOCK_STATUS).optional(),
+  sort: z.nativeEnum(PRODUCT_SORT_KEY).optional(),
+  dir: z.nativeEnum(SORT_DIRECTION).optional(),
   page: z.coerce.number().int().positive().optional(),
   pageSize: z.coerce.number().int().positive().optional(),
 });

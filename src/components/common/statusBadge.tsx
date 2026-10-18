@@ -1,3 +1,4 @@
+import { STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
 import { cn } from "@/lib/utils";
 import { CheckIcon, WarningIcon, CircleAlertIcon } from "@/components/icons";
 import type { StockStatus } from "@/lib/types/product";
@@ -8,7 +9,7 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps): React.ReactElement {
-  if (status === "in_stock") {
+  if (status === STOCK_STATUS.IN_STOCK) {
     return (
       <span
         className={cn(
@@ -17,12 +18,12 @@ export function StatusBadge({ status, className }: StatusBadgeProps): React.Reac
         )}
       >
         <CheckIcon className="size-3.5 shrink-0" />
-        <span>In stock</span>
+        <span>{STOCK_STATUS_LABEL[STOCK_STATUS.IN_STOCK]}</span>
       </span>
     );
   }
 
-  if (status === "low") {
+  if (status === STOCK_STATUS.LOW) {
     return (
       <span
         className={cn(
@@ -31,7 +32,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps): React.Reac
         )}
       >
         <WarningIcon className="size-3.5 shrink-0" />
-        <span>Low</span>
+        <span>{STOCK_STATUS_LABEL[STOCK_STATUS.LOW]}</span>
       </span>
     );
   }
@@ -44,7 +45,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps): React.Reac
       )}
     >
       <CircleAlertIcon className="size-3.5 shrink-0" />
-      <span>Out of stock</span>
+      <span>{STOCK_STATUS_LABEL[STOCK_STATUS.OUT]}</span>
     </span>
   );
 }

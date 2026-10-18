@@ -10,6 +10,8 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 import type { PageSize } from "@/lib/types/common";
 
+import { PAGE_SIZE_OPTIONS } from "@/constants";
+
 interface PaginationProps {
   page: number;
   pageSize: PageSize;
@@ -44,9 +46,11 @@ export function Pagination({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="25">25</SelectItem>
-            <SelectItem value="50">50</SelectItem>
-            <SelectItem value="100">100</SelectItem>
+            {PAGE_SIZE_OPTIONS.map((size) => (
+              <SelectItem key={size} value={String(size)}>
+                {size}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

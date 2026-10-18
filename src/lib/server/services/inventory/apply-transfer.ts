@@ -1,5 +1,11 @@
 import "server-only";
 
+import {
+  ERROR_CODE,
+  FIELD_ERROR_CODE,
+  HTTP_STATUS,
+  MOVEMENT_TYPE,
+} from "@/constants";
 import { AppError } from "@/lib/domain/errors";
 
 import type { Repository } from "@/lib/server/repo";
@@ -14,21 +20,21 @@ export function applyTransfer(
   const fromStore = ctx.storeMap.get(input.fromStoreId);
   const toStore = ctx.storeMap.get(input.toStoreId);
   if (!fromStore || !toStore) {
-    throw new AppError("STORE_NOT_FOUND", 404, "Store not found");
+    throw new AppError(ERROR_CODE.STORE_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Store not found");
   }
 
   const fromStock = txRepo.getStock(canonicalSku, input.fromStoreId);
   const toStock = txRepo.getStock(canonicalSku, input.toStoreId);
   if (!fromStock || !toStock) {
-    throw new AppError("NOT_STOCKED_AT_STORE", 422, "Product is not stocked at this store");
+    throw new AppError(ERROR_CODE.NOT_STOCKED_AT_STORE, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Product is not stocked at this store");
   }
 
   if (fromStock.onHand < input.quantity) {
     throw new AppError(
-      "INSUFFICIENT_STOCK",
-      409,
+      ERROR_CODE.INSUFFICIENT_STOCK,
+      HTTP_STATUS.CONFLICT,
       `${fromStore.name} only has ${fromStock.onHand} on hand. Enter ${fromStock.onHand} or less.`,
-      [{ field: "quantity", code: "TOO_MANY", message: `Only ${fromStock.onHand} on hand.` }],
+      [{ field: "quantity", code: FIELD_ERROR_CODE.TOO_MANY, message: `Only ${fromStock.onHand} on hand.` }],
     );
   }
 
@@ -43,7 +49,7 @@ export function applyTransfer(
   const outMovement = txRepo.addMovement({
     productId: canonicalSku,
     storeId: input.fromStoreId,
-    type: "transfer_out",
+    type: MOVEMENT_TYPE.TRANSFER_OUT,
     quantity: -input.quantity,
     balanceAfter: fromNewOnHand,
     reason: transferNote,
@@ -55,7 +61,7 @@ export function applyTransfer(
   const inMovement = txRepo.addMovement({
     productId: canonicalSku,
     storeId: input.toStoreId,
-    type: "transfer_in",
+    type: MOVEMENT_TYPE.TRANSFER_IN,
     quantity: input.quantity,
     balanceAfter: toNewOnHand,
     reason: transferNote,
@@ -79,7 +85,7 @@ export function applyTransfer(
   txRepo.setIdempotency({
     idempotencyKey: ctx.idempotencyKey,
     requestHash: ctx.requestHash,
-    status: 201,
+    status: HTTP_STATUS.CREATED,
     body: { movements: adjustmentResult.movements, stock: adjustmentResult.stock },
   });
 

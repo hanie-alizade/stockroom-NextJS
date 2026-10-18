@@ -1,7 +1,8 @@
 import "server-only";
 
-import type { Repository, Product, Stock } from "@/lib/server/repo";
+import { ALL_STORES, ERROR_CODE, HTTP_STATUS } from "@/constants";
 import { AppError } from "@/lib/domain/errors";
+import type { Repository, Product, Stock } from "@/lib/server/repo";
 import type { StockHistoryResult } from "./types";
 
 function calculateStockAggregate(stocks: Stock[]): { onHand: number; reorderLevel: number } {
@@ -14,8 +15,8 @@ function calculateStockAggregate(stocks: Stock[]): { onHand: number; reorderLeve
   );
 }
 
-function getStockForScope(repo: Repository, productId: string, storeId: string | "all"): Stock[] {
-  if (storeId === "all") {
+function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): Stock[] {
+  if (storeId === ALL_STORES) {
     return repo.listStock(productId);
   }
   const stock = repo.getStock(productId, storeId);
@@ -25,12 +26,12 @@ function getStockForScope(repo: Repository, productId: string, storeId: string |
 export async function getStockHistory(
   repo: Repository,
   sku: string,
-  storeId: string | "all",
+  storeId: string | typeof ALL_STORES,
   days: number = 30,
 ): Promise<StockHistoryResult> {
   const product = repo.getProduct(sku);
   if (!product) {
-    throw new AppError("PRODUCT_NOT_FOUND", 404, "Product not found");
+    throw new AppError(ERROR_CODE.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Product not found");
   }
 
   const stocks = getStockForScope(repo, sku, storeId);
