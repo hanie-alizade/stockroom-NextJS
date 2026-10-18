@@ -14,5 +14,5 @@ export async function GET(request: Request): Promise<Response> {
     const result = await listProducts(repo, parsed);
 
     return result;
-  });
+  }, { request });
 }

@@ -19,5 +19,5 @@ export async function GET(
     const result = await getStockHistory(repo, id, parsed.store ?? ALL_STORES, parsed.days ?? 30);
 
     return result;
-  });
+  }, { request });
 }

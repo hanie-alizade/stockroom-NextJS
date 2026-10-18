@@ -26,5 +26,5 @@ export async function GET(
     });
 
     return result;
-  });
+  }, { request });
 }

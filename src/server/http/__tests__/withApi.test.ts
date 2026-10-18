@@ -12,15 +12,10 @@ vi.mock("@/server/repositories", () => ({
   createRepository: vi.fn(),
 }));
 
-declare global {
-  var url: string | URL | undefined;
-}
-
 describe("withApi", () => {
   beforeEach(() => {
     process.env.SIMULATED_LATENCY_MS = "0";
     vi.clearAllMocks();
-    globalThis.url = new URL("http://localhost");
     vi.mocked(createRepository).mockReturnValue(mockRepository());
   });
 
@@ -29,7 +24,7 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
-      await withApi(handler);
+      await withApi(handler, { request: new Request("http://localhost") });
 
       expect(handler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -42,7 +37,7 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
-      await withApi(handler);
+      await withApi(handler, { request: new Request("http://localhost") });
 
       expect(handler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -55,7 +50,7 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies());
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
-      await withApi(handler);
+      await withApi(handler, { request: new Request("http://localhost") });
 
       expect(handler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -68,7 +63,7 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("unknown-user"));
 
       const handler = vi.fn(async ({ user }) => ({ userId: user.id }));
-      await withApi(handler);
+      await withApi(handler, { request: new Request("http://localhost") });
 
       expect(handler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -83,7 +78,10 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn();
-      const response = await withApi(handler, { action: "write_off" });
+      const response = await withApi(handler, {
+        request: new Request("http://localhost"),
+        action: "write_off",
+      });
 
       expect(response.status).toBe(403);
       const body = await response.json();
@@ -99,7 +97,10 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn();
-      const response = await withApi(handler, { action: "transfer" });
+      const response = await withApi(handler, {
+        request: new Request("http://localhost"),
+        action: "transfer",
+      });
 
       expect(response.status).toBe(403);
       const body = await response.json();
@@ -115,7 +116,10 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn();
-      const response = await withApi(handler, { action: "import" });
+      const response = await withApi(handler, {
+        request: new Request("http://localhost"),
+        action: "import",
+      });
 
       expect(response.status).toBe(403);
       const body = await response.json();
@@ -131,7 +135,10 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async () => ({ success: true }));
-      const response = await withApi(handler, { action: "write_off" });
+      const response = await withApi(handler, {
+        request: new Request("http://localhost"),
+        action: "write_off",
+      });
 
       expect(response.status).toBe(200);
       expect(handler).toHaveBeenCalled();
@@ -141,7 +148,10 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async () => ({ success: true }));
-      const response = await withApi(handler, { action: "transfer" });
+      const response = await withApi(handler, {
+        request: new Request("http://localhost"),
+        action: "transfer",
+      });
 
       expect(response.status).toBe(200);
       expect(handler).toHaveBeenCalled();
@@ -151,7 +161,10 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("aina-rahman"));
 
       const handler = vi.fn(async () => ({ success: true }));
-      const response = await withApi(handler, { action: "import" });
+      const response = await withApi(handler, {
+        request: new Request("http://localhost"),
+        action: "import",
+      });
 
       expect(response.status).toBe(200);
       expect(handler).toHaveBeenCalled();
@@ -162,10 +175,10 @@ describe("withApi", () => {
     it("returns 500 INTERNAL_ERROR when ?fail=1 is present", async () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
-      globalThis.url = new URL("http://localhost?fail=1");
-
       const handler = vi.fn(async () => ({ success: true }));
-      const response = await withApi(handler);
+      const response = await withApi(handler, {
+        request: new Request("http://localhost?fail=1"),
+      });
 
       expect(response.status).toBe(500);
       const body = await response.json();
@@ -180,10 +193,10 @@ describe("withApi", () => {
     it("does not run handler when ?fail=1 is present", async () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
-      globalThis.url = new URL("http://localhost?fail=1");
-
       const handler = vi.fn(async () => ({ success: true }));
-      await withApi(handler);
+      await withApi(handler, {
+        request: new Request("http://localhost?fail=1"),
+      });
 
       expect(handler).not.toHaveBeenCalled();
     });
@@ -208,7 +221,9 @@ describe("withApi", () => {
       vi.mocked(cookies).mockResolvedValue(mockCookies("faiz-hakim"));
 
       const handler = vi.fn(async () => ({ success: true, data: "test" }));
-      const response = await withApi(handler);
+      const response = await withApi(handler, {
+        request: new Request("http://localhost"),
+      });
 
       expect(response.status).toBe(200);
       const body = await response.json();

@@ -244,4 +244,16 @@ describe("GET /api/products", () => {
     expect(typeof data.summary.stockValueSen).toBe("number");
     expect(data.summary.stockValueSen).toBeGreaterThan(0);
   });
+
+  it("returns 500 INTERNAL_ERROR when fail=1", async () => {
+    const response = await GET(new Request("http://localhost/api/products?fail=1"));
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data.error).toBe("INTERNAL_ERROR");
+  });
+
+  it("does not fail when fail=0", async () => {
+    const response = await GET(new Request("http://localhost/api/products?fail=0"));
+    expect(response.status).toBe(200);
+  });
 });

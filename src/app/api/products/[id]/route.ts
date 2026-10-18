@@ -20,5 +20,5 @@ export async function GET(
     const result = await getProductDetail(repo, id, store);
 
     return result;
-  });
+  }, { request });
 }
