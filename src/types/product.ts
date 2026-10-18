@@ -49,15 +49,15 @@ export type StockByStore = {
 };
 
 export type ProductDetail = {
-  id?: string;
+  id: string;
   sku: string;
   name: string;
   category: string;
   supplier: string;
   unitCostSen: number;
-  onHand?: number;
-  reorderLevel?: number;
-  status?: StockStatus;
+  onHand: number;
+  reorderLevel: number;
+  status: StockStatus;
   stockValueSen: number;
   lastMovementAt: string | null;
   stockByStore: StockByStore[];
@@ -66,16 +66,18 @@ export type ProductDetail = {
 export type StockHistoryPoint = {
   date: string;
   onHand: number;
-  reorderLevel?: number;
+  reorderLevel: number;
 };
 
 export type StockHistory = {
   points: StockHistoryPoint[];
   reorderLevel: number;
+  days?: number;
 };
 
 export type StockHistoryResult = {
   points: StockHistoryPoint[];
+  reorderLevel: number;
   days: number;
 };
 

@@ -35,7 +35,7 @@ export function ProductsToolbar({
   onStatusChange,
 }: ProductsToolbarProps): React.ReactElement {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const debouncedSearch = useDebouncedCallback(onSearchChange, 300);
+  const debouncedSearch = useDebouncedCallback(onSearchChange, 500);
 
   useEffect(() => {
     const input = inputRef.current;

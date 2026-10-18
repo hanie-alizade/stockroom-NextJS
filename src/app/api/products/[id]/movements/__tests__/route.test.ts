@@ -2,7 +2,12 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET } from "../route";
 import { cookies } from "next/headers";
 
-import { mockCookies } from "tests/helpers";
+import { createRepository } from "@/server/repositories";
+import { createProductMovementsMockRepo, mockCookies } from "tests/helpers";
+
+vi.mock("@/server/repositories", () => ({
+  createRepository: vi.fn(),
+}));
 
 // next/headers has no request scope in vitest; withApi reads the cookie here.
 vi.mock("next/headers", () => ({
@@ -15,6 +20,7 @@ describe("GET /api/products/:id/movements", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(cookies).mockResolvedValue(staffCookies);
+    vi.mocked(createRepository).mockReturnValue(createProductMovementsMockRepo());
   });
 
   it("returns movements for a product sorted newest first", async () => {

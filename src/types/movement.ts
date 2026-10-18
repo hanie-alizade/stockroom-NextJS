@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { MOVEMENT_TYPE } from "@/constants";
+import type { MOVEMENT_TYPE, PERIOD } from "@/constants";
 import type { movementListQuerySchema } from "@/schemas";
 import type { Paginated } from "./common";
 import type { StoreId } from "./store";
@@ -27,7 +27,7 @@ export type Movement = MovementDraft & {
   counterpartStoreId?: StoreId;
 };
 
-export type MovementPeriod = "7d" | "30d" | "90d";
+export type MovementPeriod = (typeof PERIOD)[keyof typeof PERIOD];
 
 export type MovementListQuery = z.infer<typeof movementListQuerySchema>;
 

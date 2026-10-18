@@ -21,6 +21,7 @@ export async function GET(
       type: parsed.type,
       from: parsed.from,
       to: parsed.to,
+      period: parsed.period,
       page: parsed.page ?? DEFAULT_PAGE,
       pageSize: parsed.pageSize,
     });

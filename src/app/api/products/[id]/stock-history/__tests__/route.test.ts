@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET } from "../route";
 import { createRepository } from "@/server/repositories";
 import { cookies } from "next/headers";
-import type { Product, Stock } from "@/server/repositories";
+import type { Movement, Product, Stock } from "@/server/repositories";
 
 import { mockCookies, mockRepository } from "tests/helpers";
 
@@ -125,6 +125,7 @@ describe("GET /api/products/:id/stock-history", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
+    expect(data.reorderLevel).toBe(30);
     expect(data.points[0].reorderLevel).toBe(30);
   });
 
@@ -134,8 +135,9 @@ describe("GET /api/products/:id/stock-history", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
+    expect(data.reorderLevel).toBe(5);
     expect(data.points[0].reorderLevel).toBe(5);
-    expect(data.points[0].onHand).toBe(18);
+    expect(data.points[data.points.length - 1].onHand).toBe(18);
   });
 
   it("returns 404 for unknown product", async () => {
@@ -155,5 +157,97 @@ describe("GET /api/products/:id/stock-history", () => {
     expect(response.status).toBe(200);
     expect(data.points).toHaveLength(31);
     expect(data.points[0].onHand).toBe(0);
+  });
+
+  it("rebuilds with two movements (history before and after a sell)", async () => {
+    const now = new Date();
+    const todayStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kuala_Lumpur",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(now);
+
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const yesterdayStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kuala_Lumpur",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(yesterday);
+
+    const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
+    const twoDaysAgoStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kuala_Lumpur",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(twoDaysAgo);
+
+    const mockProduct: Product = {
+      sku: "KL-1042",
+      name: "Arabica Beans 1kg",
+      category: "Coffee",
+      supplier: "Highland Roasters",
+      unitCostSen: 6800,
+    };
+
+    const mockStocks: Stock[] = [
+      { storeId: "s_mont_kiara", onHand: 18, reorderLevel: 5 },
+    ];
+
+    const mockMovements: Movement[] = [
+      {
+        id: "m_sell",
+        productId: "KL-1042",
+        storeId: "s_mont_kiara",
+        type: "sell",
+        quantity: -2,
+        balanceAfter: 18,
+        reason: null,
+        transferId: null,
+        createdAt: now.toISOString(),
+        userId: "faiz-hakim",
+      },
+      {
+        id: "m_receive",
+        productId: "KL-1042",
+        storeId: "s_mont_kiara",
+        type: "receive",
+        quantity: 5,
+        balanceAfter: 20,
+        reason: "PO-1234",
+        transferId: null,
+        createdAt: yesterday.toISOString(),
+        userId: "faiz-hakim",
+      },
+    ];
+
+    const mockRepo = mockRepository({
+      getProduct: vi.fn(() => mockProduct),
+      getStock: vi.fn(() => mockStocks[0]),
+      listStock: vi.fn(() => mockStocks),
+      getMovements: vi.fn(() => mockMovements),
+    });
+
+    vi.mocked(createRepository).mockReturnValue(mockRepo);
+
+    const url = new URL("http://localhost/api/products/KL-1042/stock-history?store=s_mont_kiara&days=7");
+    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.reorderLevel).toBe(5);
+    expect(data.days).toBe(7);
+    expect(data.points).toHaveLength(8);
+
+    const todayPoint = data.points.find((p: { date: string }) => p.date === todayStr);
+    expect(todayPoint?.onHand).toBe(18);
+
+    const yesterdayPoint = data.points.find((p: { date: string }) => p.date === yesterdayStr);
+    expect(yesterdayPoint?.onHand).toBe(20);
+
+    const twoDaysAgoPoint = data.points.find((p: { date: string }) => p.date === twoDaysAgoStr);
+    expect(twoDaysAgoPoint?.onHand).toBe(15);
   });
 });

@@ -38,12 +38,15 @@ export async function getProductDetail(
 
   const stockValueSen = onHand * product.unitCostSen;
 
-  const allMovements = repo.getStores().flatMap((s) => repo.getMovements(sku, s.id, { limit: 1 }));
+  const scopedMovements =
+    storeId === ALL_STORES
+      ? repo.getStores().flatMap((s) => repo.getMovements(sku, s.id, { limit: 1 }))
+      : repo.getMovements(sku, storeId, { limit: 1 });
   const lastMovementAt =
-    allMovements.length > 0
-      ? allMovements.reduce(
+    scopedMovements.length > 0
+      ? scopedMovements.reduce(
         (latest, m) => (m.createdAt > latest ? m.createdAt : latest),
-        allMovements[0].createdAt,
+        scopedMovements[0].createdAt,
       )
       : null;
 
@@ -61,11 +64,15 @@ export async function getProductDetail(
   });
 
   return {
+    id: product.sku,
     sku: product.sku,
     name: product.name,
     category: product.category,
     supplier: product.supplier,
     unitCostSen: product.unitCostSen,
+    onHand,
+    reorderLevel,
+    status: getStatus(onHand, reorderLevel),
     stockValueSen,
     lastMovementAt,
     stockByStore,
