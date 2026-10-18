@@ -139,10 +139,11 @@ export async function listProducts(
     if (sort === PRODUCT_SORT_KEY.STATUS) {
       const aOrder = sortKeyToStatusOrder(a.status);
       const bOrder = sortKeyToStatusOrder(b.status);
-      comparison = aOrder - bOrder;
-      if (comparison === 0) {
-        comparison = a.sku.localeCompare(b.sku);
+      const statusDiff = dir === SORT_DIRECTION.DESC ? aOrder - bOrder : bOrder - aOrder;
+      if (statusDiff !== 0) {
+        return statusDiff;
       }
+      return dir === SORT_DIRECTION.DESC ? a.sku.localeCompare(b.sku) : b.sku.localeCompare(a.sku);
     } else if (sort === PRODUCT_SORT_KEY.SKU) {
       comparison = a.sku.localeCompare(b.sku);
     } else if (sort === PRODUCT_SORT_KEY.NAME) {
