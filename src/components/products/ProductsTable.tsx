@@ -3,10 +3,7 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ALL_STORES } from "@/constants";
-import { ApiError } from "@/api";
-import { Banner } from "@/components/common";
-import { StateBlock } from "@/components/common";
-import { CircleAlertIcon } from "@/components/icons";
+import { QueryErrorState } from "@/components/common";
 import { ProductsTableHead } from "./ProductsTableHead";
 import { ProductsTableRow } from "./ProductsTableRow";
 import { ProductsTableSkeleton } from "./ProductsTableSkeleton";
@@ -63,8 +60,6 @@ export function ProductsTable({
   const now = useMemo(() => new Date(), []);
   const storeParam = store && store !== ALL_STORES ? `?store=${store}` : "";
 
-  const statusCode = error instanceof ApiError ? error.status ?? 500 : 500;
-
   const handleRowClick = (id: string): void => {
     router.push(`/products/${id}${storeParam}`);
   };
@@ -78,15 +73,13 @@ export function ProductsTable({
   return (
     <div className="flex flex-col">
       {showErrorWithOldData && (
-        <div className="p-4 pb-0">
-          <Banner
-            variant="danger"
-            title="We couldn't load products"
-            description={`The server returned an error (${statusCode}). Your data hasn't changed.`}
-            actionText="Try again"
-            onAction={onRetry}
-          />
-        </div>
+        <QueryErrorState
+          error={error}
+          onRetry={onRetry}
+          hasData={true}
+          title="We couldn't load products"
+          className="p-4 pb-0"
+        />
       )}
 
       <div className="overflow-x-auto">
@@ -134,26 +127,15 @@ export function ProductsTable({
       </div>
 
       {showErrorEmpty && (
-        <div className="flex flex-col p-4">
-          <Banner
-            variant="danger"
-            title="We couldn't load products"
-            description={`The server returned an error (${statusCode}). Your data hasn't changed.`}
-            actionText="Try again"
-            onAction={onRetry}
-          />
-          <div className="mt-12 flex justify-center pb-12">
-            <StateBlock
-              icon={CircleAlertIcon}
-              iconVariant="danger"
-              title="Something went wrong"
-              description="We couldn't load this page. Your data is safe."
-              actionText="Try again"
-              onAction={onRetry}
-            />
-          </div>
-        </div>
+        <QueryErrorState
+          error={error}
+          onRetry={onRetry}
+          hasData={false}
+          variant="section"
+          title="We couldn't load products"
+        />
       )}
     </div>
   );
 }
+

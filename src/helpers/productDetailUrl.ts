@@ -200,12 +200,14 @@ export function setProductDetailPage(
   pathname: string,
   current: ProductDetailUrlQuery,
   page: number,
+  replace = false,
 ): void {
   const next: ProductDetailUrlQuery = {
     ...current,
     page,
   };
-  router.push(buildProductDetailUrl(pathname, next));
+  const navigate = replace ? router.replace : router.push;
+  navigate(buildProductDetailUrl(pathname, next));
 }
 
 export function setProductDetailPageSize(

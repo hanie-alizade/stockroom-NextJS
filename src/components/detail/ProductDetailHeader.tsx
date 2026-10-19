@@ -4,7 +4,7 @@ import { ALL_STORES } from "@/constants";
 import { formatMoney } from "@/helpers";
 import { ChevronRightIcon } from "@/components/icons";
 import { StatusBadge } from "@/components/common";
-import type { StockStatus, StoreScope } from "@/types";
+import type { StockByStore, StockStatus, StoreScope } from "@/types";
 
 export interface ProductDetailHeaderProps {
   name: string;
@@ -14,6 +14,8 @@ export interface ProductDetailHeaderProps {
   unitCostSen: number;
   status: StockStatus;
   store: StoreScope;
+  stockByStore?: StockByStore[];
+  isCarried?: boolean;
   onAdjust: (storeId?: string) => void;
 }
 
@@ -25,6 +27,8 @@ export function ProductDetailHeader({
   unitCostSen,
   status,
   store,
+  stockByStore,
+  isCarried,
   onAdjust,
 }: ProductDetailHeaderProps): ReactElement {
   const productsHref =
@@ -32,6 +36,11 @@ export function ProductDetailHeader({
 
   const formattedCost = `${formatMoney(unitCostSen, { withCurrency: true })} per unit`;
   const metaText = `${category} \u00B7 ${supplier} \u00B7 ${formattedCost}`;
+
+  const isCarriedAtStore =
+    isCarried !== undefined
+      ? isCarried
+      : store === ALL_STORES || (stockByStore !== undefined ? stockByStore.length > 0 : true);
 
   return (
     <div className="flex flex-col">
@@ -57,7 +66,7 @@ export function ProductDetailHeader({
         <div className="flex flex-col">
           <div className="flex items-center gap-md">
             <h1 className="text-page-title text-text-primary">{name}</h1>
-            <StatusBadge status={status} />
+            {isCarriedAtStore && <StatusBadge status={status} />}
           </div>
           <div className="mt-xs flex items-center gap-sm">
             <span className="bg-bg-muted text-mono text-text-secondary inline-flex h-5 items-center rounded-sm px-sm">

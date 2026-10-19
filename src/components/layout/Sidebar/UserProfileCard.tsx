@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CheckIcon } from "@/components/icons";
 import { ROLE_LABEL } from "@/constants";
-import { ApiError } from "@/api";
+import { getErrorInfo } from "@/helpers";
 import { useQueryMeta, useMutationSwitchUser } from "@/apiHooks";
 import { useCurrentUser } from "@/providers";
 
@@ -32,12 +32,11 @@ export function UserProfileCard(): React.ReactElement | null {
 
     switchUserMutation.mutate(userId, {
       onSuccess: async () => {
-        queryClient.clear();
+        await queryClient.resetQueries();
         router.refresh();
       },
       onError: (error) => {
-        const message = error instanceof ApiError ? error.body.message : "An error occurred";
-        toast.error(message);
+        toast.error(getErrorInfo(error).message);
       },
     });
   };

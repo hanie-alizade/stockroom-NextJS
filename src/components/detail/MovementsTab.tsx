@@ -3,8 +3,8 @@
 import { useEffect, type ReactElement } from "react";
 import { PERIOD } from "@/constants";
 import { useQueryProductMovements } from "@/apiHooks";
-import { Banner, Pagination, StateBlock } from "@/components/common";
-import { BoxIcon, CircleAlertIcon, SearchIcon } from "@/components/icons";
+import { Pagination, QueryErrorState, StateBlock } from "@/components/common";
+import { BoxIcon, SearchIcon } from "@/components/icons";
 import { MovementsFilters } from "./MovementsFilters";
 import { MovementsTable } from "./MovementsTable";
 import type { MovementPeriod, MovementType, PageSize, Store, StoreScope } from "@/types";
@@ -22,7 +22,7 @@ export interface MovementsTabProps {
   onStoreChange: (store: StoreScope) => void;
   onPeriodChange: (period: MovementPeriod) => void;
   onClearFilters: () => void;
-  onPageChange: (page: number) => void;
+  onPageChange: (page: number, replace?: boolean) => void;
   onPageSizeChange: (pageSize: PageSize) => void;
   onAdjust: (storeId?: string) => void;
 }
@@ -44,7 +44,7 @@ export function MovementsTab({
   onPageSizeChange,
   onAdjust,
 }: MovementsTabProps): ReactElement {
-  const { data, isLoading, isFetching, isError, refetch } = useQueryProductMovements(productId, {
+  const { data, isLoading, isFetching, isError, error, refetch } = useQueryProductMovements(productId, {
     store,
     type,
     period,
@@ -60,7 +60,7 @@ export function MovementsTab({
     if (total > 0) {
       const maxPage = Math.max(1, Math.ceil(total / pageSize));
       if (page > maxPage) {
-        onPageChange(maxPage);
+        onPageChange(maxPage, true);
       }
     }
   }, [total, pageSize, page, onPageChange]);
@@ -75,25 +75,13 @@ export function MovementsTab({
 
   if (showErrorEmpty) {
     content = (
-      <div className="flex flex-col p-4">
-        <Banner
-          variant="danger"
-          title="We couldn't load movements"
-          description="The server returned an error (500). Your data hasn't changed."
-          actionText="Try again"
-          onAction={() => void refetch()}
-        />
-        <div className="mt-12 flex justify-center pb-12">
-          <StateBlock
-            icon={CircleAlertIcon}
-            iconVariant="danger"
-            title="Something went wrong"
-            description="We couldn't load this page. Your data is safe."
-            actionText="Try again"
-            onAction={() => void refetch()}
-          />
-        </div>
-      </div>
+      <QueryErrorState
+        error={error}
+        onRetry={() => void refetch()}
+        hasData={false}
+        variant="section"
+        title="We couldn't load movements"
+      />
     );
   } else if (showEmpty) {
     content = (
@@ -153,15 +141,13 @@ export function MovementsTab({
 
       <div className="bg-bg-surface border-border-default shadow-card mt-xl rounded-lg border overflow-hidden">
         {showErrorWithOldData && (
-          <div className="p-4 pb-0">
-            <Banner
-              variant="danger"
-              title="We couldn't load movements"
-              description="The server returned an error (500). Your data hasn't changed."
-              actionText="Try again"
-              onAction={() => void refetch()}
-            />
-          </div>
+          <QueryErrorState
+            error={error}
+            onRetry={() => void refetch()}
+            hasData={true}
+            title="We couldn't load movements"
+            className="p-4 pb-0"
+          />
         )}
 
         {content}

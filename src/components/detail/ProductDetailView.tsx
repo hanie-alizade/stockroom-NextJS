@@ -11,8 +11,7 @@ import {
 import type { DetailTab } from "@/constants";
 import { useQueryMeta, useQueryProductDetail, useQueryProductMovements } from "@/apiHooks";
 import { useProductDetailUrlState } from "@/hooks";
-import { Banner, StateBlock } from "@/components/common";
-import { CircleAlertIcon } from "@/components/icons";
+import { Banner, QueryErrorState } from "@/components/common";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/helpers";
 import { ProductDetailHeader } from "./ProductDetailHeader";
@@ -41,6 +40,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
     data: product,
     isLoading,
     isError,
+    error,
     refetch,
   } = useQueryProductDetail(productId, { store: query.store, fail: query.fail });
 
@@ -63,22 +63,18 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
     // TODO(hanie): open the Adjust stock dialog (next task)
   }, []);
 
-  if (isError) {
-    return (
-      <div className="bg-bg-canvas flex min-h-[calc(100vh-64px)] flex-col items-center justify-center p-3xl">
-        <StateBlock
-          icon={CircleAlertIcon}
-          iconVariant="danger"
-          title="Something went wrong"
-          description="We couldn't load this page. Your data is safe."
-          actionText="Try again"
-          onAction={() => void refetch()}
+  if (!product) {
+    if (isError) {
+      return (
+        <QueryErrorState
+          error={error}
+          onRetry={() => void refetch()}
+          hasData={false}
+          variant="page"
         />
-      </div>
-    );
-  }
+      );
+    }
 
-  if (isLoading && !product) {
     return (
       <div className="bg-bg-canvas flex flex-col gap-lg p-3xl min-h-screen animate-pulse">
         <div className="h-4 w-48 bg-bg-muted rounded" />
@@ -87,14 +83,18 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
     );
   }
 
-  if (!product) {
-    return <div />;
-  }
-
   const isMovementsTabActive = query.tab === DETAIL_TAB.MOVEMENTS;
 
   return (
     <div className="bg-bg-canvas flex flex-col gap-lg p-3xl min-h-screen">
+      {isError && (
+        <QueryErrorState
+          error={error}
+          onRetry={() => void refetch()}
+          hasData={true}
+        />
+      )}
+
       <ProductDetailHeader
         name={product.name}
         sku={product.sku}
@@ -103,6 +103,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
         unitCostSen={product.unitCostSen}
         status={product.status}
         store={query.store}
+        stockByStore={product.stockByStore}
         onAdjust={handleAdjust}
       />
 
