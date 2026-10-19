@@ -80,6 +80,9 @@ export function getErrorInfo(error: unknown): ErrorInfo {
     code === ERROR_CODE.STORE_NOT_FOUND
   ) {
     kind = "notFound";
+  } else if (status === 413 || code === ERROR_CODE.FILE_TOO_LARGE) {
+    kind = "validation";
+    code = ERROR_CODE.FILE_TOO_LARGE;
   } else if (
     status === 422 ||
     status === 400 ||

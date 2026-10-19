@@ -47,11 +47,18 @@ export function canonicalJson(obj: unknown): string {
 }
 
 /**
+ * Computes a SHA-256 hash for an arbitrary payload using canonical JSON serialization.
+ */
+export function hashPayload(payload: unknown): string {
+  return createHash("sha256").update(canonicalJson(payload)).digest("hex");
+}
+
+/**
  * Computes a SHA-256 hash for an adjustment request payload.
  */
 export function hashRequest(productId: string, input: unknown): string {
   const payload = isRecord(input) ? { productId, ...input } : { productId, input };
-  return createHash("sha256").update(canonicalJson(payload)).digest("hex");
+  return hashPayload(payload);
 }
 
 /**

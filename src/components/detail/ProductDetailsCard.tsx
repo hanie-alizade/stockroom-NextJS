@@ -8,7 +8,7 @@ export interface ProductDetailsCardProps {
   reorderLevel: number;
   unitCostSen: number;
   stockValueSen: number;
-  supplier: string;
+  supplier: string | null;
   lastMovementAt: string | null;
   store: StoreScope;
 }
@@ -53,7 +53,7 @@ export function ProductDetailsCard({
         </div>
         <div className="flex h-9 items-center justify-between">
           <dt className="text-body-small text-text-secondary">Supplier</dt>
-          <dd className="text-label text-text-primary">{supplier}</dd>
+          <dd className="text-label text-text-primary">{supplier ?? "—"}</dd>
         </div>
         <div className="flex h-9 items-center justify-between">
           <dt className="text-body-small text-text-secondary">Last movement</dt>

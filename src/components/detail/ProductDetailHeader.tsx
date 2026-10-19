@@ -10,7 +10,7 @@ export interface ProductDetailHeaderProps {
   name: string;
   sku: string;
   category: string;
-  supplier: string;
+  supplier: string | null;
   unitCostSen: number;
   status: StockStatus;
   store: StoreScope;
@@ -35,7 +35,8 @@ export function ProductDetailHeader({
     store && store !== ALL_STORES ? `/products?store=${store}` : "/products";
 
   const formattedCost = `${formatMoney(unitCostSen, { withCurrency: true })} per unit`;
-  const metaText = `${category} \u00B7 ${supplier} \u00B7 ${formattedCost}`;
+  const metaParts = [category, supplier, formattedCost].filter(Boolean);
+  const metaText = metaParts.join(" \u00B7 ");
 
   const isCarriedAtStore =
     isCarried !== undefined

@@ -8,7 +8,7 @@ interface ProductsSortHeaderProps {
   label: string;
   currentSort?: ProductSortKey;
   currentDir?: SortDirection;
-  onSort: (column: ProductSortKey) => void;
+  onSort?: (column: ProductSortKey) => void;
   align?: "left" | "right";
   className?: string;
   hideInactiveIcon?: boolean;
@@ -52,20 +52,33 @@ export function ProductsSortHeader({
         className,
       )}
     >
-      <button
-        type="button"
-        onClick={() => onSort(column)}
-        className={cn(
-          "text-label inline-flex items-center gap-xs transition-colors focus:outline-none",
-          isActive
-            ? "text-text-primary"
-            : "text-text-secondary hover:text-text-primary",
-          align === "right" && "ml-auto justify-end",
-        )}
-      >
-        <span>{label}</span>
-        {sortIcon}
-      </button>
+      {onSort ? (
+        <button
+          type="button"
+          onClick={() => onSort(column)}
+          className={cn(
+            "text-label inline-flex items-center gap-xs transition-colors focus:outline-none",
+            isActive
+              ? "text-text-primary"
+              : "text-text-secondary hover:text-text-primary",
+            align === "right" && "ml-auto justify-end",
+          )}
+        >
+          <span>{label}</span>
+          {sortIcon}
+        </button>
+      ) : (
+        <span
+          className={cn(
+            "text-label inline-flex items-center gap-xs",
+            isActive ? "text-text-primary" : "text-text-secondary",
+            align === "right" && "ml-auto justify-end",
+          )}
+        >
+          <span>{label}</span>
+          {sortIcon}
+        </span>
+      )}
     </th>
   );
 }

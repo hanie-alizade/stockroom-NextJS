@@ -7,7 +7,7 @@ Manager only. The page is hidden and redirected for Staff, and `validate` and `c
 1. **Upload**: choose a store, choose a `.csv` (drag and drop or click). Non-CSV files and files over 5 MB are rejected in the browser before upload, and again by the server. The browser reads only the header and a few rows, to build the mapping step and the error download.
 2. **Map columns**: each file column gets a Stockroom field or "Don't import".
 3. **Review**: the file and the mapping are sent to the server, which parses and validates every row. The user sees valid and invalid rows with reasons.
-4. **Done** (not designed, see DECISIONS.md): summary and links.
+4. **Done**: summary header block ("Import complete" or "Nothing was imported"), 4 StatCards (created, updated, unchanged, skipped), warning banner with "Download skipped rows (CSV)" if any skipped, "View products in <Store>" and "Import another file". Stepper marks all 4 steps finished with checks.
 
 Nothing is saved before the user confirms on Review.
 
@@ -26,11 +26,12 @@ There is no reorder level field in the design, so imports never change reorder l
 
 ## How rows are processed
 
-- An existing SKU updates the product (name, category, unit cost) and sets the quantity at the chosen store. If the product is not carried at that store yet, it becomes carried there (reorder level 0).
-- A new SKU creates the product, carried only at the chosen store with the file's quantity (other stores are not touched) and reorder level 0.
+- An existing SKU updates the product (name, category, unit cost) and sets the quantity at the chosen store. If the product is not carried at that store yet, it becomes carried there (reorder level 0). If only name, category or cost changed, the row is `updated` and no movement is written.
+- A new SKU creates the product (with supplier `null`), carried only at the chosen store with the file's quantity (other stores are not touched) and reorder level 0.
 - Products are identified by SKU only, never by name. A new SKU with an existing name creates a new product.
 - SKUs are trimmed and uppercased before comparing.
-- `quantity` is the new on-hand count at the chosen store, not a change. The server computes `delta = new - current` and writes one movement of type `import` (note: the file name) when delta is not 0. Delta 0 counts as `unchanged` and writes no movement.
+- `quantity` is the new on-hand count at the chosen store, not a change. The server computes `delta = new - current` and writes one movement of type `import` (note: the file name, cut to 200 chars) only when delta is not 0.
+- `unchanged` means nothing changed: name, category, unit cost and quantity are all identical.
 - Unit cost is text such as `68.00`. It is converted to sen with string parsing, never with floats. Accepted: digits with up to 2 decimals, optional leading `RM`.
 - Row numbers: the first data row is row 1 (the header is not counted).
 
@@ -53,16 +54,26 @@ Duplicate SKU rule: the first row with a SKU is judged on its own, and every lat
 ## Review step
 
 - Summary: total, valid, invalid, will create, will update.
-- Table of rows with status (icon and text, not colour only) and reasons.
+- Table of rows with status (icon and text, not colour only) and reasons. Every row, valid or not, carries `values` (the raw mapped strings) so the UI can highlight bad cells without repeating the mapping.
 - Button: import N valid rows. Disabled when there are 0 valid rows.
 - Button: download broken rows as CSV. It contains the original columns (from the browser's copy of the rows) plus an `error` column with the readable reason from the server, joined by row number, so the user can fix it and upload it again.
+
+## Limits
+
+| Limit | Value | Error code / Rule |
+| --- | --- | --- |
+| Max file size | 5 MB | `FILE_TOO_LARGE` (413) |
+| Max rows | 2000 data rows | `IMPORT_TOO_LARGE` (422) |
+| Max SKU length | 32 characters | `INVALID_SKU` |
+| Max Name length | 120 characters | `NAME_TOO_LONG` |
 
 ## Commit
 
 - Sends the same file and mapping again. The server validates again, because the data could have changed since the review.
 - Applies all valid rows in one transaction. Rows that became invalid are skipped and reported.
-- Requires `Idempotency-Key`, so a double click does not import twice.
-- Limits: 2000 rows per file (`IMPORT_TOO_LARGE`).
+- Requires `Idempotency-Key`, so a double click does not import twice. The key is created once with `crypto.randomUUID()` when the person lands on Review with a valid result, reused for retries and double clicks, and replaced when the file, the store or the mapping changes.
+- On success: invalidates `queryKeys.products.all` so list, detail, movements and charts refetch immediately.
+- On error: stays on Review with `QueryErrorState` (hasData true, inline banner) with "Try again" (same key). Mapping field errors navigate back to Map with an inline message. 403 errors refresh the page, redirecting Staff. Non-standard platform 413 responses map to the standard file too large message.
 
 ## Files in the repo
 

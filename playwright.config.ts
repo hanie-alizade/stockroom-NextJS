@@ -7,6 +7,9 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   reporter: "line",
+  use: {
+    baseURL: "http://localhost:3000",
+  },
   projects: [
     {
       name: "chromium",
@@ -16,10 +19,11 @@ export default defineConfig({
   webServer: {
     command: "npm run build && npm run start",
     url: "http://localhost:3000",
+    timeout: 180 * 1000,
     env: {
       E2E: "1",
       SIMULATED_LATENCY_MS: "0",
     },
-    reuseExistingServer: false,
+    reuseExistingServer: true,
   },
 });

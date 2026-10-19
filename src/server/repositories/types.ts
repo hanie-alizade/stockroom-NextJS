@@ -12,7 +12,7 @@ export type ProductRecord = {
   sku: string;
   name: string;
   category: string;
-  supplier: string;
+  supplier: string | null;
   unitCostSen: number;
 };
 

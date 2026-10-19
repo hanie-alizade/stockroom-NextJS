@@ -10,15 +10,12 @@ Next.js App Router with a real backend inside it (Route Handlers, in-memory data
 
 ## Quick start
 
-`TODO(devin): exact steps, tested from a clean clone`
-
 ```bash
-# expected shape, confirm and correct in Phase 0
-nvm use            # Node version from .nvmrc
+nvm use            # Node version from .nvmrc (v20+)
 npm install
-cp .env.example .env.local
-npm run dev        # http://localhost:3000
+npm run dev        # Starts local dev server at http://localhost:3000
 ```
+
 
 Switch user (Manager or Staff) and store from the sidebar. There is no real login; the current user is a cookie.
 
@@ -37,12 +34,13 @@ Switch user (Manager or Staff) and store from the sidebar. There is no real logi
 
 - Unit and route handler tests: `npm test`
 - End-to-end: `npm run e2e` (builds the app, starts it with E2E=1 and SIMULATED_LATENCY_MS=0, runs tests)
+- Note: `npx playwright install chromium` is needed once before running end-to-end tests.
 
 ## Tech stack
 
 Next.js (App Router), TypeScript strict, Tailwind, shadcn/ui, TanStack Query, Zod, Recharts, Vitest + React Testing Library, Playwright. Deployed on Vercel.
 
-Extra libraries and why: `TODO(devin): list, for example papaparse for CSV parsing in the browser`
+Extra libraries and why: `papaparse` (CSV parsing in browser for previews, column mapping, and error downloads), `axios` (HTTP client with response interceptors for normalized API errors), `clsx` and `tailwind-merge` (`cn` helper for token classes), `class-variance-authority` (cva variant styling), `sonner` (toasts for action feedback).
 
 ### Tokens
 
@@ -52,19 +50,27 @@ Design tokens are defined in `src/app/globals.css` as CSS custom properties. Pri
 
 ### How the first page of data gets from the server into TanStack Query
 
-`TODO(devin): short explanation of the server prefetch, dehydrate and HydrationBoundary flow as built, with file names. Source: docs/ARCHITECTURE.md`
+Server Components (`src/app/products/page.tsx`, `src/app/products/[id]/page.tsx`, `src/app/import/page.tsx`) query repositories directly, prefetch queries into a server-side `QueryClient`, dehydrate the cache with `dehydrate(queryClient)`, and pass it to `<HydrationBoundary state={...}>`. Client components (`ProductsView`, `ProductDetailView`, `ImportWizard`) call `useQueryProductList` / `useQueryMeta` / etc. and receive hydrated data synchronously on first render without loading flickers or waterfalls.
 
 ### Where permissions are checked, and why in both places
 
-`TODO(devin): explain can() in lib/domain/policy.ts, the withApi wrapper, and the UI locks`
+Every write is guarded on the server: Route Handlers wrapped by `withApi(request, handler, { permission })` enforce `roleHasPermission(user.role, permission)` in `src/domain/policy.ts`. If permission fails, a 403 `FORBIDDEN` response is returned. The UI checks the same `roleHasPermission` helper (via `useCan()` or `PermissionGate`) purely to lock buttons, display tooltips, or redirect early. The server is always the authority; client checks are for user experience.
 
 ### How a double adjustment is prevented
 
-`TODO(devin): explain Idempotency-Key, stored response replay, same key with another payload, client key handling`
+Mutations require an `Idempotency-Key` header (generated on client with `crypto.randomUUID()`). The repository stores executed requests and responses keyed by `(user.id, idempotencyKey)`. If the exact same payload is submitted with the same key, the service skips duplicate execution and replays the stored response with the `Idempotency-Replayed` header. If the same key is reused with a different payload, the server rejects it with 422 `IDEMPOTENCY_KEY_REUSED`.
 
 ### How the transfer's two movements stay consistent
 
-`TODO(devin): explain transferId, transaction in the repository, validation before writes, rollback, and the tests that prove it`
+Transfers generate a single unique `transferId`. `applyTransfer` runs inside a repository transaction (`txRepo.transaction()`). Stock availability at the source store and existence at the target store are validated before any writes. Two movements (`transfer_out` and `transfer_in`) are written atomically with the shared `transferId`. If any check fails, the transaction aborts and rolls back completely without writing partial movements.
+
+### Import
+
+- **Flow**: 4-step wizard: Upload (store selection, dropzone, client validation) -> Map columns (auto-alias matching, manual override, required field verification) -> Review (server validation preview, error highlights, error CSV download) -> Done (transaction commit summary, skipped rows download, products link).
+- **Template & Sample**: Template at `public/stockroom-import-template.csv`. Sample file at `samples/import-sample.csv` (63 data rows, 15 new creations, 40 updates, 8 invalid rows demonstrating error handling).
+- **Limits**: 5 MB file size limit, 2,000 data rows max, 32-character SKU limit, 120-character product name limit.
+- **Server authority**: Client PapaParse handles preview and download generation; the server re-validates all rows and applies valid rows atomically.
+- **Platform body limits**: Serverless hosts (e.g. Vercel) cap request payloads below 5 MB (~4.5 MB), which can return HTTP 413 before Route Handlers run; these are caught and normalized to `FILE_TOO_LARGE` via `getErrorInfo`.
 
 ### API errors
 
@@ -72,7 +78,8 @@ One error shape everywhere. See [docs/API.md](docs/API.md) for codes.
 
 ### In-memory data and Vercel
 
-Data is seeded from JSON and kept in memory, as the brief asks. It resets when the server restarts. On Vercel each serverless instance has its own memory, so two requests can see different data. This is fine for a demo, not for production.
+Data is seeded from JSON and kept in memory, as the brief asks. It resets when the server restarts. On Vercel each serverless instance has its own memory, so two requests can see different data. This is fine for a demo, not for production. The demo session cookie is unsigned (the role is resolved server-side from user ID).
+
 
 ## Decisions for the parts that were not designed
 

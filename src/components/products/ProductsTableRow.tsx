@@ -70,9 +70,11 @@ export function ProductsTableRow({
           >
             {item.name}
           </Link>
-          <span className="text-caption text-text-tertiary">
-            {item.supplier}
-          </span>
+          {item.supplier && (
+            <span className="text-caption text-text-tertiary">
+              {item.supplier}
+            </span>
+          )}
         </div>
       </td>
 

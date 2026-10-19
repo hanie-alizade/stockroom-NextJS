@@ -1,0 +1,64 @@
+Item code,Description,Group,Qty,Cost (RM),Barcode,Supplier
+KL-1042,Arabica beans 1 kg,Coffee,18,68.00,955000000001,Highland Roasters
+KL-1043,Robusta beans 1 kg,Coffee,25,55.00,955000000002,Highland Roasters
+KL-2210,Oat milk 1 L,Dairy & alt.,0,12.00,955000000003,Green Field Oats
+KL-1000,Oat milk 200ml,Dairy & alt.,15,34.89,955000000004,Valley Dairy
+KL-1001,Almond milk 200ml,Dairy & alt.,4,46.25,955000000005,Green Field Oats
+KL-1002,Arabica beans 200g,Coffee,15,67.47,95500000006,Highland Roasters
+KL-1003,Vanilla syrup 250ml,Syrups,36,123.60,95500000007,Sweet Bar Co.
+KL-1004,Caramel syrup 250ml,Syrups,18,126.52,95500000008,Sweet Bar Co.
+KL-1005,Robusta beans 200g,Coffee,48,66.60,95500000009,Kopi Lane roastery
+KL-1006,Paper cups 8oz 50pcs,Packaging,17,87.38,955000000010,PackRight
+KL-1007,Earl Grey tea 20 bags,Tea,23,71.20,955000000011,Highland Roasters
+KL-1008,Whole milk 200ml,Dairy & alt.,49,36.66,955000000012,Valley Dairy
+KL-1009,Espresso blend 200g,Coffee,36,133.51,955000000013,Highland Roasters
+KL-1010,Paper cups 12oz 50pcs,Packaging,55,30.54,955000000014,PackRight
+KL-1011,Hazelnut syrup 250ml,Syrups,44,114.30,955000000015,Sweet Bar Co.
+KL-1012,Croissants 2pcs,Bakery,31,144.68,955000000016,Golden Crumb Bakery
+KL-1013,Paper cups 16oz 50pcs,Packaging,46,54.23,955000000017,PackRight
+KL-1014,Chocolate syrup 250ml,Syrups,53,132.14,955000000018,Sweet Bar Co.
+KL-1015,Soy milk 200ml,Dairy & alt.,15,60.81,955000000019,Green Field Oats
+KL-1016,Lids 8oz 50pcs,Packaging,11,127.05,955000000020,PackRight
+KL-1017,English Breakfast tea 20 bags,Tea,27,92.92,95500000021,Kopi Lane roastery
+KL-1018,Lids 12oz 50pcs,Packaging,37,52.14,95500000022,PackRight
+KL-1019,Mint syrup 250ml,Syrups,55,97.11,95500000023,Sweet Bar Co.
+KL-1020,Decaf beans 200g,Coffee,33,75.77,95500000024,Kopi Lane roastery
+KL-1021,Lids 16oz 50pcs,Packaging,52,115.06,95500000025,PackRight
+KL-1022,Chocolate croissants 2pcs,Bakery,18,61.36,95500000026,Golden Crumb Bakery
+KL-1023,Cinnamon syrup 250ml,Syrups,26,36.67,95500000027,Sweet Bar Co.
+KL-1024,Paper straws 50pcs,Packaging,7,135.91,95500000028,PackRight
+KL-1025,Cup sleeves 50pcs,Packaging,55,143.72,95500000029,PackRight
+KL-1026,Green tea 20 bags,Tea,33,48.76,95500000030,Highland Roasters
+KL-1027,Chamomile tea 20 bags,Tea,27,6.07,95500000031,Kopi Lane roastery
+KL-1028,Takeaway bags 50pcs,Packaging,31,137.91,95500000032,PackRight
+KL-1029,Single origin Colombia 200g,Coffee,5,112.90,95500000033,Highland Roasters
+KL-1030,Coconut milk 200ml,Dairy & alt.,46,131.45,95500000034,Valley Dairy
+KL-1031,Toffee nut syrup 250ml,Syrups,47,43.58,95500000035,Sweet Bar Co.
+KL-1032,Ethiopian Yirgacheffe 200g,Coffee,14,123.42,95500000036,Kopi Lane roastery
+KL-1033,Condensed milk 200ml,Dairy & alt.,46,119.41,95500000037,Green Field Oats
+KL-1034,Almond croissants 2pcs,Bakery,11,39.44,95500000038,Golden Crumb Bakery
+KL-1035,Salted caramel syrup 250ml,Syrups,42,29.46,95500000039,Sweet Bar Co.
+KL-1036,Peppermint tea 20 bags,Tea,31,104.67,95500000040,Highland Roasters
+NEW-1001,Special Roast Blend 1,Coffee,26,19.50,955888800001,Craft Beans Co.
+NEW-1002,Special Roast Blend 2,Dairy & alt.,27,20.50,955888800002,Craft Beans Co.
+NEW-1003,Special Roast Blend 3,Packaging,28,21.50,955888800003,Craft Beans Co.
+NEW-1004,Special Roast Blend 4,Syrups,29,22.50,955888800004,Craft Beans Co.
+NEW-1005,Special Roast Blend 5,Bakery,30,18.50,955888800005,Craft Beans Co.
+NEW-1006,Special Roast Blend 6,Tea,31,19.50,955888800006,Craft Beans Co.
+NEW-1007,Special Roast Blend 7,Coffee,32,20.50,955888800007,Craft Beans Co.
+NEW-1008,Special Roast Blend 8,Dairy & alt.,33,21.50,955888800008,Craft Beans Co.
+NEW-1009,Special Roast Blend 9,Packaging,34,22.50,955888800009,Craft Beans Co.
+NEW-1010,Special Roast Blend 10,Syrups,35,18.50,955888800010,Craft Beans Co.
+NEW-1011,Special Roast Blend 11,Bakery,36,19.50,955888800011,Craft Beans Co.
+NEW-1012,Special Roast Blend 12,Tea,37,20.50,955888800012,Craft Beans Co.
+NEW-1013,Special Roast Blend 13,Coffee,38,21.50,955888800013,Craft Beans Co.
+NEW-1014,Special Roast Blend 14,Dairy & alt.,39,22.50,955888800014,Craft Beans Co.
+NEW-1015,Special Roast Blend 15,Packaging,40,18.50,955888800015,Craft Beans Co.
+,Missing SKU Product,Coffee,10,12.00,955999000001,PackRight
+BAD-NEG-QTY,Negative Qty Product,Tea,-5,8.50,955999000002,Highland Roasters
+BAD-DEC-QTY,Decimal Qty Product,Bakery,4.5,6.00,955999000003,Golden Crumb Bakery
+BAD-COST-TEXT,Word Cost Product,Packaging,10,thirty,955999000004,PackRight
+BAD-NO-COST,Missing Cost Product,Syrups,12,,955999000005,Sweet Bar Co.
+BAD-CATEGORY,Snack Chips Product,Snacks,25,4.00,955999000006,Snack Brands
+KL-1042,Duplicate Product Row,Coffee,100,68.00,955999000007,Highland Roasters
+BAD-LONG-NAME,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,Coffee,15,22.00,955999000008,Highland Roasters

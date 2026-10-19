@@ -21,7 +21,7 @@ export type ProductListItem = {
   sku: string;
   name: string;
   category: string;
-  supplier: string;
+  supplier: string | null;
   unitCostSen: number;
   onHand: number;
   reorderLevel: number;
@@ -53,7 +53,7 @@ export type ProductDetail = {
   sku: string;
   name: string;
   category: string;
-  supplier: string;
+  supplier: string | null;
   unitCostSen: number;
   onHand: number;
   reorderLevel: number;

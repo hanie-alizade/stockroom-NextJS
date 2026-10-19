@@ -1,5 +1,8 @@
+import { IDEMPOTENCY_KEY_HEADER } from "@/constants";
 import { axiosInstance } from "./axiosConfig";
 import type {
+  Adjustment,
+  AdjustmentResult,
   MovementListQuery,
   MovementListResponse,
   ProductDetail,
@@ -46,3 +49,21 @@ export async function getStockHistory(
   });
   return data;
 }
+
+export async function postAdjustment(
+  productId: string,
+  payload: Adjustment,
+  idempotencyKey: string,
+): Promise<AdjustmentResult> {
+  const { data } = await axiosInstance.post<AdjustmentResult>(
+    `/api/products/${productId}/adjustments`,
+    payload,
+    {
+      headers: {
+        [IDEMPOTENCY_KEY_HEADER]: idempotencyKey,
+      },
+    },
+  );
+  return data;
+}
+
