@@ -34,13 +34,13 @@ export function StockByStoreTable({
         )}
       </div>
 
-      <div className="overflow-x-auto min-w-[800px] w-full">
-        <table className="w-full border-collapse">
+      <div className="overflow-x-auto w-full">
+        <table className="w-full min-w-[800px] border-collapse">
           <thead>
             <tr className="bg-bg-subtle border-border-default h-10 border-b">
               <th
                 scope="col"
-                className="text-label text-text-secondary pl-xl px-md text-left font-medium"
+                className="text-label text-text-secondary pl-xl px-md text-left font-medium sticky left-0 z-10 bg-bg-subtle border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)] min-w-[160px]"
               >
                 Store
               </th>
@@ -92,7 +92,7 @@ export function StockByStoreTable({
                     !isLast && "border-b",
                   )}
                 >
-                  <td className="pl-xl px-md">
+                  <td className="pl-xl px-md sticky left-0 z-10 bg-bg-surface border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]">
                     <div className="flex items-center gap-sm">
                       <SupplierIcon className="text-text-tertiary size-4 shrink-0" />
                       <span className="text-body-strong text-text-primary">{storeName}</span>

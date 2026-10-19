@@ -192,7 +192,7 @@ export function StockChart({
 
   return (
     <div className="bg-bg-surface border-border-default shadow-card rounded-lg border p-xl flex flex-col">
-      <div className="flex h-10 items-center justify-between">
+      <div className="flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-2 min-h-10">
         <div>
           <h2 className="text-card text-text-primary">On hand, last {days} days</h2>
           <p className="text-caption text-text-tertiary mt-2xs">{subtitle}</p>
@@ -203,7 +203,7 @@ export function StockChart({
           onValueChange={(val) => {
             if (val) setRange(val as RangeOption);
           }}
-          className="bg-bg-muted h-8 w-[152px] rounded-md p-[3px] flex items-center justify-between border-0 gap-0"
+          className="bg-bg-muted h-8 w-[152px] shrink-0 rounded-md p-[3px] flex items-center justify-between border-0 gap-0"
         >
           <ToggleGroupItem
             value="7d"

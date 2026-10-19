@@ -12,6 +12,7 @@ import type { DetailTab } from "@/constants";
 import { useQueryMeta, useQueryProductDetail, useQueryProductMovements } from "@/apiHooks";
 import { useProductDetailUrlState } from "@/hooks";
 import { Banner, QueryErrorState } from "@/components/common";
+import { PageContainer } from "@/components/layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/helpers";
 import { ProductDetailHeader } from "./ProductDetailHeader";
@@ -76,17 +77,17 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
     }
 
     return (
-      <div className="bg-bg-canvas flex flex-col gap-lg p-3xl min-h-screen animate-pulse">
+      <PageContainer className="animate-pulse">
         <div className="h-4 w-48 bg-bg-muted rounded" />
         <div className="h-14 w-72 bg-bg-muted rounded" />
-      </div>
+      </PageContainer>
     );
   }
 
   const isMovementsTabActive = query.tab === DETAIL_TAB.MOVEMENTS;
 
   return (
-    <div className="bg-bg-canvas flex flex-col gap-lg p-3xl min-h-screen">
+    <PageContainer>
       {isError && (
         <QueryErrorState
           error={error}
@@ -124,7 +125,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
       >
         <TabsList
           variant="line"
-          className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0"
+          className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0 overflow-x-auto"
         >
           <TabsTrigger
             value={DETAIL_TAB.OVERVIEW}
@@ -201,6 +202,6 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
           />
         </TabsContent>
       </Tabs>
-    </div>
+    </PageContainer>
   );
 }

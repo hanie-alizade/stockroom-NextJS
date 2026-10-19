@@ -46,57 +46,58 @@ export function MovementsFilters({
   const periodLabel = PERIOD_LABEL[period] ?? "Last 30 days";
 
   return (
-    <div className="flex items-center gap-lg">
-      <Select
-        value={type ?? "all"}
-        onValueChange={(val) => onTypeChange(val === "all" ? undefined : (val as MovementType))}
-      >
-        <SelectTrigger className="border-border-default bg-bg-surface text-body h-10 w-[152px] rounded-md">
-          <SelectValue placeholder="All types">{typeLabel}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All types</SelectItem>
-          {movementTypes.map((t) => (
-            <SelectItem key={t} value={t}>
-              {MOVEMENT_TYPE_LABEL[t]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-md lg:gap-lg w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:items-center gap-md lg:gap-lg w-full lg:w-auto">
+        <Select
+          value={type ?? "all"}
+          onValueChange={(val) => onTypeChange(val === "all" ? undefined : (val as MovementType))}
+        >
+          <SelectTrigger className="border-border-default bg-bg-surface text-body h-11 lg:h-10 w-full lg:w-[152px] rounded-md">
+            <SelectValue placeholder="All types">{typeLabel}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All types</SelectItem>
+            {movementTypes.map((t) => (
+              <SelectItem key={t} value={t}>
+                {MOVEMENT_TYPE_LABEL[t]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <Select value={store} onValueChange={(val) => onStoreChange(val as StoreScope)}>
-        <SelectTrigger className="border-border-default bg-bg-surface text-body h-10 w-[164px] rounded-md">
-          <div className="flex items-center gap-sm overflow-hidden">
-            <SupplierIcon className="text-text-tertiary size-4 shrink-0" />
-            <SelectValue placeholder="All stores">{storeLabel}</SelectValue>
-          </div>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL_STORES}>All stores</SelectItem>
-          {stores.map((s) => (
-            <SelectItem key={s.id} value={s.id}>
-              {s.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <Select value={store} onValueChange={(val) => onStoreChange(val as StoreScope)}>
+          <SelectTrigger className="border-border-default bg-bg-surface text-body h-11 lg:h-10 w-full lg:w-[164px] rounded-md">
+            <div className="flex items-center gap-sm overflow-hidden">
+              <SupplierIcon className="text-text-tertiary size-4 shrink-0" />
+              <SelectValue placeholder="All stores">{storeLabel}</SelectValue>
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_STORES}>All stores</SelectItem>
+            {stores.map((s) => (
+              <SelectItem key={s.id} value={s.id}>
+                {s.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <Select
-        value={period}
-        onValueChange={(val) => onPeriodChange(val as MovementPeriod)}
-      >
-        <SelectTrigger className="border-border-default bg-bg-surface text-body h-10 w-[184px] rounded-md">
-          <SelectValue placeholder="Last 30 days">{periodLabel}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={PERIOD.DAYS_7}>{PERIOD_LABEL[PERIOD.DAYS_7]}</SelectItem>
-          <SelectItem value={PERIOD.DAYS_30}>{PERIOD_LABEL[PERIOD.DAYS_30]}</SelectItem>
-          <SelectItem value={PERIOD.DAYS_90}>{PERIOD_LABEL[PERIOD.DAYS_90]}</SelectItem>
-        </SelectContent>
-      </Select>
+        <Select
+          value={period}
+          onValueChange={(val) => onPeriodChange(val as MovementPeriod)}
+        >
+          <SelectTrigger className="border-border-default bg-bg-surface text-body h-11 lg:h-10 w-full sm:col-span-2 lg:col-span-1 lg:w-[184px] rounded-md">
+            <SelectValue placeholder="Last 30 days">{periodLabel}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={PERIOD.DAYS_7}>{PERIOD_LABEL[PERIOD.DAYS_7]}</SelectItem>
+            <SelectItem value={PERIOD.DAYS_30}>{PERIOD_LABEL[PERIOD.DAYS_30]}</SelectItem>
+            <SelectItem value={PERIOD.DAYS_90}>{PERIOD_LABEL[PERIOD.DAYS_90]}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-
-      <div className="text-body-small text-text-tertiary ml-auto" aria-live="polite">
+      <div className="text-body-small text-text-tertiary lg:ml-auto" aria-live="polite">
         {total === 1 ? "1 movement" : `${total} movements`}
       </div>
     </div>

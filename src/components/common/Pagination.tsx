@@ -32,14 +32,18 @@ export function Pagination({
   const rangeText = getRangeText(page, pageSize, total);
 
   return (
-    <div className="border-border-default flex items-center justify-between border-t p-lg">
-      <div className="flex items-center gap-2">
+    <div className="border-border-default flex flex-col md:flex-row items-stretch md:items-center justify-between border-t p-lg gap-3 md:gap-0">
+      <div className="text-mono text-body-small text-text-secondary md:hidden text-center">
+        {rangeText}
+      </div>
+
+      <div className="flex items-center justify-between md:justify-start gap-2">
         <span className="text-body-small text-text-secondary">Rows per page</span>
         <Select
           value={String(pageSize)}
           onValueChange={(val) => onPageSizeChange(normalizePageSize(Number(val)))}
         >
-          <SelectTrigger className="h-8 w-18 px-2 text-center" size="sm">
+          <SelectTrigger className="h-11 md:h-8 w-18 px-2 text-center" size="sm">
             <SelectValue>{pageSize}</SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -52,15 +56,17 @@ export function Pagination({
         </Select>
       </div>
 
-      <div className="flex items-center gap-md">
-        <span className="text-mono text-body-small text-text-secondary">{rangeText}</span>
+      <div className="flex items-center justify-end gap-md">
+        <span className="text-mono text-body-small text-text-secondary hidden md:inline">
+          {rangeText}
+        </span>
         <div className="flex items-center gap-2">
           <button
             type="button"
             aria-label="Previous page"
             disabled={isFirstPage}
             onClick={() => onPageChange(page - 1)}
-            className="border-border-default hover:bg-bg-subtle disabled:text-text-disabled text-text-primary flex size-8 items-center justify-center rounded-md border transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            className="border-border-default hover:bg-bg-subtle disabled:text-text-disabled text-text-primary flex size-11 md:size-8 items-center justify-center rounded-md border transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent"
           >
             <ChevronLeftIcon className="size-4" />
           </button>
@@ -69,7 +75,7 @@ export function Pagination({
             aria-label="Next page"
             disabled={isLastPage}
             onClick={() => onPageChange(page + 1)}
-            className="border-border-default hover:bg-bg-subtle disabled:text-text-disabled text-text-primary flex size-8 items-center justify-center rounded-md border transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            className="border-border-default hover:bg-bg-subtle disabled:text-text-disabled text-text-primary flex size-11 md:size-8 items-center justify-center rounded-md border transition-colors disabled:cursor-not-allowed disabled:hover:bg-transparent"
           >
             <ChevronRightIcon className="size-4" />
           </button>
