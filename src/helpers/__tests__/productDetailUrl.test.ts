@@ -175,12 +175,16 @@ describe("productDetailUrl", () => {
         ...initialQuery,
         store: STORE_ID.CHERAS,
       });
-      expect(mockRouter.push).toHaveBeenCalledWith("/products/KL-1042?store=cheras&tab=movements");
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        "/products/KL-1042?store=cheras&tab=movements",
+      );
     });
 
     it("setProductDetailTab retains other params and calls router.push", () => {
       setProductDetailTab(mockRouter, "/products/KL-1042", initialQuery, DETAIL_TAB.OVERVIEW);
-      expect(mockRouter.push).toHaveBeenCalledWith("/products/KL-1042?type=sell&period=90d&page=3");
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        "/products/KL-1042?type=sell&period=90d&page=3",
+      );
     });
 
     it("setProductDetailPage updates page without changing other params", () => {

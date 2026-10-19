@@ -139,9 +139,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns 404 PRODUCT_NOT_FOUND for unknown product", async () => {
     const url = new URL("http://localhost/api/products/UNKNOWN-123");
-    const response = await GET(new Request(url), {
-      params: Promise.resolve({ id: "UNKNOWN-123" }),
-    });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "UNKNOWN-123" }) });
     const data = await response.json();
 
     expect(response.status).toBe(404);

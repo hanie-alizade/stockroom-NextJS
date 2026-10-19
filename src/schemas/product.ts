@@ -30,3 +30,4 @@ export const stockHistoryQuerySchema = z.object({
     .optional(),
   fail: z.string().optional(),
 });
+

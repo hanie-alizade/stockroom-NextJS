@@ -23,10 +23,12 @@ export function ProductDetailsCard({
   store,
 }: ProductDetailsCardProps): ReactElement {
   const onHandLabel = store === ALL_STORES ? "On hand (all stores)" : "On hand";
-  const formattedLastMovement = lastMovementAt ? formatWhen(lastMovementAt, new Date()) : "—";
+  const formattedLastMovement = lastMovementAt
+    ? formatWhen(lastMovementAt, new Date())
+    : "—";
 
   return (
-    <div className="bg-bg-surface border-border-default shadow-card p-xl rounded-lg border">
+    <div className="bg-bg-surface border-border-default shadow-card rounded-lg border p-xl">
       <h2 className="text-card text-text-primary">Details</h2>
       <dl className="mt-sm flex flex-col">
         <div className="flex h-9 items-center justify-between">

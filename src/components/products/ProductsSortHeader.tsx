@@ -47,7 +47,7 @@ export function ProductsSortHeader({
       scope="col"
       aria-sort={ariaSort}
       className={cn(
-        "px-md h-10 text-left align-middle select-none",
+        "px-md h-10 select-none text-left align-middle",
         align === "right" && "text-right",
         className,
       )}
@@ -56,8 +56,10 @@ export function ProductsSortHeader({
         type="button"
         onClick={() => onSort(column)}
         className={cn(
-          "text-label gap-xs inline-flex items-center transition-colors focus:outline-none",
-          isActive ? "text-text-primary" : "text-text-secondary hover:text-text-primary",
+          "text-label inline-flex items-center gap-xs transition-colors focus:outline-none",
+          isActive
+            ? "text-text-primary"
+            : "text-text-secondary hover:text-text-primary",
           align === "right" && "ml-auto justify-end",
         )}
       >

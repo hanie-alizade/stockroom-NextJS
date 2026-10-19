@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, type ReactElement } from "react";
-import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DETAIL_TAB, PERIOD } from "@/constants";
+import {
+  ALL_STORES,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+  DETAIL_TAB,
+  PERIOD,
+} from "@/constants";
 import type { DetailTab } from "@/constants";
 import { useQueryMeta, useQueryProductDetail, useQueryProductMovements } from "@/apiHooks";
 import { useProductDetailUrlState } from "@/hooks";
@@ -20,8 +26,16 @@ export interface ProductDetailViewProps {
 }
 
 export function ProductDetailView({ productId }: ProductDetailViewProps): ReactElement {
-  const { query, setStore, setTab, setType, setPeriod, clearFilters, setPage, setPageSize } =
-    useProductDetailUrlState();
+  const {
+    query,
+    setStore,
+    setTab,
+    setType,
+    setPeriod,
+    clearFilters,
+    setPage,
+    setPageSize,
+  } = useProductDetailUrlState();
 
   const {
     data: product,
@@ -51,7 +65,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
 
   if (isError) {
     return (
-      <div className="bg-bg-canvas p-3xl flex min-h-[calc(100vh-64px)] flex-col items-center justify-center">
+      <div className="bg-bg-canvas flex min-h-[calc(100vh-64px)] flex-col items-center justify-center p-3xl">
         <StateBlock
           icon={CircleAlertIcon}
           iconVariant="danger"
@@ -66,9 +80,9 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
 
   if (isLoading && !product) {
     return (
-      <div className="bg-bg-canvas gap-lg p-3xl flex min-h-screen animate-pulse flex-col">
-        <div className="bg-bg-muted h-4 w-48 rounded" />
-        <div className="bg-bg-muted h-14 w-72 rounded" />
+      <div className="bg-bg-canvas flex flex-col gap-lg p-3xl min-h-screen animate-pulse">
+        <div className="h-4 w-48 bg-bg-muted rounded" />
+        <div className="h-14 w-72 bg-bg-muted rounded" />
       </div>
     );
   }
@@ -80,7 +94,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
   const isMovementsTabActive = query.tab === DETAIL_TAB.MOVEMENTS;
 
   return (
-    <div className="bg-bg-canvas gap-lg p-3xl flex min-h-screen flex-col">
+    <div className="bg-bg-canvas flex flex-col gap-lg p-3xl min-h-screen">
       <ProductDetailHeader
         name={product.name}
         sku={product.sku}
@@ -109,7 +123,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
       >
         <TabsList
           variant="line"
-          className="border-border-default gap-2xl h-10 w-full justify-start rounded-none border-b p-0"
+          className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0"
         >
           <TabsTrigger
             value={DETAIL_TAB.OVERVIEW}
@@ -138,8 +152,8 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
         </TabsList>
 
         <TabsContent value={DETAIL_TAB.OVERVIEW} className="pt-2xl outline-none">
-          <div className="gap-2xl flex flex-col">
-            <div className="gap-2xl grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="flex flex-col gap-2xl">
+            <div className="grid grid-cols-1 gap-2xl lg:grid-cols-[minmax(0,1fr)_320px]">
               <StockChart
                 productId={productId}
                 store={query.store}

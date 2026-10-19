@@ -42,9 +42,7 @@ export async function getStockHistory(
   let runningOnHand = currentOnHand;
 
   for (let step = 0; step <= days; step++) {
-    const d = new Date(
-      Date.UTC(todayParts.year, todayParts.month, todayParts.day - step, 12, 0, 0),
-    );
+    const d = new Date(Date.UTC(todayParts.year, todayParts.month, todayParts.day - step, 12, 0, 0));
     const dateStr = toDateString(d);
 
     points.push({

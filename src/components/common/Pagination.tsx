@@ -32,7 +32,7 @@ export function Pagination({
   const rangeText = getRangeText(page, pageSize, total);
 
   return (
-    <div className="border-border-default p-lg flex items-center justify-between border-t">
+    <div className="border-border-default flex items-center justify-between border-t p-lg">
       <div className="flex items-center gap-2">
         <span className="text-body-small text-text-secondary">Rows per page</span>
         <Select
@@ -52,7 +52,7 @@ export function Pagination({
         </Select>
       </div>
 
-      <div className="gap-md flex items-center">
+      <div className="flex items-center gap-md">
         <span className="text-mono text-body-small text-text-secondary">{rangeText}</span>
         <div className="flex items-center gap-2">
           <button

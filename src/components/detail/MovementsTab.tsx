@@ -151,7 +151,7 @@ export function MovementsTab({
         onPeriodChange={onPeriodChange}
       />
 
-      <div className="bg-bg-surface border-border-default shadow-card mt-xl overflow-hidden rounded-lg border">
+      <div className="bg-bg-surface border-border-default shadow-card mt-xl rounded-lg border overflow-hidden">
         {showErrorWithOldData && (
           <div className="p-4 pb-0">
             <Banner

@@ -160,10 +160,7 @@ class InMemoryRepository implements Repository {
   }
 
   setIdempotency(record: IdempotencyRecord): void {
-    this.txManager?.snapshotIdempotency(
-      record.idempotencyKey,
-      this.data.idempotency.get(record.idempotencyKey),
-    );
+    this.txManager?.snapshotIdempotency(record.idempotencyKey, this.data.idempotency.get(record.idempotencyKey));
     this.data.idempotency.set(record.idempotencyKey, record);
   }
 

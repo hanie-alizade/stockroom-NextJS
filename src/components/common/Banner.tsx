@@ -35,7 +35,8 @@ export function Banner({
         "flex min-h-[62px] items-center justify-between rounded-lg border px-4 py-3",
         variant === "danger" &&
           "border-status-danger-border bg-status-danger-bg text-status-danger-fg",
-        variant === "warn" && "border-status-warn-border bg-status-warn-bg text-status-warn-fg",
+        variant === "warn" &&
+          "border-status-warn-border bg-status-warn-bg text-status-warn-fg",
         variant === "info" && "border-border-default bg-bg-surface text-text-primary",
         className,
       )}

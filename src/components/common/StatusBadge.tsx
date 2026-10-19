@@ -37,7 +37,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps): React.Reac
   return (
     <span
       className={cn(
-        "text-label gap-xs px-sm inline-flex h-[22px] items-center rounded-full whitespace-nowrap",
+        "text-label inline-flex h-[22px] items-center gap-xs rounded-full px-sm whitespace-nowrap",
         config.className,
         className,
       )}

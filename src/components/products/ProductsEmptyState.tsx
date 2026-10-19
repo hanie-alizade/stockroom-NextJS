@@ -40,7 +40,9 @@ export function ProductsEmptyState({
       onAction={canImport ? () => router.push("/import") : undefined}
       actionElement={
         !canImport ? (
-          <p className="text-body-small text-text-tertiary">Ask a manager to import products.</p>
+          <p className="text-body-small text-text-tertiary">
+            Ask a manager to import products.
+          </p>
         ) : undefined
       }
       className="py-16"
