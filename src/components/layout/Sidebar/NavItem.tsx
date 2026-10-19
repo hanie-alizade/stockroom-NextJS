@@ -19,7 +19,7 @@ export function NavItem({
   badgeText,
 }: NavItemProps): React.ReactElement {
   const baseClasses =
-    "flex h-9 w-[223px] items-center gap-2 rounded-lg px-3 text-body-strong transition-colors";
+    "flex h-11 lg:h-9 w-full lg:w-[223px] items-center gap-2 rounded-lg px-3 text-body-strong transition-colors";
 
   if (disabled) {
     return (

@@ -19,3 +19,4 @@ export { ReportIcon } from "./ReportIcon";
 export { SupplierIcon } from "./SupplierIcon";
 export { BoxIcon } from "./BoxIcon";
 export { TransferIcon } from "./TransferIcon";
+export { MenuIcon } from "./MenuIcon";

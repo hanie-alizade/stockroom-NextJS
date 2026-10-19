@@ -61,7 +61,7 @@ export function StoreSelector(): React.ReactElement {
   return (
     <div className="mb-4">
       <Select value={value} onValueChange={handleValueChange}>
-        <SelectTrigger className="h-8 w-full" data-size="sm">
+        <SelectTrigger className="h-11 lg:h-8 w-full" data-size="sm">
           <SupplierIcon className="shrink-0" />
           <SelectValue className="flex-1 text-left">{storeLabel}</SelectValue>
         </SelectTrigger>

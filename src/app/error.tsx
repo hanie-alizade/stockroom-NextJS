@@ -3,6 +3,7 @@
 import type { ReactElement } from "react";
 import { CircleAlertIcon } from "@/components/icons";
 import { StateBlock } from "@/components/common";
+import { PageContainer } from "@/components/layout";
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -11,7 +12,7 @@ interface ErrorPageProps {
 
 export default function ErrorPage({ reset }: ErrorPageProps): ReactElement {
   return (
-    <div className="bg-bg-canvas flex min-h-[calc(100vh-64px)] flex-col items-center justify-center p-3xl">
+    <PageContainer className="items-center justify-center">
       <StateBlock
         icon={CircleAlertIcon}
         iconVariant="danger"
@@ -20,6 +21,6 @@ export default function ErrorPage({ reset }: ErrorPageProps): ReactElement {
         actionText="Try again"
         onAction={reset}
       />
-    </div>
+    </PageContainer>
   );
 }

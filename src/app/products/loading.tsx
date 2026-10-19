@@ -5,11 +5,12 @@ import {
   ProductsTableHead,
   ProductsTableSkeleton,
 } from "@/components/products";
+import { PageContainer } from "@/components/layout";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductsLoading(): ReactElement {
   return (
-    <div className="bg-bg-canvas gap-2xl p-3xl flex flex-col">
+    <PageContainer>
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-page-title text-text-primary">Products</h1>
@@ -55,6 +56,6 @@ export default function ProductsLoading(): ReactElement {
           </table>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

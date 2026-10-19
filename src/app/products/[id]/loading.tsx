@@ -1,9 +1,10 @@
 import type { ReactElement } from "react";
+import { PageContainer } from "@/components/layout";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductDetailLoading(): ReactElement {
   return (
-    <div className="bg-bg-canvas flex min-h-screen flex-col gap-lg p-3xl">
+    <PageContainer>
       <div className="flex flex-col">
         <div className="pb-xs">
           <Skeleton className="h-4 w-44" />
@@ -58,6 +59,6 @@ export default function ProductDetailLoading(): ReactElement {
           </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

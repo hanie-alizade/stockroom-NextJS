@@ -2,10 +2,11 @@ import type { ReactElement } from "react";
 import Link from "next/link";
 import { BoxIcon } from "@/components/icons";
 import { StateBlock } from "@/components/common";
+import { PageContainer } from "@/components/layout";
 
 export default function ProductNotFound(): ReactElement {
   return (
-    <div className="bg-bg-canvas flex min-h-[calc(100vh-64px)] flex-col items-center justify-center p-3xl">
+    <PageContainer className="items-center justify-center">
       <StateBlock
         icon={BoxIcon}
         title="Product not found"
@@ -19,6 +20,6 @@ export default function ProductNotFound(): ReactElement {
           </Link>
         }
       />
-    </div>
+    </PageContainer>
   );
 }

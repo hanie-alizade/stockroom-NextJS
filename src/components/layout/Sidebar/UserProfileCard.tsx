@@ -73,7 +73,7 @@ export function UserProfileCard(): React.ReactElement | null {
         <DropdownMenuTrigger asChild disabled={switchUserMutation.isPending || !meta}>
           <button
             type="button"
-            className="text-accent-default hover:text-accent-hover focus-visible:ring-border-focus text-label transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="text-accent-default hover:text-accent-hover focus-visible:ring-border-focus text-label transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
           >
             Switch
           </button>
