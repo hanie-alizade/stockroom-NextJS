@@ -7,7 +7,7 @@ Manager only. The page is hidden and redirected for Staff, and `validate` and `c
 1. **Upload**: choose a store, choose a `.csv` (drag and drop or click). Non-CSV files and files over 5 MB are rejected in the browser before upload, and again by the server. The browser reads only the header and a few rows, to build the mapping step and the error download.
 2. **Map columns**: each file column gets a Stockroom field or "Don't import".
 3. **Review**: the file and the mapping are sent to the server, which parses and validates every row. The user sees valid and invalid rows with reasons.
-4. **Done** (not designed, see DECISIONS.md): summary and links.
+4. **Done**: summary header block ("Import complete" or "Nothing was imported"), 4 StatCards (created, updated, unchanged, skipped), warning banner with "Download skipped rows (CSV)" if any skipped, "View products in <Store>" and "Import another file". Stepper marks all 4 steps finished with checks.
 
 Nothing is saved before the user confirms on Review.
 
@@ -71,7 +71,9 @@ Duplicate SKU rule: the first row with a SKU is judged on its own, and every lat
 
 - Sends the same file and mapping again. The server validates again, because the data could have changed since the review.
 - Applies all valid rows in one transaction. Rows that became invalid are skipped and reported.
-- Requires `Idempotency-Key`, so a double click does not import twice.
+- Requires `Idempotency-Key`, so a double click does not import twice. The key is created once with `crypto.randomUUID()` when the person lands on Review with a valid result, reused for retries and double clicks, and replaced when the file, the store or the mapping changes.
+- On success: invalidates `queryKeys.products.all` so list, detail, movements and charts refetch immediately.
+- On error: stays on Review with `QueryErrorState` (hasData true, inline banner) with "Try again" (same key). Mapping field errors navigate back to Map with an inline message. 403 errors refresh the page, redirecting Staff. Non-standard platform 413 responses map to the standard file too large message.
 
 ## Files in the repo
 

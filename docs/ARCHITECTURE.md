@@ -269,3 +269,22 @@ src/server/services/imports/
 src/server/services/inventory/createAdjustment.ts
   createAdjustment(repo: Repository, productId: string, input: Adjustment, ctx: AdjustmentContext): Promise<AdjustmentResult>
 ```
+
+### Import architecture and idempotency key lifecycle
+
+```
+Client (ImportWizard)
+  useImportWizard state machine: step (upload | map | review | done), storeId, file, mapping, validationResult, commitResult, idempotencyKey
+  1. Upload: parses CSV with PapaParse in browser for preview & auto-mapping.
+  2. Map: maps columns to Stockroom fields; verifies required fields.
+  3. Review: calls POST /api/imports/validate. On valid result, generates idempotencyKey = crypto.randomUUID().
+     Commit button calls POST /api/imports/commit with Idempotency-Key.
+  4. Done: displays commit stats, link to products, skipped rows CSV download.
+```
+
+- **Idempotency Key Lifecycle**:
+  - **Generation**: Created once with `crypto.randomUUID()` when landing on Review with a valid validation result.
+  - **Reuse**: Kept in the wizard reducer state across double clicks and commit retries.
+  - **Invalidation**: Cleared to `null` whenever the file, store, or mapping is changed, or when the wizard is reset.
+  - **Server**: Enforces unique transaction key per request payload. Replays the exact commit result on duplicate key with identical payload, or returns 422 `IDEMPOTENCY_KEY_REUSED` on key collision with differing payload.
+

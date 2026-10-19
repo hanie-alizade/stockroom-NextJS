@@ -27,7 +27,10 @@ Show it honestly. One point is drawn as a visible dot with a tooltip, and a shor
 - Why: a table is still the best format when it fits, cards avoid sideways scrolling on phones, and CSS-first breakpoints avoid layout shifts.
 
 **Import "Done" step**
-A summary with counts (created, updated, unchanged, skipped), a "Download skipped rows" button when anything was skipped, a link to the products list scoped to the imported store, and "Import another file". The counts come from the commit response, not from the review.
+Built under the stepper with all 4 steps marked finished with checks. Displays a header block with 48px round icon (status-ok green CheckCircle, or amber WarningIcon when nothing was applied or all rows skipped). Title is "Import complete" (or "Nothing was imported" when all rows are skipped), description "<created + updated> products applied to <Store>." (or "Every row was skipped. Download the skipped rows, fix them and try again."). 4 StatCards (grid-cols-2 lg:grid-cols-4): Created, Updated, Unchanged, Skipped (amber tone when > 0) with values taken directly from the commit response. If skipped > 0, an amber banner offers "Download skipped rows (CSV)". Actions provide a primary link "View products in <Store>" and secondary button "Import another file" which resets the wizard to step 1.
+
+**Import validation and platform body limit**
+The browser parses the CSV client-side with PapaParse only to populate mapping sample values and build client-side download CSVs preserving original columns. The server re-parses and validates everything, deciding true validity. Cloud platforms (such as Vercel) cap request payloads below 5 MB (around 4.5 MB), which may trigger HTTP 413 before Route Handlers run; `getErrorInfo` maps 413 to the friendly `FILE_TOO_LARGE` message. In `ReviewTable`, the Category column is kept left-aligned (standard for text content), differing from Figma's right-aligned header.
 
 **Product with no movements (Movements tab empty)**
 Its own empty state: "No movements yet" with one sentence of explanation, and a "Receive stock" button that opens the dialog. This is different from "no results for these filters" on the same tab, which says that the filters matched nothing and offers "Clear filters".
