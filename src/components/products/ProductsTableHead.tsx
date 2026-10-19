@@ -8,20 +8,20 @@ import type { ProductSortKey, SortDirection } from "@/types";
 interface ProductsTableHeadProps {
   sort?: ProductSortKey;
   dir?: SortDirection;
-  onSort: (column: ProductSortKey) => void;
-  isAllSelected: boolean;
-  isPartiallySelected: boolean;
-  onToggleAll: () => void;
+  onSort?: (column: ProductSortKey) => void;
+  isAllSelected?: boolean;
+  isPartiallySelected?: boolean;
+  onToggleAll?: () => void;
 }
 
 export function ProductsTableHead({
   sort,
   dir,
   onSort,
-  isAllSelected,
-  isPartiallySelected,
+  isAllSelected = false,
+  isPartiallySelected = false,
   onToggleAll,
-}: ProductsTableHeadProps): React.ReactElement {
+}: ProductsTableHeadProps = {}): React.ReactElement {
   let checkedState: boolean | "indeterminate" = false;
   if (isAllSelected) {
     checkedState = true;
@@ -44,6 +44,7 @@ export function ProductsTableHead({
               aria-label="Select all rows"
               checked={checkedState}
               onCheckedChange={onToggleAll}
+              disabled={!onToggleAll}
             />
           </div>
         </th>

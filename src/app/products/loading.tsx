@@ -44,12 +44,7 @@ export default function ProductsLoading(): ReactElement {
       <div className="bg-bg-surface border-border-default shadow-card rounded-lg border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left">
-            <ProductsTableHead
-              onSort={() => {}}
-              isAllSelected={false}
-              isPartiallySelected={false}
-              onToggleAll={() => {}}
-            />
+            <ProductsTableHead />
             <tbody>
               <ProductsTableSkeleton />
             </tbody>
