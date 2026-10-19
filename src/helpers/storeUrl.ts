@@ -8,8 +8,7 @@ export interface StoreRouter {
 export function setStoreScopeParam(
   router: StoreRouter,
   pathname: string,
-  currentSearchParams:
-    URLSearchParams | { toString: () => string; get: (key: string) => string | null },
+  currentSearchParams: URLSearchParams | { toString: () => string; get: (key: string) => string | null },
   newStore?: StoreScope,
 ): void {
   const params = new URLSearchParams(currentSearchParams.toString());

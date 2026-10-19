@@ -56,7 +56,11 @@ export function ProductsToolbar({
   };
 
   const handleStatusChange = (val: string): void => {
-    if (val === STOCK_STATUS.IN_STOCK || val === STOCK_STATUS.LOW || val === STOCK_STATUS.OUT) {
+    if (
+      val === STOCK_STATUS.IN_STOCK ||
+      val === STOCK_STATUS.LOW ||
+      val === STOCK_STATUS.OUT
+    ) {
       onStatusChange(val);
     } else {
       onStatusChange(undefined);

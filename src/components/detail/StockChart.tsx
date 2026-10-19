@@ -142,7 +142,7 @@ export function StockChart({
             ticks={xTicks}
             tick={({ x, y, payload, index }) => {
               const isFirst = index === 0;
-              const isLast = index === xTicks.length - 1;
+              const isLast = index === (xTicks.length - 1);
               let anchor: "start" | "end" | "middle" = "middle";
               if (isFirst) {
                 anchor = "start";
@@ -196,7 +196,7 @@ export function StockChart({
   }
 
   return (
-    <div className="bg-bg-surface border-border-default shadow-card p-xl flex flex-col rounded-lg border">
+    <div className="bg-bg-surface border-border-default shadow-card rounded-lg border p-xl flex flex-col">
       <div className="flex h-10 items-center justify-between">
         <div>
           <h2 className="text-card text-text-primary">On hand, last {days} days</h2>
@@ -208,43 +208,50 @@ export function StockChart({
           onValueChange={(val) => {
             if (val) setRange(val as RangeOption);
           }}
-          className="bg-bg-muted flex h-8 w-[152px] items-center justify-between gap-0 rounded-md border-0 p-[3px]"
+          className="bg-bg-muted h-8 w-[152px] rounded-md p-[3px] flex items-center justify-between border-0 gap-0"
         >
           <ToggleGroupItem
             value="7d"
-            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card hover:text-text-primary h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all"
+            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all hover:text-text-primary"
           >
             7d
           </ToggleGroupItem>
           <ToggleGroupItem
             value="30d"
-            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card hover:text-text-primary h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all"
+            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all hover:text-text-primary"
           >
             30d
           </ToggleGroupItem>
           <ToggleGroupItem
             value="90d"
-            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card hover:text-text-primary h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all"
+            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all hover:text-text-primary"
           >
             90d
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
 
-      <div className="mt-lg h-[200px]" role="img" aria-label={ariaLabel} aria-busy={isFetching}>
+      <div
+        className="mt-lg h-[200px]"
+        role="img"
+        aria-label={ariaLabel}
+        aria-busy={isFetching}
+      >
         {chartBody}
       </div>
 
       {points.length === 1 && !isLoading && !isError && (
-        <p className="text-caption text-text-tertiary mt-2 text-center">Only 1 data point so far</p>
+        <p className="text-caption text-text-tertiary mt-2 text-center">
+          Only 1 data point so far
+        </p>
       )}
 
-      <div className="mt-md gap-lg text-caption text-text-secondary flex items-center">
-        <div className="gap-sm flex items-center">
+      <div className="mt-md flex items-center gap-lg text-caption text-text-secondary">
+        <div className="flex items-center gap-sm">
           <span className="inline-block h-[2px] w-4 bg-[var(--accent-default)]" />
           <span>On hand</span>
         </div>
-        <div className="gap-sm flex items-center">
+        <div className="flex items-center gap-sm">
           <span className="inline-block w-4 border-b-[1.5px] border-dashed border-[var(--status-warn-fg)]" />
           <span>Reorder level ({reorderLevel})</span>
         </div>

@@ -9,7 +9,12 @@ import {
   STORE_IDS,
 } from "@/constants";
 import type { DetailTab } from "@/constants";
-import type { MovementPeriod, MovementType, PageSize, StoreScope } from "@/types";
+import type {
+  MovementPeriod,
+  MovementType,
+  PageSize,
+  StoreScope,
+} from "@/types";
 
 import type { RouterInstance } from "./productListUrl";
 
@@ -56,14 +61,17 @@ export function parseProductDetailParams(
 ): ProductDetailUrlQuery {
   const storeRaw = getParam(source, "store");
   const store: StoreScope =
-    storeRaw && storeRaw !== ALL_STORES && VALID_STORE_IDS.has(storeRaw) ? storeRaw : ALL_STORES;
+    storeRaw && storeRaw !== ALL_STORES && VALID_STORE_IDS.has(storeRaw)
+      ? storeRaw
+      : ALL_STORES;
 
   const tabRaw = getParam(source, "tab");
   const tab: DetailTab =
     tabRaw === DETAIL_TAB.MOVEMENTS ? DETAIL_TAB.MOVEMENTS : DETAIL_TAB.OVERVIEW;
 
   const typeRaw = getParam(source, "type");
-  const type: MovementType | undefined = typeRaw && isMovementType(typeRaw) ? typeRaw : undefined;
+  const type: MovementType | undefined =
+    typeRaw && isMovementType(typeRaw) ? typeRaw : undefined;
 
   const periodRaw = getParam(source, "period");
   const period: MovementPeriod =

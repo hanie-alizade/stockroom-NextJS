@@ -22,7 +22,7 @@ export function MovementsTable({
   const storeMap = new Map(stores.map((s) => [s.id, s.name]));
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="overflow-x-auto w-full">
       <table
         aria-busy={isFetching ?? isLoading}
         className="w-full min-w-[900px] border-collapse text-left"
@@ -32,44 +32,29 @@ export function MovementsTable({
             <th
               scope="col"
               aria-sort="descending"
-              className="pl-xl px-md text-label text-text-primary w-[185px] text-left font-medium"
+              className="w-[185px] pl-xl px-md text-left text-label text-text-primary font-medium"
             >
-              <div className="gap-xs flex items-center">
+              <div className="flex items-center gap-xs">
                 <span>Date & time</span>
-                <ArrowDownIcon className="text-text-primary size-3.5" />
+                <ArrowDownIcon className="size-3.5 text-text-primary" />
               </div>
             </th>
-            <th
-              scope="col"
-              className="px-md text-label text-text-secondary w-[143px] text-left font-medium"
-            >
+            <th scope="col" className="w-[143px] px-md text-left text-label text-text-secondary font-medium">
               Type
             </th>
-            <th
-              scope="col"
-              className="px-md text-label text-text-secondary w-[182px] text-left font-medium"
-            >
+            <th scope="col" className="w-[182px] px-md text-left text-label text-text-secondary font-medium">
               Store
             </th>
-            <th
-              scope="col"
-              className="px-md text-label text-text-secondary w-[100px] text-right font-medium"
-            >
+            <th scope="col" className="w-[100px] px-md text-right text-label text-text-secondary font-medium">
               Change
             </th>
-            <th
-              scope="col"
-              className="px-md text-label text-text-secondary w-[100px] text-right font-medium"
-            >
+            <th scope="col" className="w-[100px] px-md text-right text-label text-text-secondary font-medium">
               Balance
             </th>
-            <th
-              scope="col"
-              className="px-md text-label text-text-secondary w-[180px] text-left font-medium"
-            >
+            <th scope="col" className="w-[180px] px-md text-left text-label text-text-secondary font-medium">
               By
             </th>
-            <th scope="col" className="px-md text-label text-text-secondary text-left font-medium">
+            <th scope="col" className="px-md text-left text-label text-text-secondary font-medium">
               Note
             </th>
           </tr>
@@ -77,25 +62,25 @@ export function MovementsTable({
         <tbody>
           {isLoading &&
             Array.from({ length: 9 }).map((_, i) => (
-              <tr key={i} className="border-border-default h-12 border-b">
-                <td className="pl-xl px-md w-[185px]">
+              <tr key={i} className="h-12 border-b border-border-default">
+                <td className="w-[185px] pl-xl px-md">
                   <Skeleton className="h-4 w-24 rounded-xs" />
                 </td>
-                <td className="px-md w-[143px]">
+                <td className="w-[143px] px-md">
                   <Skeleton className="h-5 w-20 rounded-full" />
                 </td>
-                <td className="px-md w-[182px]">
+                <td className="w-[182px] px-md">
                   <Skeleton className="h-4 w-28 rounded-xs" />
                 </td>
-                <td className="px-md w-[100px] text-right">
-                  <Skeleton className="ml-auto h-4 w-10 rounded-xs" />
+                <td className="w-[100px] px-md text-right">
+                  <Skeleton className="h-4 w-10 ml-auto rounded-xs" />
                 </td>
-                <td className="px-md w-[100px] text-right">
-                  <Skeleton className="ml-auto h-4 w-10 rounded-xs" />
+                <td className="w-[100px] px-md text-right">
+                  <Skeleton className="h-4 w-10 ml-auto rounded-xs" />
                 </td>
-                <td className="px-md w-[180px]">
-                  <div className="gap-sm flex items-center">
-                    <Skeleton className="size-7 shrink-0 rounded-full" />
+                <td className="w-[180px] px-md">
+                  <div className="flex items-center gap-sm">
+                    <Skeleton className="size-7 rounded-full shrink-0" />
                     <Skeleton className="h-4 w-20 rounded-xs" />
                   </div>
                 </td>
@@ -127,19 +112,19 @@ export function MovementsTable({
               }
 
               return (
-                <tr key={m.id} className="border-border-default h-12 border-b">
-                  <td className="pl-xl px-md text-body-small text-text-secondary w-[185px] whitespace-nowrap">
+                <tr key={m.id} className="h-12 border-b border-border-default">
+                  <td className="w-[185px] pl-xl px-md text-body-small text-text-secondary whitespace-nowrap">
                     {formatDateTime(m.createdAt)}
                   </td>
-                  <td className="px-md w-[143px]">
+                  <td className="w-[143px] px-md">
                     <MovementTypePill type={m.type} />
                   </td>
-                  <td className="px-md text-body text-text-primary w-[182px] truncate">
+                  <td className="w-[182px] px-md text-body text-text-primary truncate">
                     {storeText}
                   </td>
                   <td
                     className={cn(
-                      "px-md text-mono w-[100px] text-right font-normal",
+                      "w-[100px] px-md text-right text-mono font-normal",
                       isNegative && "text-status-danger-fg",
                       isPositive && "text-status-ok-fg",
                       !isNegative && !isPositive && "text-text-secondary",
@@ -147,11 +132,11 @@ export function MovementsTable({
                   >
                     {changeText}
                   </td>
-                  <td className="px-md text-mono text-text-secondary w-[100px] text-right">
+                  <td className="w-[100px] px-md text-right text-mono text-text-secondary">
                     {m.balanceAfter}
                   </td>
-                  <td className="px-md w-[180px]">
-                    <div className="gap-sm flex items-center">
+                  <td className="w-[180px] px-md">
+                    <div className="flex items-center gap-sm">
                       <Avatar className="size-7">
                         <AvatarFallback className="bg-accent-subtle text-accent-default text-caption font-medium">
                           {m.by.initials}

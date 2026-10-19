@@ -1,5 +1,11 @@
 import type { ReactElement } from "react";
-import { ALL_STORES, MOVEMENT_TYPE, MOVEMENT_TYPE_LABEL, PERIOD, PERIOD_LABEL } from "@/constants";
+import {
+  ALL_STORES,
+  MOVEMENT_TYPE,
+  MOVEMENT_TYPE_LABEL,
+  PERIOD,
+  PERIOD_LABEL,
+} from "@/constants";
 import { SupplierIcon } from "@/components/icons";
 import {
   Select,
@@ -34,11 +40,13 @@ export function MovementsFilters({
   const movementTypes = Object.values(MOVEMENT_TYPE);
   const typeLabel = type ? MOVEMENT_TYPE_LABEL[type] : "All types";
   const storeLabel =
-    store === ALL_STORES ? "All stores" : (stores.find((s) => s.id === store)?.name ?? store);
+    store === ALL_STORES
+      ? "All stores"
+      : (stores.find((s) => s.id === store)?.name ?? store);
   const periodLabel = PERIOD_LABEL[period] ?? "Last 30 days";
 
   return (
-    <div className="gap-lg flex items-center">
+    <div className="flex items-center gap-lg">
       <Select
         value={type ?? "all"}
         onValueChange={(val) => onTypeChange(val === "all" ? undefined : (val as MovementType))}
@@ -58,7 +66,7 @@ export function MovementsFilters({
 
       <Select value={store} onValueChange={(val) => onStoreChange(val as StoreScope)}>
         <SelectTrigger className="border-border-default bg-bg-surface text-body h-10 w-[164px] rounded-md">
-          <div className="gap-sm flex items-center overflow-hidden">
+          <div className="flex items-center gap-sm overflow-hidden">
             <SupplierIcon className="text-text-tertiary size-4 shrink-0" />
             <SelectValue placeholder="All stores">{storeLabel}</SelectValue>
           </div>
@@ -73,7 +81,10 @@ export function MovementsFilters({
         </SelectContent>
       </Select>
 
-      <Select value={period} onValueChange={(val) => onPeriodChange(val as MovementPeriod)}>
+      <Select
+        value={period}
+        onValueChange={(val) => onPeriodChange(val as MovementPeriod)}
+      >
         <SelectTrigger className="border-border-default bg-bg-surface text-body h-10 w-[184px] rounded-md">
           <SelectValue placeholder="Last 30 days">{periodLabel}</SelectValue>
         </SelectTrigger>
@@ -83,6 +94,7 @@ export function MovementsFilters({
           <SelectItem value={PERIOD.DAYS_90}>{PERIOD_LABEL[PERIOD.DAYS_90]}</SelectItem>
         </SelectContent>
       </Select>
+
 
       <div className="text-body-small text-text-tertiary ml-auto" aria-live="polite">
         {total === 1 ? "1 movement" : `${total} movements`}

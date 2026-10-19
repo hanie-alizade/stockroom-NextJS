@@ -44,7 +44,7 @@ export function StatCard({
         onClick={onClick}
         aria-pressed={selected}
         className={cn(
-          "border-border-default bg-bg-surface shadow-card hover:bg-bg-subtle focus-visible:ring-border-focus p-lg flex h-[105px] cursor-pointer flex-col justify-between rounded-lg border text-left transition-colors focus-visible:ring-2 focus-visible:outline-none",
+          "border-border-default bg-bg-surface shadow-card hover:bg-bg-subtle focus-visible:ring-border-focus flex h-[105px] cursor-pointer flex-col justify-between rounded-lg border p-lg text-left transition-colors focus-visible:ring-2 focus-visible:outline-none",
           selected && "border-border-focus ring-border-focus ring-1",
           className,
         )}
@@ -57,7 +57,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "border-border-default bg-bg-surface shadow-card p-lg flex h-[105px] flex-col justify-between rounded-lg border",
+        "border-border-default bg-bg-surface shadow-card flex h-[105px] flex-col justify-between rounded-lg border p-lg",
         className,
       )}
     >

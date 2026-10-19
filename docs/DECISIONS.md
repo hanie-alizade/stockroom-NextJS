@@ -1,6 +1,6 @@
 # Decisions
 
-Format: what I chose, why, and what I gave up. Section 1 and 2 feed the README answers. Section 3 holds smaller decisions. Section 4 lists known gaps that are decisions still open.
+Format: what I chose, why, and what I gave up. Items marked `[verify]` need a quick check against the Figma Screens page before this goes into the README.
 
 ## 1. Answers to the Handoff "Open questions"
 
@@ -20,12 +20,9 @@ Show it honestly. One point is drawn as a visible dot with a tooltip, and a shor
 
 **Below 1024px**
 
-- Breakpoints: the sidebar is fixed from 1024px (`lg`); the table is used from 768px (`md`), cards below it.
-- 768 to 1023px: sidebar collapses into a top bar (MobileHeader) with a menu button and slide-in sheet; the table scrolls horizontally inside its own container with Checkbox, SKU, and Name columns sticky on the left; first columns of StockByStoreTable (Store) and MovementsTable (Date & time) are also sticky.
-- Under 768px (down to 375px): the sidebar is accessed via MobileHeader slide-in sheet; table rows become cards (name, mono SKU, status badge, on hand, reorder level, unit cost); filters collapse into a bottom "Filters" sheet with category, status, sort key and direction toggle (changes apply immediately to URL); selection toolbar and chips wrap; pagination places range text on its own row; touch targets are at least 44px for icon buttons and navigation.
-- Product detail below 1024px: header stacks (Adjust stock button full width under 640px), breadcrumb truncates product name, meta line wraps, Overview displays in 1 column (Chart then Details card then Stock by store), Movements filters wrap into a grid (1 column under 640px, 2 columns from 640px) with movements count text below.
-- Adjust stock dialog: stays a centered dialog (560px wide, never wider than the viewport minus 32px, never taller than the viewport minus 32px). The body scrolls, the footer stays visible. Under 640px the From and To fields stack, the swap button turns 90 degrees, and the footer buttons stack under the "Signed in as" line.
-- Why: a table is still the best format when it fits, cards avoid sideways scrolling on phones, and CSS-first breakpoints avoid layout shifts.
+- 768 to 1023px: sidebar collapses into a top bar with a menu button; the table stays a table but scrolls horizontally inside its own container, with the SKU and Name columns sticky.
+- Under 768px (down to 375px): the sidebar becomes a slide-in menu holding the store switcher and the user switcher; table rows become cards (name, SKU, status badge with text, on hand and reorder level); filters collapse into one "Filters" sheet; the adjust dialog becomes a full-height sheet; pagination controls stay reachable with 44px touch targets.
+- Why: a table is still the best format when it fits, and cards avoid sideways scrolling on phones.
 
 **Import "Done" step**
 A summary with counts (created, updated, unchanged, skipped), a "Download skipped rows" button when anything was skipped, a link to the products list scoped to the imported store, and "Import another file". The counts come from the commit response, not from the review.
@@ -37,7 +34,7 @@ Its own empty state: "No movements yet" with one sentence of explanation, and a 
 The link is hidden in the sidebar. If Staff open the URL anyway, the server-side page check redirects them to Products (as the Figma note suggests) with `?notice=managers-only`, and the list shows a small dismissible message "Import is available to managers only", so the person still understands why. The API also returns 403. (An earlier idea was a separate "Managers only" screen; the redirect is less code and follows the design.)
 
 **Saving state inside the dialog**
-While the request runs: the submit button shows a spinner and "Saving...", all fields are disabled, and closing is disabled until the request ends so the person cannot lose the result. On error the dialog stays open, keeps the typed values, shows the message at the top (and field messages under fields), and the button becomes "Try again". A retry after an unclear outcome (network error, timeout, 5xx) reuses the same idempotency key for the same payload, so it cannot apply twice. After a clear answer from the server (4xx such as 409 or 422) the next submit gets a new key. On success, a toast appears, the dialog closes and focus returns to the button that opened it.
+While the request runs: the submit button shows a spinner and "Saving...", all fields are disabled, and closing is disabled until the request ends so the person cannot lose the result. On error the dialog stays open, keeps the typed values, shows the message at the top (and field messages under fields), and the button becomes "Try again". A retry reuses the same idempotency key for the same payload. On success, a toast appears, the dialog closes and focus returns to the button that opened it.
 
 ## 3. Other decisions
 
@@ -52,28 +49,10 @@ While the request runs: the submit button shows a spinner and "Saving...", all f
 - **Users and roles:** the design has three people (Aina Rahman Manager, Faiz Hakim Staff, Mei Ling, whose role is not shown, assumed Staff). The cookie holds a user id and the server derives the role, so a client cannot claim to be a Manager. A missing or unknown cookie falls back to the Staff user Faiz Hakim (least privilege), so a first-time visitor must use "Switch" to become a Manager. This is stated in the README. Movements record who made them (the "By" column).
 - **Products carried per store:** the design shows 248 products overall and 212 at Mont Kiara, so a product is carried only at some stores. Adjustments and the dialog lists only use stores that carry the product (else 422 `NOT_STOCKED_AT_STORE`). Import can start carrying a product at the chosen store.
 - **Chart data:** rebuilt from movements, going backwards from today's stock. The seed generator makes movements that add up to the current stock so the chart and the numbers agree.
-- **Header "Export" button on the list:** the design has one next to "Import CSV". The brief asks only for exporting the selected rows, so the header button is not built and goes under "What I cut" in the README.
+- **Header "Export" button on the list:** built to export all rows of the current scope and filters (store, search, category, status) in the current sort. Batched in chunks of 100 via the existing list API.
 - **Status sort:** the design shows no sort icon on the Status header. We still allow sorting by it, because the Handoff notes ask how Status should sort.
 - **Wording we wrote ourselves:** toasts for receive, sell and write-off, error toast, empty states of the Movements tab, empty catalogue for Staff, upload rejection messages and a few import messages. Listed in `docs/SCREENS.md` as "own wording".
 - **Tooltip text:** the design has two versions ("write off" and "write off or transfer"). We use the second one for both locked types.
 - **Sample-data differences in the design** (dates, "Last movement" values, the Aina or Faiz user on the same screen) are example data and are ignored.
 - **Dates:** use a fixed time zone (Asia/Kuala_Lumpur) so server and browser agree. Relative time uses a 12-hour threshold, "Yesterday" is by calendar day (not 24 hours), "Just now" covers ±1 minute, and older dates show the year when in a different year. Invalid inputs throw RangeError.
 - **Product not carried at store (detail page):** when a product is viewed with a store scope where it is not carried (API returns empty `stockByStore`), the page displays an informational notice "This product is not carried at <Store>" with an action "View in all stores" that clears the store filter, avoiding misleading zero/out-of-stock data.
-- **Import "unchanged" vs "updated" and movements:** `unchanged` means nothing changed: name, category, unit cost and quantity are all identical. If only name, category or cost changed, the row is `updated` and no movement is written. A movement of type `import` (note: the file name, cut to 200 chars) is written only when quantity delta is not 0.
-- **New products have no supplier:** `supplier` is nullable (`string | null`) in ProductRecord, ProductListItem and ProductDetail. The UI hides the supplier line when null; the Details card shows an em dash.
-
-- **Product id is the SKU.** URLs and API ids use the SKU (`/products/KL-1042`). It is unique, readable and stable in the seed. Import identifies products by SKU too. Gave up: a SKU can never be renamed without breaking links.
-- **Idempotency key is global.** The repository stores keys without the user id. The request hash includes the product id and the body, so a key reused for another request gives 422 `IDEMPOTENCY_KEY_REUSED`. Two different users sending the same key with the same body would get the same replay. The client uses a random UUID per attempt, so this does not happen in practice. A real system would scope keys per user and expire them.
-- **A replayed adjustment answers 201.** Same status and body as the first call, plus the `Idempotent-Replay: true` header, so a client cannot tell the difference except by that header. Import commit replays with 200 like its first answer.
-- **Permission checks for adjustments live in the service.** The needed permission depends on the body `type` (Receive and Sell for everyone, Write-off and Transfer for Managers), so `createAdjustment` checks `ADJUSTMENT_PERMISSION[type]` after the body is parsed. Import routes use the `withApi` permission option because the permission is fixed.
-- **Test reset route.** `POST /api/test/reset` exists only in development or with `E2E=1` and answers 404 otherwise. It is the only seam Playwright needs.
-- **Sample import file.** `samples/import-sample.csv` is generated from the seed by `npm run sample:import`: 63 rows, 8 broken ones (several error kinds), 15 new SKUs and 40 existing ones. Headers differ from the Stockroom names so auto-mapping can be seen working (`Item code`, `Description`, `Group`, `Qty`, `Cost (RM)`, plus `Barcode` and `Supplier`, which are skipped).
-- **Node and framework versions.** Node 22 (`.nvmrc`), Next.js 16, React 19, Tailwind 4. The brief asks for Next.js 14 or later.
-
-## 4. Known gaps (decisions still open)
-
-- **Permission before validation.** For an adjustment, the body is validated before the permission is checked, so a Staff request with an invalid write-off body gets 422 instead of 403. The brief says a Staff write-off must get 403. Fix: read only `type` from the body first and check the permission, then validate the rest. Add a route test with a Staff write-off that has no reason.
-- **Row actions button (`···`) in the products table.** The button renders but has no menu or handler. Either wire it to "Adjust stock" (SCREENS.md describes one item) or remove it. A button that does nothing is worse than no button. It also uses a raw `text-sm` class, against the conventions.
-- **Component tests.** There are no React Testing Library tests for components. The brief lists "Vitest with React Testing Library". The adjust dialog validation messages are the best first candidate.
-- **Detail page `···` button.** The design shows one next to "Adjust stock" with no items defined. Not built on purpose.
-

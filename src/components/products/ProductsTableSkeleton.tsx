@@ -4,8 +4,11 @@ export function ProductsTableSkeleton(): React.ReactElement {
   return (
     <>
       {Array.from({ length: 9 }).map((_, index) => (
-        <tr key={index} className="border-border-default h-[52px] border-b">
-          <td className="px-md w-[44px] text-center align-middle">
+        <tr
+          key={index}
+          className="border-border-default h-[52px] border-b"
+        >
+          <td className="w-[44px] px-md text-center align-middle">
             <div className="inline-flex items-center">
               <Skeleton className="size-4 rounded-sm" />
             </div>
@@ -43,7 +46,7 @@ export function ProductsTableSkeleton(): React.ReactElement {
             <Skeleton className="h-3 w-[68px] rounded-full" />
           </td>
 
-          <td className="pr-md w-[44px] text-right align-middle" />
+          <td className="w-[44px] pr-md text-right align-middle" />
         </tr>
       ))}
     </>

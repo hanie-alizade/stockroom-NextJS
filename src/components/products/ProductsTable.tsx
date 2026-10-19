@@ -11,7 +11,12 @@ import { ProductsTableHead } from "./ProductsTableHead";
 import { ProductsTableRow } from "./ProductsTableRow";
 import { ProductsTableSkeleton } from "./ProductsTableSkeleton";
 import { ProductsEmptyState } from "./ProductsEmptyState";
-import type { ProductListItem, ProductSortKey, SortDirection, StoreScope } from "@/types";
+import type {
+  ProductListItem,
+  ProductSortKey,
+  SortDirection,
+  StoreScope,
+} from "@/types";
 
 interface ProductsTableProps {
   items: ProductListItem[];
@@ -58,7 +63,7 @@ export function ProductsTable({
   const now = useMemo(() => new Date(), []);
   const storeParam = store && store !== ALL_STORES ? `?store=${store}` : "";
 
-  const statusCode = error instanceof ApiError ? (error.status ?? 500) : 500;
+  const statusCode = error instanceof ApiError ? error.status ?? 500 : 500;
 
   const handleRowClick = (id: string): void => {
     router.push(`/products/${id}${storeParam}`);
@@ -104,7 +109,10 @@ export function ProductsTable({
             {showEmpty && (
               <tr>
                 <td colSpan={10} className="p-0">
-                  <ProductsEmptyState hasFilters={hasFilters} onClearFilters={onClearFilters} />
+                  <ProductsEmptyState
+                    hasFilters={hasFilters}
+                    onClearFilters={onClearFilters}
+                  />
                 </td>
               </tr>
             )}
