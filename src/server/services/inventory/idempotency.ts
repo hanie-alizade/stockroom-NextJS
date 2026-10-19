@@ -38,9 +38,7 @@ export function canonicalJson(obj: unknown): string {
   if (isRecord(obj)) {
     const keys = Object.keys(obj).sort();
     return (
-      "{" +
-      keys.map((key) => JSON.stringify(key) + ":" + canonicalJson(obj[key])).join(",") +
-      "}"
+      "{" + keys.map((key) => JSON.stringify(key) + ":" + canonicalJson(obj[key])).join(",") + "}"
     );
   }
   return JSON.stringify(obj);
@@ -63,7 +61,8 @@ export function recordResult(
   result: AdjustmentResult,
   requestHash?: string,
 ): void {
-  const hash = requestHash ?? ctx.requestHash ?? hashRequest(result.movements[0]?.productId ?? "", result);
+  const hash =
+    requestHash ?? ctx.requestHash ?? hashRequest(result.movements[0]?.productId ?? "", result);
   txRepo.setIdempotency({
     idempotencyKey: ctx.idempotencyKey,
     requestHash: hash,

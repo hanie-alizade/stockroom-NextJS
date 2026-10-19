@@ -31,9 +31,9 @@ export async function getProductDetail(
   const lastMovementAt =
     scopedMovements.length > 0
       ? scopedMovements.reduce(
-        (latest, m) => (m.createdAt > latest ? m.createdAt : latest),
-        scopedMovements[0].createdAt,
-      )
+          (latest, m) => (m.createdAt > latest ? m.createdAt : latest),
+          scopedMovements[0].createdAt,
+        )
       : null;
 
   const stockByStore = stocks.map((stock) => {

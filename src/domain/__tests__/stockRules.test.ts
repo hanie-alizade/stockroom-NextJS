@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  isValidQuantity,
-  canRemoveStock,
-  planTransfer,
-  planDirectAdjustment,
-} from "../stockRules";
+import { isValidQuantity, canRemoveStock, planTransfer, planDirectAdjustment } from "../stockRules";
 import { AppError } from "../errors";
 
 describe("isValidQuantity", () => {

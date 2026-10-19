@@ -24,8 +24,8 @@ export function StockByStoreTable({
   ).length;
 
   return (
-    <div className="bg-bg-surface border-border-default shadow-card rounded-lg border overflow-hidden">
-      <div className="border-border-default flex h-[52px] items-center justify-between border-b px-xl">
+    <div className="bg-bg-surface border-border-default shadow-card overflow-hidden rounded-lg border">
+      <div className="border-border-default px-xl flex h-[52px] items-center justify-between border-b">
         <h2 className="text-card text-text-primary">Stock by store</h2>
         {attentionCount > 0 && (
           <span className="text-body-small text-status-warn-fg">
@@ -34,7 +34,7 @@ export function StockByStoreTable({
         )}
       </div>
 
-      <div className="overflow-x-auto min-w-[800px] w-full">
+      <div className="w-full min-w-[800px] overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-bg-subtle border-border-default h-10 border-b">
@@ -46,31 +46,31 @@ export function StockByStoreTable({
               </th>
               <th
                 scope="col"
-                className="text-label text-text-secondary w-[120px] px-md text-right font-medium"
+                className="text-label text-text-secondary px-md w-[120px] text-right font-medium"
               >
                 On hand
               </th>
               <th
                 scope="col"
-                className="text-label text-text-secondary w-[120px] px-md text-right font-medium"
+                className="text-label text-text-secondary px-md w-[120px] text-right font-medium"
               >
                 Reorder at
               </th>
               <th
                 scope="col"
-                className="text-label text-text-secondary w-[150px] px-md text-left font-medium"
+                className="text-label text-text-secondary px-md w-[150px] text-left font-medium"
               >
                 Status
               </th>
               <th
                 scope="col"
-                className="text-label text-text-secondary w-[180px] px-md text-left font-medium"
+                className="text-label text-text-secondary px-md w-[180px] text-left font-medium"
               >
                 Last movement
               </th>
               <th
                 scope="col"
-                className="text-label text-text-secondary w-[107px] pr-xl px-md text-right font-medium"
+                className="text-label text-text-secondary pr-xl px-md w-[107px] text-right font-medium"
               >
                 <span className="sr-only">Actions</span>
               </th>
@@ -87,13 +87,10 @@ export function StockByStoreTable({
               return (
                 <tr
                   key={item.storeId}
-                  className={cn(
-                    "h-11 border-border-default",
-                    !isLast && "border-b",
-                  )}
+                  className={cn("border-border-default h-11", !isLast && "border-b")}
                 >
                   <td className="pl-xl px-md">
-                    <div className="flex items-center gap-sm">
+                    <div className="gap-sm flex items-center">
                       <SupplierIcon className="text-text-tertiary size-4 shrink-0" />
                       <span className="text-body-strong text-text-primary">{storeName}</span>
                     </div>
@@ -112,14 +109,12 @@ export function StockByStoreTable({
                   <td className="px-md">
                     <StatusBadge status={item.status} />
                   </td>
-                  <td className="text-body-small text-text-tertiary px-md">
-                    {formattedLast}
-                  </td>
+                  <td className="text-body-small text-text-tertiary px-md">{formattedLast}</td>
                   <td className="pr-xl px-md text-right">
                     <button
                       type="button"
                       onClick={() => onAdjust(item.storeId)}
-                      className="text-label text-text-link hover:underline cursor-pointer"
+                      className="text-label text-text-link cursor-pointer hover:underline"
                       aria-label={`Adjust stock at ${storeName}`}
                     >
                       Adjust

@@ -48,8 +48,7 @@ export function loadSeedStoreData(): StoreData {
     id: `m_${i}`,
   }));
 
-  const movements =
-    env.NODE_ENV === "test" ? rawMovements : rebaseSeed(rawMovements, new Date());
+  const movements = env.NODE_ENV === "test" ? rawMovements : rebaseSeed(rawMovements, new Date());
 
   const movementsBySku = new Map<string, MovementRecord[]>();
   for (const m of movements) {

@@ -50,7 +50,9 @@ describe("GET /api/products/:id/movements", () => {
 
   it("returns 404 PRODUCT_NOT_FOUND for unknown product", async () => {
     const url = new URL("http://localhost/api/products/UNKNOWN-SKU/movements");
-    const response = await GET(new Request(url), { params: Promise.resolve({ id: "UNKNOWN-SKU" }) });
+    const response = await GET(new Request(url), {
+      params: Promise.resolve({ id: "UNKNOWN-SKU" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -101,7 +103,9 @@ describe("GET /api/products/:id/movements", () => {
   });
 
   it("filters by from date", async () => {
-    const url = new URL("http://localhost/api/products/KL-1042/movements?from=2026-08-01&pageSize=50");
+    const url = new URL(
+      "http://localhost/api/products/KL-1042/movements?from=2026-08-01&pageSize=50",
+    );
     const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
@@ -131,8 +135,12 @@ describe("GET /api/products/:id/movements", () => {
   it("filters by period", async () => {
     const url7d = new URL("http://localhost/api/products/KL-1042/movements?period=7d");
     const url30d = new URL("http://localhost/api/products/KL-1042/movements?period=30d");
-    const response7d = await GET(new Request(url7d), { params: Promise.resolve({ id: "KL-1042" }) });
-    const response30d = await GET(new Request(url30d), { params: Promise.resolve({ id: "KL-1042" }) });
+    const response7d = await GET(new Request(url7d), {
+      params: Promise.resolve({ id: "KL-1042" }),
+    });
+    const response30d = await GET(new Request(url30d), {
+      params: Promise.resolve({ id: "KL-1042" }),
+    });
     const data7d = await response7d.json();
     const data30d = await response30d.json();
 

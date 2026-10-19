@@ -12,9 +12,7 @@ export interface ProductSelectionFilterDeps {
 }
 
 export function useProductSelection(deps?: ProductSelectionFilterDeps) {
-  const [selectedMap, setSelectedMap] = useState<Map<string, ProductListItem>>(
-    () => new Map(),
-  );
+  const [selectedMap, setSelectedMap] = useState<Map<string, ProductListItem>>(() => new Map());
 
   const store = deps?.store;
   const q = deps?.q;
@@ -22,13 +20,16 @@ export function useProductSelection(deps?: ProductSelectionFilterDeps) {
   const status = deps?.status;
   const userId = deps?.userId;
 
-  const prevDepsRef = useRef<{
-    store?: string;
-    q?: string;
-    category?: string;
-    status?: string;
-    userId?: string;
-  } | undefined>(undefined);
+  const prevDepsRef = useRef<
+    | {
+        store?: string;
+        q?: string;
+        category?: string;
+        status?: string;
+        userId?: string;
+      }
+    | undefined
+  >(undefined);
 
   useEffect(() => {
     const prev = prevDepsRef.current;
@@ -48,10 +49,7 @@ export function useProductSelection(deps?: ProductSelectionFilterDeps) {
   const selectedItems = useMemo(() => Array.from(selectedMap.values()), [selectedMap]);
   const count = selectedMap.size;
 
-  const isSelected = useCallback(
-    (id: string): boolean => selectedMap.has(id),
-    [selectedMap],
-  );
+  const isSelected = useCallback((id: string): boolean => selectedMap.has(id), [selectedMap]);
 
   const toggle = useCallback((item: ProductListItem): void => {
     setSelectedMap((prev) => {
@@ -68,8 +66,7 @@ export function useProductSelection(deps?: ProductSelectionFilterDeps) {
   const togglePage = useCallback((pageItems: readonly ProductListItem[]): void => {
     setSelectedMap((prev) => {
       const next = new Map(prev);
-      const allSelected =
-        pageItems.length > 0 && pageItems.every((item) => next.has(item.id));
+      const allSelected = pageItems.length > 0 && pageItems.every((item) => next.has(item.id));
       if (allSelected) {
         for (const item of pageItems) {
           next.delete(item.id);

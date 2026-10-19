@@ -31,10 +31,7 @@ export function ProductsTableRow({
         isSelected ? "bg-accent-subtle" : "hover:bg-bg-subtle",
       )}
     >
-      <td
-        className="w-[44px] px-md text-center align-middle"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <td className="px-md w-[44px] text-center align-middle" onClick={(e) => e.stopPropagation()}>
         <div className="inline-flex items-center">
           <Checkbox
             aria-label={`Select ${item.name}`}
@@ -57,9 +54,7 @@ export function ProductsTableRow({
           >
             {item.name}
           </Link>
-          <span className="text-caption text-text-tertiary">
-            {item.supplier}
-          </span>
+          <span className="text-caption text-text-tertiary">{item.supplier}</span>
         </div>
       </td>
 
@@ -71,9 +66,7 @@ export function ProductsTableRow({
         <span
           className={cn(
             "text-mono-strong",
-            item.onHand === 0
-              ? "text-status-danger-fg"
-              : "text-text-primary",
+            item.onHand === 0 ? "text-status-danger-fg" : "text-text-primary",
           )}
         >
           {item.onHand}
@@ -92,14 +85,14 @@ export function ProductsTableRow({
         {formatMoney(item.unitCostSen)}
       </td>
 
-      <td suppressHydrationWarning className="text-body-small text-text-secondary px-md align-middle whitespace-nowrap">
+      <td
+        suppressHydrationWarning
+        className="text-body-small text-text-secondary px-md align-middle whitespace-nowrap"
+      >
         {formatWhen(item.updatedAt, now)}
       </td>
 
-      <td
-        className="w-[44px] pr-md text-right align-middle"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <td className="pr-md w-[44px] text-right align-middle" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           aria-label="Row actions"

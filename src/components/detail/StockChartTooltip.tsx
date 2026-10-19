@@ -17,7 +17,7 @@ export function StockChartTooltip({
   }
 
   return (
-    <div className="bg-bg-overlay text-text-on-accent shadow-popover rounded-md px-md py-sm">
+    <div className="bg-bg-overlay text-text-on-accent shadow-popover px-md py-sm rounded-md">
       <div className="text-caption">{formatDay(point.date)}</div>
       <div className="text-label mt-0.5">{point.onHand} on hand</div>
     </div>

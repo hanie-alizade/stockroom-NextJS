@@ -21,9 +21,7 @@ describe("buildCsv", () => {
   });
 
   it("protects against formula injection starting with =, +, -, @", () => {
-    const columns = [
-      { header: "Formula", accessor: (r: { text: string }) => r.text },
-    ];
+    const columns = [{ header: "Formula", accessor: (r: { text: string }) => r.text }];
     const rows = [
       { text: "=cmd|' /C calc'!A0" },
       { text: "+12345" },
@@ -36,9 +34,9 @@ describe("buildCsv", () => {
     const lines = result.split("\r\n");
 
     expect(lines[1]).toBe("\"'=cmd|' /C calc'!A0\"");
-    expect(lines[2]).toBe("\"'+12345\"");
-    expect(lines[3]).toBe("\"'-500\"");
-    expect(lines[4]).toBe("\"'@SUM(1,2)\"");
+    expect(lines[2]).toBe('"\'+12345"');
+    expect(lines[3]).toBe('"\'-500"');
+    expect(lines[4]).toBe('"\'@SUM(1,2)"');
     expect(lines[5]).toBe("Safe Value");
   });
 
@@ -55,9 +53,7 @@ describe("buildCsv", () => {
   });
 
   it("handles null and undefined values safely", () => {
-    const columns = [
-      { header: "A", accessor: (r: { a?: string | null }) => r.a },
-    ];
+    const columns = [{ header: "A", accessor: (r: { a?: string | null }) => r.a }];
     const rows = [{ a: null }, { a: undefined }, { a: "" }];
 
     const result = buildCsv(columns, rows);

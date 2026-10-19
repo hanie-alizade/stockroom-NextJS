@@ -1,19 +1,12 @@
 import "server-only";
 
-import {
-  HTTP_STATUS,
-  IDEMPOTENCY_KEY_HEADER,
-  REPLAY_HEADER,
-} from "@/constants";
+import { HTTP_STATUS, IDEMPOTENCY_KEY_HEADER, REPLAY_HEADER } from "@/constants";
 import { adjustmentSchema } from "@/schemas";
 import { jsonResponse, parseJsonBody, withApi } from "@/server/http";
 import type { RouteContext } from "@/server/http";
 import { createAdjustment } from "@/server/services/inventory";
 
-export async function POST(
-  request: Request,
-  { params }: RouteContext,
-): Promise<Response> {
+export async function POST(request: Request, { params }: RouteContext): Promise<Response> {
   return withApi(request, async ({ user, repo }) => {
     const idempotencyKey = request.headers.get(IDEMPOTENCY_KEY_HEADER) ?? "";
     const parsed = await parseJsonBody(request, adjustmentSchema);

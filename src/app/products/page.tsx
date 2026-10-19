@@ -35,13 +35,13 @@ export default async function ProductsPage({
           queryKey: queryKeys.products.list(parsedParams),
           queryFn: () => listProducts(repo, parsedParams),
         })
-        .catch(() => { }),
+        .catch(() => {}),
       queryClient
         .query({
           queryKey: queryKeys.meta.all,
           queryFn: () => getMeta(repo, user),
         })
-        .catch(() => { }),
+        .catch(() => {}),
     ]);
   }
 

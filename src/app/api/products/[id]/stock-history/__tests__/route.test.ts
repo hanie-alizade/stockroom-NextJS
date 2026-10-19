@@ -143,7 +143,9 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("returns 404 for unknown product", async () => {
     const url = new URL("http://localhost/api/products/UNKNOWN-123/stock-history");
-    const response = await GET(new Request(url), { params: Promise.resolve({ id: "UNKNOWN-123" }) });
+    const response = await GET(new Request(url), {
+      params: Promise.resolve({ id: "UNKNOWN-123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -202,9 +204,7 @@ describe("GET /api/products/:id/stock-history", () => {
       unitCostSen: 6800,
     };
 
-    const mockStocks: StockRecord[] = [
-      { storeId: "s_mont_kiara", onHand: 18, reorderLevel: 5 },
-    ];
+    const mockStocks: StockRecord[] = [{ storeId: "s_mont_kiara", onHand: 18, reorderLevel: 5 }];
 
     const mockMovements: MovementRecord[] = [
       {
@@ -242,7 +242,9 @@ describe("GET /api/products/:id/stock-history", () => {
 
     vi.mocked(createRepository).mockReturnValue(mockRepo);
 
-    const url = new URL("http://localhost/api/products/KL-1042/stock-history?store=s_mont_kiara&days=7");
+    const url = new URL(
+      "http://localhost/api/products/KL-1042/stock-history?store=s_mont_kiara&days=7",
+    );
     const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 

@@ -28,9 +28,7 @@ interface Movement {
 
 describe("Seed integrity", () => {
   const users = seedData.users as User[];
-  const managerUserIds = new Set(
-    users.filter((u) => u.role === "manager").map((u) => u.id),
-  );
+  const managerUserIds = new Set(users.filter((u) => u.role === "manager").map((u) => u.id));
   const stockMap = seedData.stock as Record<string, StockRow[]>;
   const movements = seedData.movements as Movement[];
 
@@ -159,9 +157,7 @@ describe("Seed integrity", () => {
     for (const m of movements) {
       if (m.type === "write_off" || m.type === "transfer_out" || m.type === "transfer_in") {
         if (!managerUserIds.has(m.userId)) {
-          errors.push(
-            `Movement ${m.type} for ${m.productId} made by non-manager ${m.userId}`,
-          );
+          errors.push(`Movement ${m.type} for ${m.productId} made by non-manager ${m.userId}`);
         }
       }
       if (m.type === "write_off") {

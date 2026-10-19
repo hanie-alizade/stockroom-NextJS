@@ -78,7 +78,7 @@ export function ProductsChips({
           {chips.map((chip) => (
             <div
               key={chip.key}
-              className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap border-border-default bg-bg-surface text-label text-text-primary inline-flex h-[30px] items-center gap-1.5 rounded-full border py-1 pr-1.5 pl-3 select-none"
+              className="border-border-default bg-bg-surface text-label text-text-primary inline-flex h-[30px] max-w-32 items-center gap-1.5 overflow-hidden rounded-full border py-1 pr-1.5 pl-3 text-ellipsis whitespace-nowrap select-none"
             >
               <span>{chip.label}</span>
               <button

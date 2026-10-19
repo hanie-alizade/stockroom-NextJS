@@ -28,10 +28,7 @@ export function useProductsExport(query: ProductListQuery): {
       let allItems: ProductListItem[] = [...firstRes.items];
 
       if (totalPages > 1) {
-        const remainingPages = Array.from(
-          { length: totalPages - 1 },
-          (_, idx) => idx + 2,
-        );
+        const remainingPages = Array.from({ length: totalPages - 1 }, (_, idx) => idx + 2);
         const remainingResponses = await Promise.all(
           remainingPages.map((page) =>
             getProductList({

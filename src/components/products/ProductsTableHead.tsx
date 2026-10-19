@@ -32,11 +32,8 @@ export function ProductsTableHead({
   return (
     <thead>
       <tr className="bg-bg-subtle border-border-default h-10 border-y">
-        <th scope="col" className="w-[44px] px-md text-center align-middle">
-          <div
-            className="inline-flex items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <th scope="col" className="px-md w-[44px] text-center align-middle">
+          <div className="inline-flex items-center" onClick={(e) => e.stopPropagation()}>
             <Checkbox
               aria-label="Select all rows"
               checked={checkedState}
@@ -115,7 +112,7 @@ export function ProductsTableHead({
           onSort={onSort}
         />
 
-        <th scope="col" className="w-[44px] pr-md text-right align-middle">
+        <th scope="col" className="pr-md w-[44px] text-right align-middle">
           <span className="sr-only">Row actions</span>
         </th>
       </tr>

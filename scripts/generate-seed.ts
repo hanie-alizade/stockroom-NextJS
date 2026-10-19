@@ -407,7 +407,6 @@ function makeProductsUnique(products: Product[]): Product[] {
   });
 }
 
-
 const PRODUCT_FIXTURES: Product[] = [
   {
     sku: "KL-1042",
@@ -767,7 +766,9 @@ function generateProductMovements(
                 !mA.transferId &&
                 !mB.transferId
               ) {
-                const transferTime = new Date(Math.floor((overlapMin + overlapMax) / 2)).toISOString();
+                const transferTime = new Date(
+                  Math.floor((overlapMin + overlapMax) / 2),
+                ).toISOString();
                 const transferId = `transfer-${product.sku}-${transferCounter++}`;
 
                 mA.type = "transfer_out";
@@ -829,9 +830,7 @@ function generateSeed() {
     generateStockRows(finalProducts, productFixtures),
   );
 
-  const otherProducts = finalProducts.filter(
-    (p) => !productFixtures.find((f) => f.sku === p.sku),
-  );
+  const otherProducts = finalProducts.filter((p) => !productFixtures.find((f) => f.sku === p.sku));
   const randomProduct = pick(otherProducts.slice(2));
   const randomStock = finalStockMap[randomProduct.sku];
   if (randomStock && randomStock.length > 0) {
@@ -858,20 +857,11 @@ function generateSeed() {
     for (const product of finalProducts) {
       const rows = finalStockMap[product.sku] || [];
       movements.push(
-        ...generateProductMovements(
-          product,
-          rows,
-          now,
-          ninetyDaysAgo,
-          todayStr,
-          currentYear,
-        ),
+        ...generateProductMovements(product, rows, now, ninetyDaysAgo, todayStr, currentYear),
       );
     }
 
-    movements.sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    );
+    movements.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }
 
   return {

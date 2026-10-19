@@ -12,4 +12,3 @@ export const movementListQuerySchema = paginationQuerySchema.extend({
 });
 
 export const productMovementsQuerySchema = movementListQuerySchema;
-

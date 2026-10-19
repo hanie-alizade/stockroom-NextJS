@@ -52,9 +52,7 @@ export function ProductsHeader({
     : `${totalProducts} products`;
 
   const syncedText =
-    mounted && dataUpdatedAt
-      ? `synced ${formatRelativeTime(dataUpdatedAt, now)}`
-      : null;
+    mounted && dataUpdatedAt ? `synced ${formatRelativeTime(dataUpdatedAt, now)}` : null;
 
   const subtitle = syncedText ? `${baseSubtitle} · ${syncedText}` : baseSubtitle;
 
@@ -90,4 +88,3 @@ export function ProductsHeader({
     </div>
   );
 }
-

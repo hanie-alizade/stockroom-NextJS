@@ -38,7 +38,7 @@ export function MovementTypePill({ type, className }: MovementTypePillProps): Re
   return (
     <span
       className={cn(
-        "text-label inline-flex h-[22px] items-center gap-xs rounded-full px-sm whitespace-nowrap",
+        "text-label gap-xs px-sm inline-flex h-[22px] items-center rounded-full whitespace-nowrap",
         colorClass,
         className,
       )}

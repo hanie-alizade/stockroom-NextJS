@@ -78,18 +78,20 @@ function filterProducts(
       movements[0]?.createdAt ?? DEFAULT_PRODUCT_UPDATED_AT,
     );
 
-    return [{
-      id: product.sku,
-      sku: product.sku,
-      name: product.name,
-      category: product.category,
-      supplier: product.supplier,
-      unitCostSen: product.unitCostSen,
-      onHand,
-      reorderLevel,
-      status: itemStatus,
-      updatedAt,
-    }];
+    return [
+      {
+        id: product.sku,
+        sku: product.sku,
+        name: product.name,
+        category: product.category,
+        supplier: product.supplier,
+        unitCostSen: product.unitCostSen,
+        onHand,
+        reorderLevel,
+        status: itemStatus,
+        updatedAt,
+      },
+    ];
   });
 }
 

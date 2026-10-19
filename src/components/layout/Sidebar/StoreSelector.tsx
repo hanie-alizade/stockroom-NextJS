@@ -77,4 +77,3 @@ export function StoreSelector(): React.ReactElement {
     </div>
   );
 }
-

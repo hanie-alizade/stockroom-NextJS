@@ -74,4 +74,3 @@ export type StockHistory = {
   reorderLevel: number;
   days: number;
 };
-

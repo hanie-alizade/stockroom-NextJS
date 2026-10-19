@@ -14,11 +14,7 @@ import { AppError } from "@/domain";
 import { parseProductDetailParams } from "@/helpers";
 import { createRepository } from "@/server/repositories";
 import { getMeta } from "@/server/services/meta";
-import {
-  getProductDetail,
-  getProductMovements,
-  getStockHistory,
-} from "@/server/services/products";
+import { getProductDetail, getProductMovements, getStockHistory } from "@/server/services/products";
 import { getCurrentUser } from "@/server/session";
 
 export const metadata: Metadata = {

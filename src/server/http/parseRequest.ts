@@ -26,11 +26,7 @@ export async function parseJsonBody<T extends z.ZodTypeAny>(
   try {
     raw = await request.json();
   } catch {
-    throw new AppError(
-      ERROR_CODE.INVALID_JSON,
-      HTTP_STATUS.BAD_REQUEST,
-      "Invalid JSON body",
-    );
+    throw new AppError(ERROR_CODE.INVALID_JSON, HTTP_STATUS.BAD_REQUEST, "Invalid JSON body");
   }
   return schema.parse(raw);
 }

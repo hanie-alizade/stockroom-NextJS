@@ -26,9 +26,7 @@ export function ProductsSelectionToolbar({
           onCheckedChange={onTogglePage}
           aria-label="Select all rows on current page"
         />
-        <span className="text-label text-text-primary font-semibold">
-          {selectedCount} selected
-        </span>
+        <span className="text-label text-text-primary font-semibold">{selectedCount} selected</span>
       </div>
 
       <div className="flex items-center gap-2">

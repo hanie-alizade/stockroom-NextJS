@@ -15,7 +15,13 @@ function formatCell(val: unknown): string {
   }
 
   // Quote cell if it contains comma, double-quote, newline, or leading single-quote from formula protection
-  if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r") || str.startsWith("'")) {
+  if (
+    str.includes(",") ||
+    str.includes('"') ||
+    str.includes("\n") ||
+    str.includes("\r") ||
+    str.startsWith("'")
+  ) {
     return `"${str.replace(/"/g, '""')}"`;
   }
 
@@ -24,9 +30,7 @@ function formatCell(val: unknown): string {
 
 export function buildCsv<T>(columns: readonly CsvColumn<T>[], rows: readonly T[]): string {
   const headerRow = columns.map((col) => formatCell(col.header)).join(",");
-  const dataRows = rows.map((row) =>
-    columns.map((col) => formatCell(col.accessor(row))).join(","),
-  );
+  const dataRows = rows.map((row) => columns.map((col) => formatCell(col.accessor(row))).join(","));
 
   return [headerRow, ...dataRows].join("\r\n");
 }

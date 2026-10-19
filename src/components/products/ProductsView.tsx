@@ -2,20 +2,11 @@
 
 import { useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import {
-  useProductListUrlState,
-  useProductSelection,
-  useProductsExport,
-} from "@/hooks";
+import { useProductListUrlState, useProductSelection, useProductsExport } from "@/hooks";
 import { useQueryMeta, useQueryProductList } from "@/apiHooks";
 import { Banner, Pagination } from "@/components/common";
 import { buildCsv, downloadCsv, cn, productCsvColumns, normalizePageSize } from "@/helpers";
-import {
-  ALL_STORES,
-  DEFAULT_PAGE,
-  DEFAULT_PAGE_SIZE,
-  TIME_ZONE,
-} from "@/constants";
+import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, TIME_ZONE } from "@/constants";
 import { useCurrentUser } from "@/providers";
 import { ProductsHeader } from "./ProductsHeader";
 import { ProductsSummary } from "./ProductsSummary";
@@ -23,10 +14,7 @@ import { ProductsToolbar } from "./ProductsToolbar";
 import { ProductsSelectionToolbar } from "./ProductsSelectionToolbar";
 import { ProductsChips } from "./ProductsChips";
 import { ProductsTable } from "./ProductsTable";
-import type {
-  PageSize,
-  ProductListSummary,
-} from "@/types";
+import type { PageSize, ProductListSummary } from "@/types";
 
 export function ProductsView(): React.ReactElement {
   const router = useRouter();
@@ -160,7 +148,6 @@ export function ProductsView(): React.ReactElement {
         onExport={() => void exportAll()}
         isExporting={isExporting}
       />
-
 
       <ProductsSummary
         summary={summary}

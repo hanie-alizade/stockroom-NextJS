@@ -12,12 +12,7 @@ import {
 import { AppError } from "@/domain";
 import { paginate } from "@/helpers";
 import type { Repository } from "@/server/repositories";
-import type {
-  Movement,
-  MovementListResponse,
-  MovementPeriod,
-  MovementType,
-} from "@/types";
+import type { Movement, MovementListResponse, MovementPeriod, MovementType } from "@/types";
 
 import { toMovementDto } from "@/server/services/movementDto";
 
@@ -42,15 +37,7 @@ export async function getProductMovements(
     throw new AppError(ERROR_CODE.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Product not found");
   }
 
-  const {
-    store = ALL_STORES,
-    type,
-    from,
-    to,
-    period,
-    page = DEFAULT_PAGE,
-    pageSize,
-  } = params;
+  const { store = ALL_STORES, type, from, to, period, page = DEFAULT_PAGE, pageSize } = params;
 
   const activePeriod = period ?? (from || to ? undefined : DEFAULT_PERIOD);
   let effectiveFrom = from;
@@ -105,4 +92,3 @@ export async function getProductMovements(
     total,
   };
 }
-
