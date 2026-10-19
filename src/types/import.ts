@@ -1,26 +1,21 @@
-import type { z } from "zod";
-import type { importRequestSchema } from "@/schemas";
+import type {
+  IMPORT_ACTION,
+  IMPORT_ERROR_CODE,
+  IMPORT_FIELD,
+  IMPORT_ROW_STATUS,
+} from "@/constants";
 
-export type ImportRequest = z.infer<typeof importRequestSchema>;
+export type ImportField = (typeof IMPORT_FIELD)[keyof typeof IMPORT_FIELD];
 
-export type ImportField = "sku" | "name" | "category" | "quantity" | "unitCost";
+export type ImportErrorCode = (typeof IMPORT_ERROR_CODE)[keyof typeof IMPORT_ERROR_CODE];
 
-export type ImportErrorCode =
-  | "MISSING_REQUIRED"
-  | "INVALID_QUANTITY"
-  | "INVALID_UNIT_COST"
-  | "INVALID_SKU"
-  | "UNKNOWN_CATEGORY"
-  | "DUPLICATE_SKU_IN_FILE"
-  | "NAME_TOO_LONG";
+export type ImportRowStatus = (typeof IMPORT_ROW_STATUS)[keyof typeof IMPORT_ROW_STATUS];
 
-export type ImportContext = {
-  rowNumber: number;
-  mapping: Partial<Record<ImportField, string>>;
-  categories: readonly string[];
-  existingSkus: ReadonlySet<string>;
-  duplicateOfRow?: number; // set when an earlier row had the same SKU: the number of that first row
-};
+export type ImportAction = (typeof IMPORT_ACTION)[keyof typeof IMPORT_ACTION];
+
+export type ImportMapping = Partial<Record<ImportField, string>>;
+
+export type ImportRowValues = Record<ImportField, string>;
 
 export type ImportRowError = {
   code: ImportErrorCode;
@@ -30,8 +25,9 @@ export type ImportRowError = {
 
 export type ImportRowResult = {
   rowNumber: number;
-  status: "valid" | "invalid";
-  action?: "create" | "update";
+  status: ImportRowStatus;
+  action?: ImportAction;
+  values: ImportRowValues;
   data?: {
     sku: string;
     name: string;
@@ -40,4 +36,35 @@ export type ImportRowResult = {
     unitCostSen: number;
   };
   errors: ImportRowError[];
+};
+
+export type ImportValidationSummary = {
+  total: number;
+  valid: number;
+  invalid: number;
+  willCreate: number;
+  willUpdate: number;
+};
+
+export type ImportValidationResult = {
+  summary: ImportValidationSummary;
+  rows: ImportRowResult[];
+};
+
+export type ImportCommitResult = {
+  created: number;
+  updated: number;
+  unchanged: number;
+  skipped: number;
+  skippedRows: {
+    rowNumber: number;
+    errors: ImportRowError[];
+  }[];
+};
+
+export type ImportRowContext = {
+  rowNumber: number;
+  categories: readonly string[];
+  existingSkus: ReadonlySet<string>;
+  duplicateOfRow?: number;
 };

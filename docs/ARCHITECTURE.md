@@ -174,12 +174,12 @@ src/types/product.ts
   type StockStatus = "in_stock" | "low" | "out"
   type ProductSortKey = "updatedAt" | "sku" | "name" | "category" | "onHand" | "reorderLevel" | "unitCostSen" | "status"
   type ProductListQuery = z.infer<typeof productListQuerySchema>   // store, q, category, status, sort, dir, page, pageSize
-  type ProductListItem = { id: string; sku: string; name: string; category: string; supplier: string;
+  type ProductListItem = { id: string; sku: string; name: string; category: string; supplier: string | null;
     unitCostSen: number; onHand: number; reorderLevel: number; status: StockStatus; updatedAt: string }
   type ProductListSummary = { totalProducts: number; stockValueSen: number; lowStock: number; outOfStock: number }
   type ProductListResponse = Paginated<ProductListItem> & { summary: ProductListSummary }
   type StockByStore = { storeId: StoreId; onHand: number; reorderLevel: number; status: StockStatus; lastMovementAt: string | null }
-  type ProductDetail = { id: string; sku: string; name: string; category: string; supplier: string; unitCostSen: number;
+  type ProductDetail = { id: string; sku: string; name: string; category: string; supplier: string | null; unitCostSen: number;
     onHand: number; reorderLevel: number; status: StockStatus; stockValueSen: number;
     lastMovementAt: string | null; stockByStore: StockByStore[] }
   type StockHistoryPoint = { date: string; onHand: number }
@@ -202,13 +202,20 @@ src/types/import.ts
   type ImportField = "sku" | "name" | "category" | "quantity" | "unitCost"
   type ImportErrorCode = "MISSING_REQUIRED" | "INVALID_QUANTITY" | "INVALID_UNIT_COST" | "INVALID_SKU"
     | "UNKNOWN_CATEGORY" | "DUPLICATE_SKU_IN_FILE" | "NAME_TOO_LONG"
-  type ImportContext = { rowNumber: number; mapping: Partial<Record<ImportField, string>>;
-    categories: readonly string[]; existingSkus: ReadonlySet<string>;
-    duplicateOfRow?: number }                 // set when an earlier row had the same SKU: the number of that first row
+  type ImportRowStatus = "valid" | "invalid"
+  type ImportAction = "create" | "update"
+  type ImportMapping = Record<ImportField, string>
+  type ImportRowValues = Record<ImportField, string>
   type ImportRowError = { code: ImportErrorCode; field: ImportField; message: string }
-  type ImportRowResult = { rowNumber: number; status: "valid" | "invalid"; action?: "create" | "update";
+  type ImportRowResult = { rowNumber: number; status: ImportRowStatus; action?: ImportAction;
+    values: ImportRowValues;
     data?: { sku: string; name: string; category: string; quantity: number; unitCostSen: number };
     errors: ImportRowError[] }
+  type ImportValidationSummary = { total: number; valid: number; invalid: number; willCreate: number; willUpdate: number }
+  type ImportValidationResult = { summary: ImportValidationSummary; rows: ImportRowResult[] }
+  type ImportCommitResult = { created: number; updated: number; unchanged: number; skipped: number;
+    skippedRows: { rowNumber: number; errors: ImportRowError[] }[] }
+  type ImportRowContext = { categories: readonly string[]; existingSkus: ReadonlySet<string>; duplicateOfRow?: number }
 ```
 
 ### Functions
@@ -235,19 +242,30 @@ src/domain/stockRules.ts
   ): { out: MovementDraft; in: MovementDraft }
     // throws AppError INSUFFICIENT_STOCK (409) or VALIDATION_ERROR with SAME_STORE (422)
 
-src/domain/importValidation.ts (planned, not built yet)
-  validateImportRow(row: Record<string, string>, context: ImportContext): ImportRowResult
+src/domain/importValidation.ts
+  normalizeSku(sku: string): string
+  findCategory(categories: readonly string[], name: string): string | null
+  validateImportRow(values: ImportRowValues, context: ImportRowContext): ImportRowError[]
+  buildImportRowResult(rowNumber: number, values: ImportRowValues, context: ImportRowContext): ImportRowResult
+
+src/helpers/csvParse.ts
+  parseCsv(text: string, options?: { preview?: number }): { headers: string[]; rows: Record<string, string>[]; rowCount: number }
+
+src/helpers/importMapping.ts
+  autoMatchColumns(headers: readonly string[]): Partial<Record<ImportField, string>>
 
 src/helpers/dates.ts
   formatWhen(date: Date | string, now: Date): string    // "2h ago", "Today, 09:10", "Yesterday", "12 Oct"
   formatDateTime(date: Date | string): string          // "14 Oct, 10:58"
 
 src/schemas/
-  adjustmentSchema, productListQuerySchema, importRequestSchema (Zod)
+  adjustmentSchema, productListQuerySchema, importFormSchema, importMappingSchema (Zod)
 
-src/server/services/importsService.ts (planned, not built yet)
-  parseCsv(text: string): { headers: string[]; rows: Record<string, string>[] }   // papaparse on the server, header row required
+src/server/services/imports/
+  readImportForm(request: Request, repo: Repository): Promise<ImportFileInput>
+  validateImport(repo: Repository, input: ImportFileInput): ImportValidationResult
+  commitImport(repo: Repository, input: ImportFileInput, ctx: ImportCommitContext): Promise<ImportCommitResultWithReplay>
 
 src/server/services/inventory/createAdjustment.ts
-  createAdjustment(input: Adjustment, ctx: { role: Role; idempotencyKey: string }): Promise<AdjustmentResult>
+  createAdjustment(repo: Repository, productId: string, input: Adjustment, ctx: AdjustmentContext): Promise<AdjustmentResult>
 ```

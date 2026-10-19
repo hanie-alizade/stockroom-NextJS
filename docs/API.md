@@ -163,24 +163,61 @@ A replay of the same key and payload returns the same body and status, plus `Ide
 
 Manager only. Stateless: the request sends the file and the mapping, and the server parses and validates everything.
 
-Body: `multipart/form-data` with `file` (the CSV, at most 5 MB, else 413 `FILE_TOO_LARGE`; unreadable or no header, else 422 `INVALID_FILE`), `storeId`, and `mapping` (JSON text such as `{ "sku": "Item code", ... }`). The server parses the CSV itself (header row, empty lines skipped, at most 2000 rows).
+Body: `multipart/form-data` with:
+- `file`: the CSV file (at most 5 MB, else 413 `FILE_TOO_LARGE`; unreadable, empty or no header, else 422 `INVALID_FILE`; max 2000 data rows, else 422 `IMPORT_TOO_LARGE`).
+- `storeId`: target store ID (unknown store returns 404 `STORE_NOT_FOUND`).
+- `mapping`: JSON text such as `{ "sku": "Item code", "name": "Description", "category": "Group", "quantity": "Qty", "unitCost": "Cost (RM)" }` (all required fields must be mapped, no column reused; bad mapping returns 422 `VALIDATION_ERROR`).
 
-Response 200:
+Response 200: every row, valid or not, carries `values` (raw mapped strings) so the UI can highlight bad cells without repeating the mapping:
 
 ```json
-{ "summary": { "total": 60, "valid": 53, "invalid": 7, "willCreate": 12, "willUpdate": 41 },
-  "rows": [ { "rowNumber": 2, "status": "valid", "action": "update", "data": { ... }, "errors": [] },
-            { "rowNumber": 9, "status": "invalid", "errors": [ { "code": "INVALID_QUANTITY", "field": "quantity", "message": "..." } ] } ] }
+{
+  "summary": { "total": 60, "valid": 53, "invalid": 7, "willCreate": 12, "willUpdate": 41 },
+  "rows": [
+    {
+      "rowNumber": 1,
+      "status": "valid",
+      "action": "update",
+      "values": { "sku": "KL-1042", "name": "Arabica beans 1 kg", "category": "Coffee", "quantity": "25", "unitCost": "68.00" },
+      "data": { "sku": "KL-1042", "name": "Arabica beans 1 kg", "category": "Coffee", "quantity": 25, "unitCostSen": 6800 },
+      "errors": []
+    },
+    {
+      "rowNumber": 9,
+      "status": "invalid",
+      "values": { "sku": "BAD-1", "name": "Bad Item", "category": "Coffee", "quantity": "-5", "unitCost": "10.00" },
+      "errors": [
+        { "code": "INVALID_QUANTITY", "field": "quantity", "message": "Quantity can't be negative" }
+      ]
+    }
+  ]
+}
 ```
 
 Nothing is saved by this route.
 
 ### POST `/api/imports/commit`
 
-Manager only. `Idempotency-Key` required. Same body as validate (the file is sent again). The server validates again, applies the valid rows in one transaction, skips invalid ones and returns:
+Manager only. `Idempotency-Key` required (missing key returns 400 `IDEMPOTENCY_KEY_REQUIRED`).
+Same multipart body as validate (the file is sent again). The server validates again, applies all valid rows in ONE transaction, skips invalid ones, writes `import` movements when quantity delta is not 0 (with balanceAfter = quantity and reason = fileName), and persists idempotency. Replaying the same key and request returns 200 with header `Idempotent-Replay: true`. Reusing key with a different payload returns 422 `IDEMPOTENCY_KEY_REUSED`.
+
+Response 200:
 
 ```json
-{ "created": 12, "updated": 40, "unchanged": 1, "skipped": 7, "skippedRows": [ { "rowNumber": 9, "errors": [ ... ] } ] }
+{
+  "created": 12,
+  "updated": 40,
+  "unchanged": 1,
+  "skipped": 7,
+  "skippedRows": [
+    {
+      "rowNumber": 9,
+      "errors": [
+        { "code": "INVALID_QUANTITY", "field": "quantity", "message": "Quantity can't be negative" }
+      ]
+    }
+  ]
+}
 ```
 
 ### POST `/api/test/reset`
