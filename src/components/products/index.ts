@@ -10,3 +10,6 @@ export { ProductsTableRow } from "./ProductsTableRow";
 export { ProductsTableSkeleton } from "./ProductsTableSkeleton";
 export { ProductsEmptyState } from "./ProductsEmptyState";
 export { ProductsSortHeader } from "./ProductsSortHeader";
+export { ProductCard } from "./ProductCard";
+export { ProductCardList } from "./ProductCardList";
+export { ProductsFiltersSheet } from "./ProductsFiltersSheet";

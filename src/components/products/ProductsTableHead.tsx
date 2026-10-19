@@ -32,7 +32,10 @@ export function ProductsTableHead({
   return (
     <thead>
       <tr className="bg-bg-subtle border-border-default h-10 border-y">
-        <th scope="col" className="w-[44px] px-md text-center align-middle">
+        <th
+          scope="col"
+          className="w-[44px] min-w-[44px] max-w-[44px] px-md text-center align-middle sticky left-0 z-20 bg-bg-subtle"
+        >
           <div
             className="inline-flex items-center"
             onClick={(e) => e.stopPropagation()}
@@ -51,7 +54,7 @@ export function ProductsTableHead({
           currentSort={sort}
           currentDir={dir}
           onSort={onSort}
-          className="w-[100px]"
+          className="w-[100px] min-w-[100px] max-w-[100px] sticky left-[44px] z-20 bg-bg-subtle"
         />
 
         <ProductsSortHeader
@@ -60,6 +63,7 @@ export function ProductsTableHead({
           currentSort={sort}
           currentDir={dir}
           onSort={onSort}
+          className="w-[220px] min-w-[220px] max-w-[220px] sticky left-[144px] z-20 bg-bg-subtle border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]"
         />
 
         <ProductsSortHeader

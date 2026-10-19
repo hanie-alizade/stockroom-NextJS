@@ -256,3 +256,19 @@ export function toggleProductListSort(
   };
   router.push(buildProductListUrl(pathname, next));
 }
+
+export function setProductListSort(
+  router: RouterInstance,
+  pathname: string,
+  current: ProductListQuery,
+  sort?: ProductSortKey,
+  dir?: SortDirection,
+): void {
+  const next: ProductListQuery = {
+    ...current,
+    sort,
+    dir: sort ? (dir ?? SORT_DIRECTION.DESC) : undefined,
+  };
+  router.push(buildProductListUrl(pathname, next));
+}
+

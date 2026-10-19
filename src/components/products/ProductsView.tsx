@@ -46,6 +46,7 @@ export function ProductsView(): React.ReactElement {
     setPage,
     setPageSize,
     toggleSort,
+    setSort,
   } = useProductListUrlState();
 
   const {
@@ -197,6 +198,9 @@ export function ProductsView(): React.ReactElement {
             onSearchChange={setSearch}
             onCategoryChange={setCategory}
             onStatusChange={setStatus}
+            sort={query.sort}
+            dir={query.dir}
+            onSortChange={setSort}
           />
         )}
 
