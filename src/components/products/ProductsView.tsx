@@ -9,11 +9,13 @@ import {
 } from "@/hooks";
 import { useQueryMeta, useQueryProductList } from "@/apiHooks";
 import { Banner, Pagination } from "@/components/common";
+import { PageContainer } from "@/components/layout";
 import { buildCsv, downloadCsv, cn, productCsvColumns, normalizePageSize } from "@/helpers";
 import {
   ALL_STORES,
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
+  NOTICE,
   TIME_ZONE,
 } from "@/constants";
 import { useCurrentUser } from "@/providers";
@@ -125,7 +127,7 @@ export function ProductsView(): React.ReactElement {
   }, [selectedItems, query.sort, query.dir]);
 
   const notice = searchParams.get("notice");
-  const showNotice = notice === "managers-only";
+  const showNotice = notice === NOTICE.MANAGERS_ONLY;
 
   const handleDismissNotice = useCallback(() => {
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -143,7 +145,7 @@ export function ProductsView(): React.ReactElement {
   const showErrorEmpty = isError && items.length === 0;
 
   return (
-    <div className="bg-bg-canvas gap-2xl p-3xl flex flex-col">
+    <PageContainer>
       {showNotice && (
         <Banner
           variant="info"
@@ -243,6 +245,6 @@ export function ProductsView(): React.ReactElement {
           />
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

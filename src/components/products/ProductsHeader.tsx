@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ALL_STORES, PERMISSION } from "@/constants";
 import { DownloadIcon, UploadIcon } from "@/components/icons";
-import { useHasPermission } from "@/providers";
+import { PermissionGate } from "@/components/common";
 import { useQueryMeta } from "@/apiHooks";
 import { formatRelativeTime } from "@/helpers";
 import { useNow } from "@/hooks";
@@ -27,7 +27,6 @@ export function ProductsHeader({
   onExport,
   isExporting = false,
 }: ProductsHeaderProps): React.ReactElement {
-  const hasImportPermission = useHasPermission(PERMISSION.IMPORT);
   const { data: meta } = useQueryMeta();
   const mounted = useSyncExternalStore(
     emptySubscribe,
@@ -77,7 +76,7 @@ export function ProductsHeader({
           <span>{isExporting ? "Exporting…" : "Export"}</span>
         </button>
 
-        {hasImportPermission && (
+        <PermissionGate permission={PERMISSION.IMPORT}>
           <Link
             href="/import"
             className="bg-accent-default hover:bg-accent-hover text-text-on-accent text-label inline-flex h-9 items-center gap-2 rounded-md px-3 transition-colors"
@@ -85,7 +84,7 @@ export function ProductsHeader({
             <UploadIcon className="size-4 shrink-0" />
             <span>Import CSV</span>
           </Link>
-        )}
+        </PermissionGate>
       </div>
     </div>
   );

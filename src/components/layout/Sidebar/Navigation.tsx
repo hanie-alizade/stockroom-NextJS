@@ -2,14 +2,13 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { BoxIcon, UploadIcon, SupplierIcon, ReportIcon } from "@/components/icons";
-import { NavItem } from "./NavItem";
-import { useHasPermission } from "@/providers";
+import { PermissionGate } from "@/components/common";
 import { PERMISSION } from "@/constants";
+import { NavItem } from "./NavItem";
 
 export function Navigation(): React.ReactElement {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const hasImportPermission = useHasPermission(PERMISSION.IMPORT);
 
   const isProductsActive = pathname.startsWith("/products");
   const isImportActive = pathname === "/import";
@@ -17,17 +16,15 @@ export function Navigation(): React.ReactElement {
   const currentStore = searchParams.get("store");
   const productsHref = currentStore ? `/products?store=${currentStore}` : "/products";
 
-  const showImport = hasImportPermission;
-
   return (
     <nav className="flex flex-col gap-1">
       <span className="text-overline text-text-secondary mb-2">INVENTORY</span>
 
       <NavItem href={productsHref} icon={BoxIcon} label="Products" active={isProductsActive} />
 
-      {showImport && (
+      <PermissionGate permission={PERMISSION.IMPORT}>
         <NavItem href="/import" icon={UploadIcon} label="Import" active={isImportActive} />
-      )}
+      </PermissionGate>
 
       <NavItem href="/suppliers" icon={SupplierIcon} label="Suppliers" disabled badgeText="Soon" />
 
