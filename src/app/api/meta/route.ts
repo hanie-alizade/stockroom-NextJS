@@ -1,8 +1,11 @@
 import "server-only";
 
-import { withApi } from "@/server/http/withApi";
+import { jsonResponse, withApi } from "@/server/http";
 import { getMeta } from "@/server/services/meta";
 
 export async function GET(request: Request): Promise<Response> {
-  return withApi(async ({ user, repo }) => getMeta(repo, user), { request });
+  return withApi(request, async ({ user, repo }) => {
+    const data = await getMeta(repo, user);
+    return jsonResponse(data);
+  });
 }

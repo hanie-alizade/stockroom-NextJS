@@ -1,14 +1,14 @@
 import { z } from "zod";
-import { MOVEMENT_TYPE } from "@/constants";
-import { storeScopeSchema } from "./common";
+import { MOVEMENT_TYPE, PERIOD } from "@/constants";
+import { paginationQuerySchema, storeScopeSchema } from "./common";
 
-export const movementListQuerySchema = z.object({
+export const movementListQuerySchema = paginationQuerySchema.extend({
   store: storeScopeSchema.optional(),
   type: z.nativeEnum(MOVEMENT_TYPE).optional(),
   from: z.string().optional(),
   to: z.string().optional(),
-  page: z.coerce.number().int().positive().optional(),
-  pageSize: z.coerce.number().int().positive().optional(),
+  period: z.nativeEnum(PERIOD).optional(),
+  fail: z.string().optional(),
 });
 
 export const productMovementsQuerySchema = movementListQuerySchema;

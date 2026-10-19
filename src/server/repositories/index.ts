@@ -1,10 +1,10 @@
 import type {
   Repository,
-  Product,
-  Stock,
-  Movement,
-  User,
-  Store,
+  ProductRecord,
+  StockRecord,
+  MovementRecord,
+  UserRecord,
+  StoreRecord,
   Category,
   Supplier,
   IdempotencyRecord,
@@ -13,13 +13,14 @@ import { createRepository } from "./inMemory";
 
 export type {
   Repository,
-  Product,
-  Stock,
-  Movement,
-  User,
-  Store,
+  ProductRecord,
+  StockRecord,
+  MovementRecord,
+  UserRecord,
+  StoreRecord,
   Category,
   Supplier,
   IdempotencyRecord,
 };
 export { createRepository };
+export { rebaseSeed } from "./rebaseSeed";

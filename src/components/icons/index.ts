@@ -1,3 +1,4 @@
+export type { IconComponent, IconProps } from "./types";
 export { SearchIcon } from "./SearchIcon";
 export { ChevronDownIcon } from "./ChevronDownIcon";
 export { ChevronRightIcon } from "./ChevronRightIcon";
@@ -17,3 +18,4 @@ export { InfoIcon } from "./InfoIcon";
 export { ReportIcon } from "./ReportIcon";
 export { SupplierIcon } from "./SupplierIcon";
 export { BoxIcon } from "./BoxIcon";
+export { TransferIcon } from "./TransferIcon";

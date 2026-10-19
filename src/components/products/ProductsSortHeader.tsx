@@ -11,6 +11,7 @@ interface ProductsSortHeaderProps {
   onSort: (column: ProductSortKey) => void;
   align?: "left" | "right";
   className?: string;
+  hideInactiveIcon?: boolean;
 }
 
 export function ProductsSortHeader({
@@ -21,20 +22,32 @@ export function ProductsSortHeader({
   onSort,
   align = "left",
   className,
+  hideInactiveIcon = false,
 }: ProductsSortHeaderProps): React.ReactElement {
   const isActive = currentSort === column;
-  const ariaSort = isActive
-    ? currentDir === SORT_DIRECTION.DESC
-      ? "descending"
-      : "ascending"
-    : undefined;
+  let ariaSort: "descending" | "ascending" | undefined;
+  if (isActive) {
+    ariaSort = currentDir === SORT_DIRECTION.DESC ? "descending" : "ascending";
+  }
+
+  let sortIcon: React.ReactNode = null;
+  if (isActive) {
+    sortIcon =
+      currentDir === SORT_DIRECTION.DESC ? (
+        <ArrowDownIcon className="text-text-primary size-3.5 shrink-0" />
+      ) : (
+        <ArrowUpIcon className="text-text-primary size-3.5 shrink-0" />
+      );
+  } else if (!hideInactiveIcon) {
+    sortIcon = <SortIcon className="text-text-tertiary size-3.5 shrink-0" />;
+  }
 
   return (
     <th
       scope="col"
       aria-sort={ariaSort}
       className={cn(
-        "px-md h-10 select-none text-left align-middle",
+        "px-md h-10 text-left align-middle select-none",
         align === "right" && "text-right",
         className,
       )}
@@ -43,23 +56,13 @@ export function ProductsSortHeader({
         type="button"
         onClick={() => onSort(column)}
         className={cn(
-          "text-label inline-flex items-center gap-xs transition-colors focus:outline-none",
-          isActive
-            ? "text-text-primary"
-            : "text-text-secondary hover:text-text-primary",
+          "text-label gap-xs inline-flex items-center transition-colors focus:outline-none",
+          isActive ? "text-text-primary" : "text-text-secondary hover:text-text-primary",
           align === "right" && "ml-auto justify-end",
         )}
       >
         <span>{label}</span>
-        {isActive ? (
-          currentDir === SORT_DIRECTION.DESC ? (
-            <ArrowDownIcon className="text-text-primary size-3.5 shrink-0" />
-          ) : (
-            <ArrowUpIcon className="text-text-primary size-3.5 shrink-0" />
-          )
-        ) : (
-          <SortIcon className="text-text-tertiary size-3.5 shrink-0" />
-        )}
+        {sortIcon}
       </button>
     </th>
   );

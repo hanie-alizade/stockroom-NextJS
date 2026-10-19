@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { MOVEMENT_TYPE } from "@/constants";
+import type { MOVEMENT_TYPE, PERIOD } from "@/constants";
 import type { movementListQuerySchema } from "@/schemas";
 import type { Paginated } from "./common";
 import type { StoreId } from "./store";
@@ -27,31 +27,8 @@ export type Movement = MovementDraft & {
   counterpartStoreId?: StoreId;
 };
 
-export type MovementPeriod = "7d" | "30d" | "90d";
+export type MovementPeriod = (typeof PERIOD)[keyof typeof PERIOD];
 
 export type MovementListQuery = z.infer<typeof movementListQuerySchema>;
 
 export type MovementListResponse = Paginated<Movement>;
-
-// Repository internal type
-export type MovementRecord = {
-  id: string;
-  productId: string;
-  storeId: string;
-  type: MovementType;
-  quantity: number;
-  balanceAfter: number;
-  reason: string | null;
-  transferId: string | null;
-  createdAt: string;
-  userId: string;
-};
-
-export type MovementWithUser = MovementRecord & { createdBy: string };
-
-export type ProductMovementsResult = {
-  items: MovementWithUser[];
-  page: number;
-  pageSize: number;
-  total: number;
-};

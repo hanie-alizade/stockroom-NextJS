@@ -11,6 +11,7 @@ export const getCurrentUser = cache(async (): Promise<User> => {
   const users = repo.getUsers();
   const cookieStore = await cookies();
   const userId = cookieStore.get(SESSION_COOKIE)?.value;
+  // Unknown or missing cookie falls back to Staff (least privilege)
   const user =
     users.find((u) => u.id === userId) ?? users.find((u) => u.role === ROLE.STAFF) ?? users[0];
   return user;

@@ -6,6 +6,9 @@ import { queryKeys } from "@/constants";
 import { createRepository } from "@/server/repositories";
 import { listProducts } from "@/server/services/products";
 
+import { getMeta } from "@/server/services/meta";
+import { getCurrentUser } from "@/server/session";
+
 export const metadata: Metadata = {
   title: "Products",
 };
@@ -21,12 +24,26 @@ export default async function ProductsPage({
   const parsedParams = parseProductListParams(resolvedSearchParams);
 
   const queryClient = new QueryClient();
-  const repo = createRepository();
 
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.products.list(parsedParams),
-    queryFn: () => listProducts(repo, parsedParams),
-  });
+  if (resolvedSearchParams.fail !== "1") {
+    const repo = createRepository();
+    const user = await getCurrentUser();
+
+    await Promise.all([
+      queryClient
+        .query({
+          queryKey: queryKeys.products.list(parsedParams),
+          queryFn: () => listProducts(repo, parsedParams),
+        })
+        .catch(() => {}),
+      queryClient
+        .query({
+          queryKey: queryKeys.meta.all,
+          queryFn: () => getMeta(repo, user),
+        })
+        .catch(() => {}),
+    ]);
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

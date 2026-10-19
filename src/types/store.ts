@@ -8,6 +8,3 @@ export type Store = {
 };
 
 export type StoreScope = typeof ALL_STORES | StoreId;
-
-// Repository internal type
-export type StoreRecord = Store;

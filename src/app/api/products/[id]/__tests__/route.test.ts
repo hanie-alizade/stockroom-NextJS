@@ -3,6 +3,7 @@ import { GET } from "../route";
 import { cookies } from "next/headers";
 
 import { mockCookies } from "tests/helpers";
+import { createRepository } from "@/server/repositories";
 
 // next/headers has no request scope in vitest; withApi reads the cookie here.
 vi.mock("next/headers", () => ({
@@ -15,11 +16,24 @@ describe("GET /api/products/:id", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(cookies).mockResolvedValue(staffCookies);
+    const repo = createRepository();
+    repo.reset();
+    repo.addMovement({
+      productId: "KL-1042",
+      storeId: "cheras",
+      type: "sell",
+      quantity: 0,
+      balanceAfter: 0,
+      reason: null,
+      transferId: null,
+      createdAt: "2026-10-15T08:30:00Z",
+      userId: "faiz-hakim",
+    });
   });
 
   it("returns product details for KL-1042", async () => {
     const url = new URL("http://localhost/api/products/KL-1042");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -32,7 +46,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns stock value sen summed across all carrying stores", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -41,7 +55,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns stock by store for all six carrying stores", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -50,7 +64,7 @@ describe("GET /api/products/:id", () => {
 
   it("stock by store includes on hand, reorder level and per-store status", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -102,7 +116,7 @@ describe("GET /api/products/:id", () => {
 
   it("scopes stock by store and stock value to a single store", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=mont-kiara");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -111,9 +125,23 @@ describe("GET /api/products/:id", () => {
     expect(data.stockValueSen).toBe(18 * 6800);
   });
 
+  it("returns totals and status for KL-1042", async () => {
+    const url = new URL("http://localhost/api/products/KL-1042?store=all");
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.id).toBe("KL-1042");
+    expect(data.onHand).toBe(84);
+    expect(data.reorderLevel).toBe(30);
+    expect(data.status).toBe("in_stock");
+  });
+
   it("returns 404 PRODUCT_NOT_FOUND for unknown product", async () => {
     const url = new URL("http://localhost/api/products/UNKNOWN-123");
-    const response = await GET(new Request(url), { params: { id: "UNKNOWN-123" } });
+    const response = await GET(new Request(url), {
+      params: Promise.resolve({ id: "UNKNOWN-123" }),
+    });
     const data = await response.json();
 
     expect(response.status).toBe(404);

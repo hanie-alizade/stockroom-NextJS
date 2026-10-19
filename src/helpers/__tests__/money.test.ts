@@ -24,9 +24,14 @@ describe("parseMoneyToSen", () => {
   });
 
   it("returns null for invalid formats", () => {
-    expect(parseMoneyToSen("68.005")).toBeNull();
-    expect(parseMoneyToSen("abc")).toBeNull();
+    expect(parseMoneyToSen("12abc")).toBeNull();
+    expect(parseMoneyToSen("1e2")).toBeNull();
+    expect(parseMoneyToSen("1,2,3")).toBeNull();
     expect(parseMoneyToSen("")).toBeNull();
+    expect(parseMoneyToSen("-5")).toBeNull();
+    expect(parseMoneyToSen("68.005")).toBeNull();
+    expect(parseMoneyToSen("68.")).toBeNull();
+    expect(parseMoneyToSen("abc")).toBeNull();
     expect(parseMoneyToSen("-10")).toBeNull();
   });
 

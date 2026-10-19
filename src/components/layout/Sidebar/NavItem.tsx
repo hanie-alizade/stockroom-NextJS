@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { IconComponent } from "@/types";
+import type { IconComponent } from "@/components/icons";
 
 interface NavItemProps {
   href: string;

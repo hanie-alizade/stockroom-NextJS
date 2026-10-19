@@ -18,12 +18,18 @@ import type {
   StoreScope,
 } from "@/types";
 
+import { normalizePageSize } from "./pagination";
+
 export interface RouterInstance {
   push: (href: string) => void;
   replace: (href: string) => void;
 }
 
-const VALID_SORT_KEYS = new Set<ProductSortKey>(Object.values(PRODUCT_SORT_KEY));
+const VALID_SORT_KEYS = new Set<string>(Object.values(PRODUCT_SORT_KEY));
+
+function isProductSortKey(key: string): key is ProductSortKey {
+  return VALID_SORT_KEYS.has(key);
+}
 
 function getParam(
   source: URLSearchParams | Record<string, string | string[] | undefined>,
@@ -59,21 +65,27 @@ export function parseProductListParams(
       ? statusRaw
       : undefined;
 
-  const sortRaw = getParam(source, "sort") as ProductSortKey | undefined;
-  const sort: ProductSortKey =
-    sortRaw && VALID_SORT_KEYS.has(sortRaw) ? sortRaw : DEFAULT_PRODUCT_SORT_KEY;
+  const sortRaw = getParam(source, "sort");
+  const sort: ProductSortKey | undefined =
+    sortRaw && isProductSortKey(sortRaw) ? sortRaw : undefined;
 
   const dirRaw = getParam(source, "dir");
-  const dir: SortDirection =
-    dirRaw === SORT_DIRECTION.ASC ? SORT_DIRECTION.ASC : SORT_DIRECTION.DESC;
+  let dir: SortDirection | undefined;
+  if (sort) {
+    dir =
+      dirRaw === SORT_DIRECTION.ASC || dirRaw === SORT_DIRECTION.DESC
+        ? dirRaw
+        : DEFAULT_SORT_DIRECTION;
+  }
 
   const pageRaw = Number(getParam(source, "page"));
   const page = Number.isInteger(pageRaw) && pageRaw >= 1 ? pageRaw : DEFAULT_PAGE;
 
   const pageSizeRaw = Number(getParam(source, "pageSize"));
-  const pageSize: PageSize = (PAGE_SIZE_OPTIONS as readonly number[]).includes(pageSizeRaw)
-    ? (pageSizeRaw as PageSize)
-    : DEFAULT_PAGE_SIZE;
+  const pageSize = normalizePageSize(pageSizeRaw);
+
+  const failRaw = getParam(source, "fail");
+  const fail = failRaw === "1" ? "1" : undefined;
 
   return {
     store,
@@ -84,6 +96,7 @@ export function parseProductListParams(
     dir,
     page,
     pageSize,
+    fail,
   };
 }
 
@@ -102,10 +115,7 @@ export function buildProductListUrl(pathname: string, query: ProductListQuery): 
   if (query.status) {
     params.set("status", query.status);
   }
-  if (
-    query.sort &&
-    (query.sort !== DEFAULT_PRODUCT_SORT_KEY || query.dir !== DEFAULT_SORT_DIRECTION)
-  ) {
+  if (query.sort) {
     params.set("sort", query.sort);
     params.set("dir", query.dir ?? DEFAULT_SORT_DIRECTION);
   }
@@ -114,6 +124,9 @@ export function buildProductListUrl(pathname: string, query: ProductListQuery): 
   }
   if (query.pageSize && query.pageSize !== DEFAULT_PAGE_SIZE) {
     params.set("pageSize", String(query.pageSize));
+  }
+  if (query.fail === "1") {
+    params.set("fail", "1");
   }
 
   const queryString = params.toString();
@@ -124,11 +137,11 @@ export function setProductListSearch(
   router: RouterInstance,
   pathname: string,
   current: ProductListQuery,
-  q: string,
+  q?: string,
 ): void {
   const next: ProductListQuery = {
     ...current,
-    q: q.trim() || undefined,
+    q: q?.trim() || undefined,
     page: DEFAULT_PAGE,
   };
   router.replace(buildProductListUrl(pathname, next));
@@ -157,6 +170,35 @@ export function setProductListStatus(
   const next: ProductListQuery = {
     ...current,
     status,
+    page: DEFAULT_PAGE,
+  };
+  router.push(buildProductListUrl(pathname, next));
+}
+
+export function setProductListStore(
+  router: RouterInstance,
+  pathname: string,
+  current: ProductListQuery,
+  store?: StoreScope,
+): void {
+  const next: ProductListQuery = {
+    ...current,
+    store: store && store !== ALL_STORES ? store : ALL_STORES,
+    page: DEFAULT_PAGE,
+  };
+  router.push(buildProductListUrl(pathname, next));
+}
+
+export function clearProductListFilters(
+  router: RouterInstance,
+  pathname: string,
+  current: ProductListQuery,
+): void {
+  const next: ProductListQuery = {
+    ...current,
+    q: undefined,
+    category: undefined,
+    status: undefined,
     page: DEFAULT_PAGE,
   };
   router.push(buildProductListUrl(pathname, next));
@@ -195,15 +237,15 @@ export function toggleProductListSort(
   current: ProductListQuery,
   column: ProductSortKey,
 ): void {
-  let nextSort: ProductSortKey = column;
-  let nextDir: SortDirection = SORT_DIRECTION.DESC;
+  let nextSort: ProductSortKey | undefined = column;
+  let nextDir: SortDirection | undefined = SORT_DIRECTION.DESC;
 
   if (current.sort === column) {
     if (current.dir === SORT_DIRECTION.DESC) {
       nextDir = SORT_DIRECTION.ASC;
     } else {
-      nextSort = DEFAULT_PRODUCT_SORT_KEY;
-      nextDir = DEFAULT_SORT_DIRECTION;
+      nextSort = undefined;
+      nextDir = undefined;
     }
   }
 

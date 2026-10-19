@@ -1,18 +1,17 @@
 import "server-only";
 
 import { env } from "@/config/env";
-import { withApi } from "@/server/http/withApi";
+import { HTTP_STATUS } from "@/constants";
+import { jsonResponse, withApi } from "@/server/http";
 
-const isDev = env.NODE_ENV === "development";
-const isE2E = env.E2E === "1";
+export async function POST(request: Request): Promise<Response> {
+  return withApi(request, async ({ repo }) => {
+    const isAllowed = env.NODE_ENV === "development" || env.E2E === "1";
+    if (!isAllowed) {
+      return new Response(null, { status: HTTP_STATUS.NOT_FOUND });
+    }
 
-if (!isDev && !isE2E) {
-  throw new Error("This route is only available in development or when E2E=1");
-}
-
-export async function POST(): Promise<Response> {
-  return withApi(async ({ user, repo }) => {
     repo.reset();
-    return { success: true };
+    return jsonResponse({ success: true });
   });
 }

@@ -1,5 +1,5 @@
-/* eslint-disable max-lines */
-import { writeFileSync } from "fs";
+/* eslint-disable max-lines, no-console -- CLI seed generator progress output */
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -17,6 +17,7 @@ function mulberry32(a: number): () => number {
 
 const prngSeed = 123456789;
 const random = mulberry32(prngSeed);
+const randomMove = mulberry32(prngSeed + 1);
 
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(random() * arr.length)];
@@ -24,6 +25,14 @@ function pick<T>(arr: T[]): T {
 
 function randInt(min: number, max: number): number {
   return Math.floor(random() * (max - min + 1)) + min;
+}
+
+function pickMove<T>(arr: T[]): T {
+  return arr[Math.floor(randomMove() * arr.length)];
+}
+
+function randIntMove(min: number, max: number): number {
+  return Math.floor(randomMove() * (max - min + 1)) + min;
 }
 
 // Types
@@ -160,6 +169,243 @@ const PRODUCT_NAMES: Record<string, string[]> = {
     "Jasmine tea 100 bags",
   ],
 };
+
+const TIME_ZONE = "Asia/Kuala_Lumpur";
+
+const CATEGORY_CONFIG: Record<string, { bases: string[]; sizes: string[]; suppliers: string[] }> = {
+  Coffee: {
+    bases: [
+      "Arabica beans",
+      "Robusta beans",
+      "Espresso blend",
+      "Decaf beans",
+      "Single origin Colombia",
+      "Ethiopian Yirgacheffe",
+      "House blend",
+      "Cold brew concentrate",
+      "Sumatra Mandheling",
+      "Guatemala Antigua",
+    ],
+    sizes: [
+      "200g",
+      "250g",
+      "350g",
+      "500g",
+      "1 kg",
+      "2 kg",
+      "beans 250g",
+      "beans 500g",
+      "ground 250g",
+      "ground 500g",
+      "drip bags 10pcs",
+    ],
+    suppliers: ["Highland Roasters", "Kopi Lane roastery"],
+  },
+  "Dairy & alt.": {
+    bases: [
+      "Oat milk",
+      "Almond milk",
+      "Whole milk",
+      "Soy milk",
+      "Coconut milk",
+      "Condensed milk",
+      "Low fat milk",
+      "Skim milk",
+      "Cashew milk",
+    ],
+    sizes: [
+      "200ml",
+      "250ml",
+      "330ml",
+      "500ml",
+      "1 L",
+      "2 L",
+      "organic 1 L",
+      "barista edition 1 L",
+      "unsweetened 1 L",
+      "can 397g",
+    ],
+    suppliers: ["Valley Dairy", "Green Field Oats"],
+  },
+  Packaging: {
+    bases: [
+      "Paper cups 8oz",
+      "Paper cups 12oz",
+      "Paper cups 16oz",
+      "Lids 8oz",
+      "Lids 12oz",
+      "Lids 16oz",
+      "Paper straws",
+      "Cup sleeves",
+      "Takeaway bags",
+      "Cup carriers",
+    ],
+    sizes: [
+      "50pcs",
+      "100pcs",
+      "200pcs",
+      "250pcs",
+      "500pcs",
+      "1000pcs",
+      "kraft 500pcs",
+      "white 500pcs",
+      "black 500pcs",
+      "biodegradable 500pcs",
+    ],
+    suppliers: ["PackRight"],
+  },
+  Syrups: {
+    bases: [
+      "Vanilla syrup",
+      "Caramel syrup",
+      "Hazelnut syrup",
+      "Chocolate syrup",
+      "Mint syrup",
+      "Cinnamon syrup",
+      "Toffee nut syrup",
+      "Salted caramel syrup",
+      "Lavender syrup",
+    ],
+    sizes: [
+      "250ml",
+      "375ml",
+      "500ml",
+      "750ml",
+      "1 L",
+      "sugar-free 750ml",
+      "organic 750ml",
+      "classic 750ml",
+    ],
+    suppliers: ["Sweet Bar Co."],
+  },
+  Bakery: {
+    bases: [
+      "Croissants",
+      "Chocolate croissants",
+      "Almond croissants",
+      "Blueberry muffins",
+      "Chocolate chip cookies",
+      "Banana bread",
+      "Cinnamon rolls",
+      "Sourdough loaf",
+      "Bagels",
+    ],
+    sizes: [
+      "2pcs",
+      "4pcs",
+      "6pcs",
+      "12pcs",
+      "24pcs",
+      "1 loaf",
+      "mini 12pcs",
+      "large 6pcs",
+      "fresh baked 6pcs",
+    ],
+    suppliers: ["Golden Crumb Bakery"],
+  },
+  Tea: {
+    bases: [
+      "Earl Grey tea",
+      "English Breakfast tea",
+      "Green tea",
+      "Chamomile tea",
+      "Peppermint tea",
+      "Jasmine tea",
+      "Oolong tea",
+      "Chai tea",
+      "Matcha powder",
+    ],
+    sizes: [
+      "20 bags",
+      "25 bags",
+      "50 bags",
+      "100 bags",
+      "loose leaf 100g",
+      "loose leaf 250g",
+      "tin 100g",
+      "organic 50 bags",
+    ],
+    suppliers: ["Highland Roasters", "Kopi Lane roastery"],
+  },
+};
+
+function makeProductsUnique(products: Product[]): Product[] {
+  const usedNames = new Set<string>();
+  const categoryPools: Record<string, string[]> = {};
+  const supplierCounters: Record<string, number> = {};
+
+  for (const [cat, cfg] of Object.entries(CATEGORY_CONFIG)) {
+    const pool: string[] = [];
+    for (const size of cfg.sizes) {
+      for (const base of cfg.bases) {
+        const candidate = base.endsWith(size) ? base : `${base} ${size}`;
+        if (!pool.includes(candidate)) {
+          pool.push(candidate);
+        }
+      }
+    }
+    categoryPools[cat] = pool;
+    supplierCounters[cat] = 0;
+  }
+
+  // Preserve fixtures so their names are reserved
+  usedNames.add("Arabica beans 1 kg");
+  usedNames.add("Robusta beans 1 kg");
+  usedNames.add("Oat milk 1 L");
+
+  return products.map((p) => {
+    if (p.sku === "KL-1042") {
+      return {
+        ...p,
+        name: "Arabica beans 1 kg",
+        category: "Coffee",
+        supplier: "Highland Roasters",
+        unitCostSen: 6800,
+      };
+    }
+    if (p.sku === "KL-1043") {
+      return {
+        ...p,
+        name: "Robusta beans 1 kg",
+        category: "Coffee",
+        supplier: "Highland Roasters",
+        unitCostSen: 5500,
+      };
+    }
+    if (p.sku === "KL-2210") {
+      return {
+        ...p,
+        name: "Oat milk 1 L",
+        category: "Dairy & alt.",
+        supplier: "Green Field Oats",
+        unitCostSen: 1200,
+      };
+    }
+
+    const cfg = CATEGORY_CONFIG[p.category];
+    const pool = categoryPools[p.category] || [];
+
+    let newName = p.name;
+    for (const candidate of pool) {
+      if (!usedNames.has(candidate)) {
+        newName = candidate;
+        break;
+      }
+    }
+    usedNames.add(newName);
+
+    const supList = cfg ? cfg.suppliers : ["Highland Roasters"];
+    const supIndex = supplierCounters[p.category] ?? 0;
+    supplierCounters[p.category] = supIndex + 1;
+    const supplier = supList[supIndex % supList.length];
+
+    return {
+      ...p,
+      name: newName,
+      supplier,
+    };
+  });
+}
 
 const PRODUCT_FIXTURES: Product[] = [
   {
@@ -305,190 +551,338 @@ function generateStockRows(
   return stockRows;
 }
 
-function generateMovements(
-  products: Product[],
-  stockRows: Map<string, StockRow[]>,
-  productFixtures: Product[],
+let transferCounter = 1;
+const managerId = "aina-rahman";
+const writeOffReasons = ["Expired", "Damaged", "Spilled", "Stock count correction"];
+const receiveReasons = ["PO-7781", "PO-8823", "PO-9901", null];
+
+function generateProductMovements(
+  product: Product,
+  stockRows: StockRow[],
+  now: Date,
+  ninetyDaysAgo: Date,
+  todayStr: string,
+  currentYear: string,
 ): Movement[] {
-  const movements: Movement[] = [];
-  const now = new Date();
-  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-  const otherProducts = products.filter((p) => !productFixtures.find((f) => f.sku === p.sku));
+  const storeMovements: Map<string, Movement[]> = new Map();
+  const balances: Map<string, number> = new Map();
+  const lastTime: Map<string, number> = new Map();
 
-  const noMovementsSku = otherProducts[0].sku;
-  const oneMovementSku = otherProducts[1].sku;
+  for (const row of stockRows) {
+    storeMovements.set(row.storeId, []);
+    balances.set(row.storeId, row.onHand);
+  }
 
-  for (const product of products) {
-    if (product.sku === noMovementsSku) {
-      continue;
+  const isHero = product.sku === "KL-1042";
+
+  // Target counts per store
+  const targetCounts: Map<string, number> = new Map();
+  if (isHero) {
+    targetCounts.set("mont-kiara", 35);
+    targetCounts.set("subang", 20);
+    targetCounts.set("cheras", 15);
+    targetCounts.set("damansara", 25);
+    targetCounts.set("puchong", 15);
+    targetCounts.set("shah-alam", 18);
+  } else {
+    for (const row of stockRows) {
+      const r = randomMove();
+      const count = r < 0.05 ? randIntMove(1, 2) : randIntMove(3, 14);
+      targetCounts.set(row.storeId, count);
+    }
+  }
+
+  // Anchor newest times
+  const montKiaraHeroTime = new Date(`${todayStr}T10:42:00+08:00`).getTime();
+  const cherasHeroTime = new Date(`${currentYear}-10-09T14:30:00+08:00`).getTime();
+
+  for (const row of stockRows) {
+    if (isHero) {
+      if (row.storeId === "mont-kiara") {
+        lastTime.set(row.storeId, montKiaraHeroTime);
+      } else if (row.storeId === "cheras") {
+        lastTime.set(row.storeId, cherasHeroTime);
+      } else {
+        const offset = randIntMove(2, 48) * 60 * 60 * 1000;
+        lastTime.set(row.storeId, montKiaraHeroTime - offset);
+      }
+    } else {
+      const offset = Math.floor(randomMove() * 3 * 24 * 60 * 60 * 1000);
+      lastTime.set(row.storeId, now.getTime() - offset);
+    }
+  }
+
+  let transfersWanted = 0;
+  if (stockRows.length >= 2) {
+    if (isHero) {
+      transfersWanted = 2;
+    } else if (randomMove() < 0.12) {
+      transfersWanted = 1;
+    }
+  }
+
+  for (const row of stockRows) {
+    const storeId = row.storeId;
+    const totalMoves = targetCounts.get(storeId) ?? 5;
+    const newestT = lastTime.get(storeId) ?? now.getTime();
+    const oldestT = ninetyDaysAgo.getTime() + Math.floor(randomMove() * 10 * 24 * 60 * 60 * 1000);
+
+    const timestamps: number[] = [];
+    if (totalMoves === 1) {
+      timestamps.push(newestT);
+    } else {
+      const span = newestT - oldestT;
+      const rawTimes = [oldestT, newestT];
+      for (let i = 0; i < totalMoves - 2; i++) {
+        rawTimes.push(oldestT + Math.floor(randomMove() * span));
+      }
+      rawTimes.sort((a, b) => a - b);
+      for (let i = 0; i < rawTimes.length; i++) {
+        let t = rawTimes[i];
+        if (i > 0 && t <= timestamps[i - 1]) {
+          t = timestamps[i - 1] + 60 * 1000;
+        }
+        timestamps.push(t);
+      }
+      timestamps[timestamps.length - 1] = newestT;
     }
 
-    if (product.sku === oneMovementSku) {
-      const rows = stockRows.get(product.sku) || [];
-      if (rows.length > 0) {
-        const row = rows[0];
-        const movement: Movement = {
-          productId: product.sku,
-          storeId: row.storeId,
-          type: "receive",
-          quantity: row.onHand,
-          balanceAfter: row.onHand,
-          reason: "Initial stock",
-          transferId: null,
-          createdAt: new Date(now.getTime() - randInt(1, 7) * 24 * 60 * 60 * 1000).toISOString(),
-          userId: pick(users).id,
-        };
-        movements.push(movement);
-      }
-      continue;
-    }
+    const backwardList: Movement[] = [];
+    let b = balances.get(storeId) ?? 0;
 
-    const rows = stockRows.get(product.sku) || [];
-    for (const row of rows) {
-      const currentStock = row.onHand;
-      const movementCount = randInt(5, 30);
-      let remaining = currentStock;
+    for (let i = totalMoves - 1; i >= 0; i--) {
+      const t = timestamps[i];
+      const isFirstInTime = i === 0;
 
-      const timePoints: number[] = [];
-      for (let i = 0; i < movementCount; i++) {
-        timePoints.push(
-          ninetyDaysAgo.getTime() + random() * (now.getTime() - ninetyDaysAgo.getTime()),
-        );
-      }
-      timePoints.sort((a, b) => a - b);
+      let type: Movement["type"];
+      let quantity: number;
+      let reason: string | null = null;
+      let userId: string;
 
-      for (let i = 0; i < movementCount; i++) {
-        const movementTime = new Date(timePoints[i]);
-        const isLast = i === movementCount - 1;
-
-        if (isLast) {
-          const quantity = remaining;
-          if (quantity > 0) {
-            const movement: Movement = {
-              productId: product.sku,
-              storeId: row.storeId,
-              type: "receive",
-              quantity,
-              balanceAfter: quantity,
-              reason: pick(["PO-7781", "PO-8823", "PO-9901", null]),
-              transferId: null,
-              createdAt: movementTime.toISOString(),
-              userId: pick(users).id,
-            };
-            movements.push(movement);
+      if (isFirstInTime) {
+        if (b > 0) {
+          type = "receive";
+          quantity = b;
+          reason = pickMove(receiveReasons);
+          userId = pickMove(users).id;
+        } else {
+          const q = randIntMove(1, 5);
+          type = "sell";
+          quantity = -q;
+          reason = null;
+          userId = pickMove(users).id;
+        }
+      } else {
+        if (b === 0) {
+          const isWriteOff = randomMove() < 0.2;
+          const q = randIntMove(1, 10);
+          if (isWriteOff) {
+            type = "write_off";
+            quantity = -q;
+            reason = pickMove(writeOffReasons);
+            userId = managerId;
+          } else {
+            type = "sell";
+            quantity = -q;
+            reason = null;
+            userId = pickMove(users).id;
           }
         } else {
-          const consume = randInt(0, Math.min(remaining, 10));
-          remaining -= consume;
+          const r = randomMove();
+          if (r < 0.45) {
+            const q = randIntMove(1, Math.min(b, 20));
+            type = "receive";
+            quantity = q;
+            reason = pickMove(receiveReasons);
+            userId = pickMove(users).id;
+          } else if (r < 0.85) {
+            const q = randIntMove(1, 15);
+            type = "sell";
+            quantity = -q;
+            reason = null;
+            userId = pickMove(users).id;
+          } else {
+            const q = randIntMove(1, 5);
+            type = "write_off";
+            quantity = -q;
+            reason = pickMove(writeOffReasons);
+            userId = managerId;
+          }
+        }
+      }
 
-          if (consume > 0) {
-            const movement: Movement = {
-              productId: product.sku,
-              storeId: row.storeId,
-              type: pick(["sell", "write_off"]),
-              quantity: -consume,
-              balanceAfter: remaining,
-              reason: pick(["Damaged", "Expired", "Sale", null]),
-              transferId: null,
-              createdAt: movementTime.toISOString(),
-              userId: pick(users).id,
-            };
-            movements.push(movement);
+      backwardList.push({
+        productId: product.sku,
+        storeId,
+        type,
+        quantity,
+        balanceAfter: b,
+        reason,
+        transferId: null,
+        createdAt: new Date(t).toISOString(),
+        userId,
+      });
+
+      b = b - quantity;
+    }
+
+    backwardList.reverse();
+    storeMovements.set(storeId, backwardList);
+  }
+
+  // Insert transfers between stores
+  if (transfersWanted > 0 && stockRows.length >= 2) {
+    const storeIds = stockRows.map((r) => r.storeId);
+    let transfersDone = 0;
+
+    for (let aIdx = 0; aIdx < storeIds.length && transfersDone < transfersWanted; aIdx++) {
+      for (let bIdx = 0; bIdx < storeIds.length && transfersDone < transfersWanted; bIdx++) {
+        if (aIdx === bIdx) continue;
+        const sA = storeIds[aIdx];
+        const sB = storeIds[bIdx];
+        const movesA = storeMovements.get(sA);
+        const movesB = storeMovements.get(sB);
+        if (!movesA || !movesB || movesA.length < 3 || movesB.length < 3) continue;
+
+        for (let i = 1; i < movesA.length - 1 && transfersDone < transfersWanted; i++) {
+          const tA_prev = new Date(movesA[i - 1].createdAt).getTime();
+          const tA_next = new Date(movesA[i + 1].createdAt).getTime();
+
+          for (let j = 1; j < movesB.length - 1 && transfersDone < transfersWanted; j++) {
+            const tB_prev = new Date(movesB[j - 1].createdAt).getTime();
+            const tB_next = new Date(movesB[j + 1].createdAt).getTime();
+
+            const overlapMin = Math.max(tA_prev, tB_prev) + 60000;
+            const overlapMax = Math.min(tA_next, tB_next) - 60000;
+
+            if (overlapMin < overlapMax) {
+              const mA = movesA[i];
+              const mB = movesB[j];
+
+              if (
+                mA.quantity < 0 &&
+                mB.quantity > 0 &&
+                Math.abs(mA.quantity) === mB.quantity &&
+                !mA.transferId &&
+                !mB.transferId
+              ) {
+                const transferTime = new Date(
+                  Math.floor((overlapMin + overlapMax) / 2),
+                ).toISOString();
+                const transferId = `transfer-${product.sku}-${transferCounter++}`;
+
+                mA.type = "transfer_out";
+                mA.transferId = transferId;
+                mA.reason = "Stock transfer";
+                mA.userId = managerId;
+                mA.createdAt = transferTime;
+
+                mB.type = "transfer_in";
+                mB.transferId = transferId;
+                mB.reason = "Stock transfer";
+                mB.userId = managerId;
+                mB.createdAt = transferTime;
+
+                transfersDone++;
+                break;
+              }
+            }
           }
         }
       }
     }
   }
 
-  movements.push(...generateTransfers(products, stockRows, now, ninetyDaysAgo));
-
-  return movements;
-}
-
-function generateTransfers(
-  products: Product[],
-  stockRows: Map<string, StockRow[]>,
-  now: Date,
-  ninetyDaysAgo: Date,
-): Movement[] {
-  const movements: Movement[] = [];
-  const transferCount = 20;
-
-  for (let i = 0; i < transferCount; i++) {
-    const fromStore = pick(stores);
-    const toStore = pick(stores.filter((s) => s.id !== fromStore.id));
-    const product = pick(products);
-    const rows = stockRows.get(product.sku) || [];
-    const fromRow = rows.find((r) => r.storeId === fromStore.id);
-    const toRow = rows.find((r) => r.storeId === toStore.id);
-
-    if (fromRow && toRow && fromRow.onHand > 0) {
-      const quantity = randInt(1, Math.min(fromRow.onHand, 10));
-      const transferId = `transfer-${Date.now()}-${i}`;
-      const transferTime = new Date(
-        ninetyDaysAgo.getTime() + random() * (now.getTime() - ninetyDaysAgo.getTime()),
-      ).toISOString();
-
-      const outMovement: Movement = {
-        productId: product.sku,
-        storeId: fromStore.id,
-        type: "transfer_out",
-        quantity: -quantity,
-        balanceAfter: fromRow.onHand - quantity,
-        reason: "Stock transfer",
-        transferId,
-        createdAt: transferTime,
-        userId: pick(users).id,
-      };
-
-      const inMovement: Movement = {
-        productId: product.sku,
-        storeId: toStore.id,
-        type: "transfer_in",
-        quantity,
-        balanceAfter: toRow.onHand + quantity,
-        reason: "Stock transfer",
-        transferId,
-        createdAt: transferTime,
-        userId: pick(users).id,
-      };
-
-      movements.push(outMovement, inMovement);
-    }
+  const result: Movement[] = [];
+  for (const list of storeMovements.values()) {
+    result.push(...list);
   }
-
-  return movements;
+  return result;
 }
 
 function generateSeed() {
-  const products = generateProducts();
-  const productFixtures = products.filter((p) => ["KL-1042", "KL-1043", "KL-2210"].includes(p.sku));
-  const stockRows = generateStockRows(products, productFixtures);
-  const movements = generateMovements(products, stockRows, productFixtures);
+  const dataDir = `${__dirname}/../data`;
+  const seedPath = `${dataDir}/seed.json`;
 
-  const seed = {
-    stores,
-    categories,
-    suppliers,
-    users,
-    products,
-    stock: Object.fromEntries(stockRows),
-    movements,
-  };
+  let existingSeed: {
+    stores: Store[];
+    categories: Category[];
+    suppliers: Supplier[];
+    users: User[];
+    products: Product[];
+    stock: Record<string, StockRow[]>;
+    movements: Movement[];
+  } | null = null;
 
-  const otherProducts = products.filter((p) => !productFixtures.find((f) => f.sku === p.sku));
-  const randomProduct = pick(otherProducts.slice(2));
-  const randomStock = stockRows.get(randomProduct.sku);
-  if (randomStock && randomStock.length > 0) {
-    randomStock[0].reorderLevel = 0;
-    seed.stock[randomProduct.sku] = randomStock;
+  if (existsSync(seedPath)) {
+    try {
+      existingSeed = JSON.parse(readFileSync(seedPath, "utf-8"));
+    } catch {
+      existingSeed = null;
+    }
   }
 
-  return seed;
+  let finalProducts = generateProducts();
+  const productFixtures = finalProducts.filter((p) =>
+    ["KL-1042", "KL-1043", "KL-2210"].includes(p.sku),
+  );
+  let finalStockMap: Record<string, StockRow[]> = Object.fromEntries(
+    generateStockRows(finalProducts, productFixtures),
+  );
+
+  const otherProducts = finalProducts.filter((p) => !productFixtures.find((f) => f.sku === p.sku));
+  const randomProduct = pick(otherProducts.slice(2));
+  const randomStock = finalStockMap[randomProduct.sku];
+  if (randomStock && randomStock.length > 0) {
+    randomStock[0].reorderLevel = 0;
+  }
+
+  let differed = false;
+  let movements: Movement[] = [];
+
+  if (existingSeed) {
+    finalProducts = makeProductsUnique(existingSeed.products);
+    finalStockMap = existingSeed.stock;
+    movements = existingSeed.movements;
+  } else {
+    finalProducts = makeProductsUnique(finalProducts);
+
+    const now = new Date();
+    const todayStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: TIME_ZONE,
+    }).format(now);
+    const currentYear = todayStr.split("-")[0];
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+
+    for (const product of finalProducts) {
+      const rows = finalStockMap[product.sku] || [];
+      movements.push(
+        ...generateProductMovements(product, rows, now, ninetyDaysAgo, todayStr, currentYear),
+      );
+    }
+
+    movements.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }
+
+  return {
+    differed,
+    seed: {
+      stores: existingSeed ? existingSeed.stores : stores,
+      categories: existingSeed ? existingSeed.categories : categories,
+      suppliers: existingSeed ? existingSeed.suppliers : suppliers,
+      users: existingSeed ? existingSeed.users : users,
+      products: finalProducts,
+      stock: finalStockMap,
+      movements,
+    },
+  };
 }
 
-const seed = generateSeed();
+const { differed, seed } = generateSeed();
 const dataDir = `${__dirname}/../data`;
 const seedPath = `${dataDir}/seed.json`;
 
 writeFileSync(seedPath, JSON.stringify(seed, null, 2), "utf-8");
+console.log(
+  `Generated seed.json with ${seed.products.length} products and ${seed.movements.length} movements. (differed: ${differed})`,
+);

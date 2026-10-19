@@ -32,12 +32,8 @@ There is no reorder level field in the design, so imports never change reorder l
 - A new SKU creates the product, carried only at the chosen store with the file's quantity (other stores are not touched) and reorder level 0.
 - Products are identified by SKU only, never by name. A new SKU with an existing name creates a new product.
 - SKUs are trimmed and uppercased before comparing.
-<<<<<<< Updated upstream
-- `quantity` is the new on-hand count at the chosen store, not a change. The server computes `delta = new - current` and writes one movement of type `import` (note: the file name) when delta is not 0. Delta 0 counts as `unchanged` and writes no movement.
-=======
 - `quantity` is the new on-hand count at the chosen store, not a change. The server computes `delta = new - current` and writes one movement of type `import` (note: the file name, cut to 200 chars; `balanceAfter` is the new quantity) only when delta is not 0.
 - `unchanged` means nothing changed: name, category, unit cost and quantity are all identical.
->>>>>>> Stashed changes
 - Unit cost is text such as `68.00`. It is converted to sen with string parsing, never with floats. Accepted: digits with up to 2 decimals, optional leading `RM`.
 - Row numbers: the first data row is row 1 (the header is not counted).
 

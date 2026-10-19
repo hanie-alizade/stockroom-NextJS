@@ -88,6 +88,12 @@ const config = [
       "no-restricted-syntax": "off",
     },
   },
+  {
+    files: ["src/server/**/*.ts"],
+    rules: {
+      "no-console": ["error", { allow: ["error"] }],
+    },
+  },
 ];
 
 export default config;

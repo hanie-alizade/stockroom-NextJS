@@ -3,26 +3,12 @@ import "server-only";
 import { ALL_STORES, ERROR_CODE, HTTP_STATUS } from "@/constants";
 import { AppError, getStatus } from "@/domain";
 import type { Repository } from "@/server/repositories";
-import type { ProductDetail, StockRecord } from "@/types";
+import type { ProductDetail } from "@/types";
+import { getStockForScope, sumStock } from "./stockScope";
 
-function calculateStockAggregate(stocks: StockRecord[]): { onHand: number; reorderLevel: number } {
-  return stocks.reduce(
-    (acc, stock) => ({
-      onHand: acc.onHand + stock.onHand,
-      reorderLevel: acc.reorderLevel + stock.reorderLevel,
-    }),
-    { onHand: 0, reorderLevel: 0 },
-  );
-}
-
-function getStockForScope(repo: Repository, productId: string, storeId: string | typeof ALL_STORES): StockRecord[] {
-  if (storeId === ALL_STORES) {
-    return repo.listStock(productId);
-  }
-  const stock = repo.getStock(productId, storeId);
-  return stock ? [stock] : [];
-}
-
+/**
+ * Retrieves full product details, stock by store, and totals for a given store scope.
+ */
 export async function getProductDetail(
   repo: Repository,
   sku: string,
@@ -34,17 +20,20 @@ export async function getProductDetail(
   }
 
   const stocks = getStockForScope(repo, sku, storeId);
-  const { onHand, reorderLevel } = calculateStockAggregate(stocks);
+  const { onHand, reorderLevel } = sumStock(stocks);
 
   const stockValueSen = onHand * product.unitCostSen;
 
-  const allMovements = repo.getStores().flatMap((s) => repo.getMovements(sku, s.id, { limit: 1 }));
+  const scopedMovements =
+    storeId === ALL_STORES
+      ? repo.getStores().flatMap((s) => repo.getMovements(sku, s.id, { limit: 1 }))
+      : repo.getMovements(sku, storeId, { limit: 1 });
   const lastMovementAt =
-    allMovements.length > 0
-      ? allMovements.reduce(
-        (latest, m) => (m.createdAt > latest ? m.createdAt : latest),
-        allMovements[0].createdAt,
-      )
+    scopedMovements.length > 0
+      ? scopedMovements.reduce(
+          (latest, m) => (m.createdAt > latest ? m.createdAt : latest),
+          scopedMovements[0].createdAt,
+        )
       : null;
 
   const stockByStore = stocks.map((stock) => {
@@ -61,11 +50,15 @@ export async function getProductDetail(
   });
 
   return {
+    id: product.sku,
     sku: product.sku,
     name: product.name,
     category: product.category,
     supplier: product.supplier,
     unitCostSen: product.unitCostSen,
+    onHand,
+    reorderLevel,
+    status: getStatus(onHand, reorderLevel),
     stockValueSen,
     lastMovementAt,
     stockByStore,

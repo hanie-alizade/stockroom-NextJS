@@ -6,7 +6,7 @@ import type {
   writeOffAdjustmentSchema,
   transferAdjustmentSchema,
 } from "@/schemas";
-import type { MovementRecord } from "./movement";
+import type { Movement } from "./movement";
 import type { StoreId } from "./store";
 
 export type Adjustment = z.infer<typeof adjustmentSchema>;
@@ -16,14 +16,8 @@ export type WriteOffAdjustment = z.infer<typeof writeOffAdjustmentSchema>;
 export type TransferAdjustment = z.infer<typeof transferAdjustmentSchema>;
 export type AdjustmentInput = Adjustment;
 
-export type SavedMovement = MovementRecord & {
-  note?: string;
-  createdBy: string;
-  by: string;
-};
-
 export type AdjustmentResult = {
-  movements: SavedMovement[];
+  movements: Movement[];
   stock: {
     storeId: StoreId;
     onHand: number;

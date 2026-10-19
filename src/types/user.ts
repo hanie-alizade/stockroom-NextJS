@@ -11,6 +11,3 @@ export type User = z.infer<typeof userSchema>;
 export type SessionBody = z.infer<typeof sessionBodySchema>;
 
 export type SessionResponse = z.infer<typeof sessionResponseSchema>;
-
-// Repository internal type
-export type UserRecord = User;

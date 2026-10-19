@@ -66,7 +66,7 @@ describe("GET /api/products", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.items).toHaveLength(3);
+    expect(data.items).toHaveLength(6);
     expect(
       data.items
         .map((item: { name: string }) => item.name.toLowerCase().includes("arabica"))
@@ -79,7 +79,8 @@ describe("GET /api/products", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.items).toHaveLength(53);
+    expect(data.total).toBe(53);
+    expect(data.items).toHaveLength(25);
     expect(
       data.items.map((item: { category: string }) => item.category === "Coffee").includes(false),
     ).toBe(false);
@@ -101,6 +102,7 @@ describe("GET /api/products", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
+    expect(data.total).toBe(11);
     expect(data.items).toHaveLength(11);
     expect(new Set(data.items.map((item: { status: string }) => item.status))).toEqual(
       new Set(["low"]),
@@ -112,7 +114,8 @@ describe("GET /api/products", () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.items).toHaveLength(236);
+    expect(data.total).toBe(236);
+    expect(data.items).toHaveLength(25);
     expect(new Set(data.items.map((item: { status: string }) => item.status))).toEqual(
       new Set(["in_stock"]),
     );
@@ -218,7 +221,7 @@ describe("GET /api/products", () => {
 
     expect(response.status).toBe(200);
     expect(data.summary.totalProducts).toBe(248);
-    expect(data.summary.stockValueSen).toBe(214155292);
+    expect(data.summary.stockValueSen).toBe(213191033);
     expect(data.summary.lowStock).toBe(11);
     expect(data.summary.outOfStock).toBe(1);
   });
@@ -231,7 +234,7 @@ describe("GET /api/products", () => {
     expect(response.status).toBe(200);
     expect(data.items).toHaveLength(1);
     expect(data.summary.totalProducts).toBe(248);
-    expect(data.summary.stockValueSen).toBe(214155292);
+    expect(data.summary.stockValueSen).toBe(213191033);
   });
 
   it("summary follows store scope", async () => {
@@ -243,5 +246,17 @@ describe("GET /api/products", () => {
     expect(data.summary.totalProducts).toBe(212);
     expect(typeof data.summary.stockValueSen).toBe("number");
     expect(data.summary.stockValueSen).toBeGreaterThan(0);
+  });
+
+  it("returns 500 INTERNAL_ERROR when fail=1", async () => {
+    const response = await GET(new Request("http://localhost/api/products?fail=1"));
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data.error).toBe("INTERNAL_ERROR");
+  });
+
+  it("does not fail when fail=0", async () => {
+    const response = await GET(new Request("http://localhost/api/products?fail=0"));
+    expect(response.status).toBe(200);
   });
 });

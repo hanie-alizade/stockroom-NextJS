@@ -1,82 +1,75 @@
 import "server-only";
 
-import {
-  ADJUSTMENT_TYPE,
-  ERROR_CODE,
-  FIELD_ERROR_CODE,
-  HTTP_STATUS,
-} from "@/constants";
-import { AppError } from "@/domain";
-
-import type { Repository } from "@/server/repositories";
+import { ERROR_CODE, HTTP_STATUS } from "@/constants";
+import { AppError, planDirectAdjustment } from "@/domain";
+import type { Repository, UserRecord } from "@/server/repositories";
+import { toMovementDto } from "@/server/services/movementDto";
 import type {
   AdjustmentResult,
   ReceiveAdjustment,
   SellAdjustment,
   WriteOffAdjustment,
 } from "@/types";
-import type { ExecutionContext } from "./types";
+import { recordResult } from "./idempotency";
+import type { AdjustmentContext } from "./types";
 
 export type DirectAdjustment = ReceiveAdjustment | SellAdjustment | WriteOffAdjustment;
 
+/**
+ * Applies a direct adjustment (receive, sell, or write-off) within a repository transaction.
+ */
 export function applyDirectAdjustment(
   txRepo: Repository,
   canonicalSku: string,
   input: DirectAdjustment,
-  ctx: ExecutionContext,
+  ctx: AdjustmentContext,
+  nowIso: string,
+  userMap: Map<string, UserRecord>,
 ): AdjustmentResult {
-  const store = ctx.storeMap.get(input.storeId);
+  const store = txRepo.getStores().find((s) => s.id === input.storeId);
   if (!store) {
     throw new AppError(ERROR_CODE.STORE_NOT_FOUND, HTTP_STATUS.NOT_FOUND, "Store not found");
   }
   const stock = txRepo.getStock(canonicalSku, input.storeId);
   if (!stock) {
-    throw new AppError(ERROR_CODE.NOT_STOCKED_AT_STORE, HTTP_STATUS.UNPROCESSABLE_ENTITY, "Product is not stocked at this store");
-  }
-  if ((input.type === ADJUSTMENT_TYPE.SELL || input.type === ADJUSTMENT_TYPE.WRITE_OFF) && stock.onHand < input.quantity) {
     throw new AppError(
-      ERROR_CODE.INSUFFICIENT_STOCK,
-      HTTP_STATUS.CONFLICT,
-      `${store.name} only has ${stock.onHand} on hand. Enter ${stock.onHand} or less.`,
-      [{ field: "quantity", code: FIELD_ERROR_CODE.TOO_MANY, message: `Only ${stock.onHand} on hand.` }],
+      ERROR_CODE.NOT_STOCKED_AT_STORE,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      "Product is not stocked at this store",
     );
   }
 
-  const delta = input.type === ADJUSTMENT_TYPE.RECEIVE ? input.quantity : -input.quantity;
-  const newOnHand = stock.onHand + delta;
-  txRepo.setStock(canonicalSku, input.storeId, newOnHand, stock.reorderLevel);
+  const draft = planDirectAdjustment({
+    productId: canonicalSku,
+    store: { storeId: store.id, storeName: store.name, onHand: stock.onHand },
+    type: input.type,
+    quantity: input.quantity,
+    note: input.note,
+  });
+
+  txRepo.setStock(canonicalSku, input.storeId, draft.balanceAfter, stock.reorderLevel);
 
   const savedMovement = txRepo.addMovement({
     productId: canonicalSku,
     storeId: input.storeId,
     type: input.type,
-    quantity: delta,
-    balanceAfter: newOnHand,
-    reason: ctx.note,
+    quantity: draft.quantity,
+    balanceAfter: draft.balanceAfter,
+    reason: input.note ?? null,
     transferId: null,
-    createdAt: ctx.now,
-    userId: ctx.userId,
+    createdAt: nowIso,
+    userId: ctx.user.id,
   });
 
-  const adjustmentResult: AdjustmentResult = {
+  const movementDto = toMovementDto(savedMovement, userMap);
+
+  const result: AdjustmentResult = {
     replay: false,
-    movements: [
-      {
-        ...savedMovement,
-        note: savedMovement.reason ?? undefined,
-        createdBy: ctx.userName,
-        by: ctx.userName,
-      },
-    ],
-    stock: [{ storeId: input.storeId, onHand: newOnHand }],
+    movements: [movementDto],
+    stock: [{ storeId: input.storeId, onHand: draft.balanceAfter }],
   };
 
-  txRepo.setIdempotency({
-    idempotencyKey: ctx.idempotencyKey,
-    requestHash: ctx.requestHash,
-    status: HTTP_STATUS.CREATED,
-    body: { movements: adjustmentResult.movements, stock: adjustmentResult.stock },
-  });
+  recordResult(txRepo, ctx, result);
 
-  return adjustmentResult;
+  return result;
 }

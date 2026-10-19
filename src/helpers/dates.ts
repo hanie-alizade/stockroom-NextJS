@@ -1,5 +1,6 @@
+import { TIME_ZONE } from "@/constants";
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const APP_TIME_ZONE = "Asia/Kuala_Lumpur";
 
 function parseDate(date: Date | string): Date {
   const result = typeof date === "string" ? new Date(date) : date;
@@ -9,7 +10,18 @@ function parseDate(date: Date | string): Date {
   return result;
 }
 
-function getCalendarParts(date: Date): {
+export function toDateString(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return formatter.format(d);
+}
+
+export function getCalendarParts(date: Date): {
   year: number;
   month: number;
   day: number;
@@ -17,7 +29,7 @@ function getCalendarParts(date: Date): {
   minute: number;
 } {
   const formatter = new Intl.DateTimeFormat("en-GB", {
-    timeZone: APP_TIME_ZONE,
+    timeZone: TIME_ZONE,
     hourCycle: "h23",
     year: "numeric",
     month: "numeric",
@@ -96,4 +108,63 @@ export function formatDateTime(date: Date | string): string {
   const hour = String(parts.hour).padStart(2, "0");
   const minute = String(parts.minute).padStart(2, "0");
   return `${parts.day} ${monthName}, ${hour}:${minute}`;
+}
+
+/**
+ * Format a date as "D Mon" (e.g. "9 Oct") in the app time zone.
+ */
+export function formatDay(date: Date | string): string {
+  const dateObj = parseDate(date);
+  const parts = getCalendarParts(dateObj);
+  return `${parts.day} ${MONTHS[parts.month]}`;
+}
+
+/**
+ * Format a chart axis/tooltip date: "Today" if on the same calendar day
+ * in Asia/Kuala_Lumpur as now, otherwise "D Mon" (e.g. "9 Oct").
+ */
+export function formatChartDay(date: Date | string, now: Date = new Date()): string {
+  const dateObj = parseDate(date);
+  const nowObj = parseDate(now);
+  const partsDate = getCalendarParts(dateObj);
+  const partsNow = getCalendarParts(nowObj);
+
+  if (
+    partsDate.year === partsNow.year &&
+    partsDate.month === partsNow.month &&
+    partsDate.day === partsNow.day
+  ) {
+    return "Today";
+  }
+  return formatDay(dateObj);
+}
+
+/**
+ * Format timestamp relative to now for "synced N min ago".
+ * Returns "just now" for under 1 minute, "N min ago" under 60 minutes, and "N h ago" otherwise.
+ */
+export function formatRelativeTime(
+  timestamp: number | Date,
+  now: Date | number = new Date(),
+): string {
+  const timeMs = typeof timestamp === "number" ? timestamp : timestamp.getTime();
+  const nowMs = typeof now === "number" ? now : now.getTime();
+
+  if (Number.isNaN(timeMs) || Number.isNaN(nowMs)) {
+    throw new RangeError("Invalid date");
+  }
+
+  const diffMs = Math.max(0, nowMs - timeMs);
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMinutes / 60);
+
+  if (diffMinutes < 1) {
+    return "just now";
+  }
+
+  if (diffHours < 1) {
+    return `${diffMinutes} min ago`;
+  }
+
+  return `${diffHours} h ago`;
 }

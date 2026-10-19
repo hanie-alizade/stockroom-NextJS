@@ -36,10 +36,12 @@ export default async function RootLayout({
   const repo = createRepository();
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.meta.all,
-    queryFn: () => getMeta(repo, user),
-  });
+  await queryClient
+    .query({
+      queryKey: queryKeys.meta.all,
+      queryFn: () => getMeta(repo, user),
+    })
+    .catch(() => {});
 
   const dehydratedState = dehydrate(queryClient, {
     shouldDehydrateQuery: (query) => query.state.status === "success",

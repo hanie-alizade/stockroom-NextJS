@@ -20,18 +20,12 @@ Show it honestly. One point is drawn as a visible dot with a tooltip, and a shor
 
 **Below 1024px**
 
-<<<<<<< Updated upstream
-- 768 to 1023px: sidebar collapses into a top bar with a menu button; the table stays a table but scrolls horizontally inside its own container, with the SKU and Name columns sticky.
-- Under 768px (down to 375px): the sidebar becomes a slide-in menu holding the store switcher and the user switcher; table rows become cards (name, SKU, status badge with text, on hand and reorder level); filters collapse into one "Filters" sheet; the adjust dialog becomes a full-height sheet; pagination controls stay reachable with 44px touch targets.
-- Why: a table is still the best format when it fits, and cards avoid sideways scrolling on phones.
-=======
 - Breakpoints: the sidebar is fixed from 1024px (`lg`); the table is used from 768px (`md`), cards below it.
 - 768 to 1023px: sidebar collapses into a top bar (MobileHeader) with a menu button and slide-in sheet; the table scrolls horizontally inside its own container with Checkbox, SKU, and Name columns sticky on the left; first columns of StockByStoreTable (Store) and MovementsTable (Date & time) are also sticky.
 - Under 768px (down to 375px): the sidebar is accessed via MobileHeader slide-in sheet; table rows become cards (name, mono SKU, status badge, on hand, reorder level, unit cost); filters collapse into a bottom "Filters" sheet with category, status, sort key and direction toggle (changes apply immediately to URL); selection toolbar and chips wrap; pagination places range text on its own row; touch targets are at least 44px for icon buttons and navigation.
 - Product detail below 1024px: header stacks (Adjust stock button full width under 640px), breadcrumb truncates product name, meta line wraps, Overview displays in 1 column (Chart then Details card then Stock by store), Movements filters wrap into a grid (1 column under 640px, 2 columns from 640px) with movements count text below.
 - Adjust stock dialog: stays a centered dialog (560px wide, never wider than the viewport minus 32px, never taller than the viewport minus 32px). The body scrolls, the footer stays visible. Under 640px the From and To fields stack, the swap button turns 90 degrees, and the footer buttons stack under the "Signed in as" line.
 - Why: a table is still the best format when it fits, cards avoid sideways scrolling on phones, and CSS-first breakpoints avoid layout shifts.
->>>>>>> Stashed changes
 
 **Import "Done" step**
 A summary with counts (created, updated, unchanged, skipped), a "Download skipped rows" button when anything was skipped, a link to the products list scoped to the imported store, and "Import another file". The counts come from the commit response, not from the review.
@@ -64,8 +58,6 @@ While the request runs: the submit button shows a spinner and "Saving...", all f
 - **Tooltip text:** the design has two versions ("write off" and "write off or transfer"). We use the second one for both locked types.
 - **Sample-data differences in the design** (dates, "Last movement" values, the Aina or Faiz user on the same screen) are example data and are ignored.
 - **Dates:** use a fixed time zone (Asia/Kuala_Lumpur) so server and browser agree. Relative time uses a 12-hour threshold, "Yesterday" is by calendar day (not 24 hours), "Just now" covers ±1 minute, and older dates show the year when in a different year. Invalid inputs throw RangeError.
-<<<<<<< Updated upstream
-=======
 - **Product not carried at store (detail page):** when a product is viewed with a store scope where it is not carried (API returns empty `stockByStore`), the page displays an informational notice "This product is not carried at <Store>" with an action "View in all stores" that clears the store filter, avoiding misleading zero/out-of-stock data.
 - **Import "unchanged" vs "updated" and movements:** `unchanged` means nothing changed: name, category, unit cost and quantity are all identical. If only name, category or cost changed, the row is `updated` and no movement is written. A movement of type `import` (note: the file name, cut to 200 chars) is written only when quantity delta is not 0.
 - **New products have no supplier:** `supplier` is nullable (`string | null`) in ProductRecord, ProductListItem and ProductDetail. The UI hides the supplier line when null; the Details card shows an em dash.
@@ -85,4 +77,3 @@ While the request runs: the submit button shows a spinner and "Saving...", all f
 - **Component tests.** There are no React Testing Library tests for components. The brief lists "Vitest with React Testing Library". The adjust dialog validation messages are the best first candidate.
 - **Detail page `···` button.** The design shows one next to "Adjust stock" with no items defined. Not built on purpose.
 
->>>>>>> Stashed changes

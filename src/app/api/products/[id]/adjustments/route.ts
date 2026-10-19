@@ -1,72 +1,36 @@
 import "server-only";
 
-import {
-  ERROR_CODE,
-  HTTP_STATUS,
-  IDEMPOTENCY_KEY_HEADER,
-  REPLAY_HEADER,
-} from "@/constants";
-import { AppError } from "@/domain";
+import { HTTP_STATUS, IDEMPOTENCY_KEY_HEADER, REPLAY_HEADER } from "@/constants";
 import { adjustmentSchema } from "@/schemas";
-import { withApi } from "@/server/http/withApi";
+import { jsonResponse, parseJsonBody, withApi } from "@/server/http";
+import type { RouteContext } from "@/server/http";
 import { createAdjustment } from "@/server/services/inventory";
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> | { id: string } },
-): Promise<Response> {
-  globalThis.url = request.url;
+export async function POST(request: Request, { params }: RouteContext): Promise<Response> {
+  return withApi(request, async ({ user, repo }) => {
+    const idempotencyKey = request.headers.get(IDEMPOTENCY_KEY_HEADER) ?? "";
+    const parsed = await parseJsonBody(request, adjustmentSchema);
+    const { id } = await params;
 
-  return withApi(
-    async ({ user, repo }) => {
-      const idempotencyKey = request.headers.get(IDEMPOTENCY_KEY_HEADER);
+    const result = await createAdjustment(repo, id, parsed, {
+      user,
+      idempotencyKey,
+    });
 
-      if (!idempotencyKey || idempotencyKey.trim() === "") {
-        throw new AppError(
-          ERROR_CODE.IDEMPOTENCY_KEY_REQUIRED,
-          HTTP_STATUS.BAD_REQUEST,
-          "Missing Idempotency-Key header",
-        );
-      }
+    const headers: Record<string, string> = {};
+    if (result.replay) {
+      headers[REPLAY_HEADER] = "true";
+    }
 
-      let rawBody: unknown;
-      try {
-        rawBody = await request.json();
-      } catch {
-        throw new AppError(
-          ERROR_CODE.INVALID_JSON,
-          HTTP_STATUS.BAD_REQUEST,
-          "Invalid JSON body",
-        );
-      }
-
-      const parsed = adjustmentSchema.parse(rawBody);
-      const { id } = await params;
-
-      const result = await createAdjustment(repo, id, parsed, {
-        role: user.role,
-        idempotencyKey,
-        userId: user.id,
-      });
-
-      const headers: Record<string, string> = {
-        "content-type": "application/json",
-      };
-      if (result.replay) {
-        headers[REPLAY_HEADER] = "true";
-      }
-
-      return new Response(
-        JSON.stringify({
-          movements: result.movements,
-          stock: result.stock,
-        }),
-        {
-          status: HTTP_STATUS.CREATED,
-          headers,
-        },
-      );
-    },
-    { request },
-  );
+    return jsonResponse(
+      {
+        movements: result.movements,
+        stock: result.stock,
+      },
+      {
+        status: HTTP_STATUS.CREATED,
+        headers,
+      },
+    );
+  });
 }

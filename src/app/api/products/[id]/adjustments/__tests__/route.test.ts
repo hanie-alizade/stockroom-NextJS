@@ -40,7 +40,7 @@ describe("POST /api/products/:id/adjustments", () => {
       }),
     });
 
-    const response = await POST(request, { params: { id: "KL-1042" } });
+    const response = await POST(request, { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(201);
@@ -70,7 +70,7 @@ describe("POST /api/products/:id/adjustments", () => {
       }),
     });
 
-    const response = await POST(request, { params: { id: "KL-1042" } });
+    const response = await POST(request, { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(403);
