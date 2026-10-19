@@ -20,9 +20,11 @@ Show it honestly. One point is drawn as a visible dot with a tooltip, and a shor
 
 **Below 1024px**
 
-- 768 to 1023px: sidebar collapses into a top bar with a menu button; the table stays a table but scrolls horizontally inside its own container, with the SKU and Name columns sticky.
-- Under 768px (down to 375px): the sidebar becomes a slide-in menu holding the store switcher and the user switcher; table rows become cards (name, SKU, status badge with text, on hand and reorder level); filters collapse into one "Filters" sheet; the adjust dialog becomes a full-height sheet; pagination controls stay reachable with 44px touch targets.
-- Why: a table is still the best format when it fits, and cards avoid sideways scrolling on phones.
+- 768 to 1023px: sidebar collapses into a top bar (MobileHeader) with a menu button and slide-in sheet; the table scrolls horizontally inside its own container with Checkbox, SKU, and Name columns sticky on the left; first columns of StockByStoreTable (Store) and MovementsTable (Date & time) are also sticky.
+- Under 768px (down to 375px): the sidebar is accessed via MobileHeader slide-in sheet; table rows become cards (name, mono SKU, status badge, on hand, reorder level, unit cost); filters collapse into a bottom "Filters" sheet with category, status, sort key and direction toggle (changes apply immediately to URL); selection toolbar and chips wrap; pagination places range text on its own row; touch targets are at least 44px for icon buttons and navigation.
+- Product detail below 1024px: header stacks (Adjust stock button full width under 640px), breadcrumb truncates product name, meta line wraps, Overview displays in 1 column (Chart then Details card then Stock by store), Movements filters wrap into a grid (1 column under 640px, 2 columns from 640px) with movements count text below.
+- Adjust stock dialog: responsive full-height sheet is reserved for the dialog task and excluded here.
+- Why: a table is still the best format when it fits, cards avoid sideways scrolling on phones, and CSS-first breakpoints avoid layout shifts.
 
 **Import "Done" step**
 A summary with counts (created, updated, unchanged, skipped), a "Download skipped rows" button when anything was skipped, a link to the products list scoped to the imported store, and "Import another file". The counts come from the commit response, not from the review.

@@ -20,3 +20,4 @@ export { SupplierIcon } from "./SupplierIcon";
 export { BoxIcon } from "./BoxIcon";
 export { TransferIcon } from "./TransferIcon";
 export { MenuIcon } from "./MenuIcon";
+export { LockIcon } from "./LockIcon";

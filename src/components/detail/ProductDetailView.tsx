@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, type ReactElement } from "react";
+import { useCallback, useMemo, useState, type ReactElement } from "react";
 import {
   ALL_STORES,
   DEFAULT_PAGE,
@@ -14,7 +14,10 @@ import { useProductDetailUrlState } from "@/hooks";
 import { Banner, QueryErrorState } from "@/components/common";
 import { PageContainer } from "@/components/layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/helpers";
+import { cn, type AdjustStoreOption } from "@/helpers";
+import { useCurrentUser } from "@/providers/SessionProvider";
+import { AdjustStockDialog } from "@/components/adjust";
+import type { Adjustment } from "@/types";
 import { ProductDetailHeader } from "./ProductDetailHeader";
 import { StockChart } from "./StockChart";
 import { ProductDetailsCard } from "./ProductDetailsCard";
@@ -26,6 +29,10 @@ export interface ProductDetailViewProps {
 }
 
 export function ProductDetailView({ productId }: ProductDetailViewProps): ReactElement {
+  const currentUser = useCurrentUser();
+  const [isAdjustOpen, setIsAdjustOpen] = useState(false);
+  const [adjustStoreId, setAdjustStoreId] = useState<string | undefined>(undefined);
+
   const {
     query,
     setStore,
@@ -45,6 +52,8 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
     refetch,
   } = useQueryProductDetail(productId, { store: query.store, fail: query.fail });
 
+  const { data: unscopedProduct } = useQueryProductDetail(productId);
+
   const { data: defaultMovements } = useQueryProductMovements(productId, {
     store: query.store,
     period: PERIOD.DAYS_30,
@@ -54,14 +63,36 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
   });
 
   const { data: meta } = useQueryMeta();
-  const stores = meta?.stores ?? [];
+  const stores = useMemo(() => meta?.stores ?? [], [meta?.stores]);
   const currentStoreObj = stores.find((s) => s.id === query.store);
   const storeName = currentStoreObj?.name;
 
   const tabCount = defaultMovements?.total;
 
-  const handleAdjust = useCallback((_storeId?: string) => {
-    // TODO(hanie): open the Adjust stock dialog (next task)
+  const adjustStores: AdjustStoreOption[] = useMemo(() => {
+    const carrying = unscopedProduct?.stockByStore ?? product?.stockByStore ?? [];
+    return carrying.map((item) => {
+      const name = stores.find((s) => s.id === item.storeId)?.name ?? item.storeId;
+      return {
+        storeId: item.storeId,
+        storeName: name,
+        onHand: item.onHand,
+        reorderLevel: item.reorderLevel,
+      };
+    });
+  }, [unscopedProduct?.stockByStore, product?.stockByStore, stores]);
+
+  const handleAdjust = useCallback(
+    (storeId?: string) => {
+      const initial = storeId ?? (query.store !== ALL_STORES ? query.store : undefined);
+      setAdjustStoreId(initial);
+      setIsAdjustOpen(true);
+    },
+    [query.store],
+  );
+
+  const handleSubmitAdjustment = useCallback((_payload: Adjustment) => {
+    // TODO(hanie): wire the mutation (next task)
   }, []);
 
   if (!product) {
@@ -202,6 +233,18 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
           />
         </TabsContent>
       </Tabs>
+
+      <AdjustStockDialog
+        open={isAdjustOpen}
+        onOpenChange={setIsAdjustOpen}
+        product={{ id: product.id, sku: product.sku, name: product.name }}
+        stores={adjustStores}
+        initialStoreId={adjustStoreId}
+        user={currentUser}
+        isSaving={false}
+        serverError={null}
+        onSubmit={handleSubmitAdjustment}
+      />
     </PageContainer>
   );
 }
