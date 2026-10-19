@@ -1,6 +1,10 @@
-import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type UseQueryResult } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { queryKeys } from "@/constants";
+import { getAdjustmentToast } from "@/helpers";
 import type {
+  Adjustment,
+  AdjustmentResult,
   MovementListQuery,
   MovementListResponse,
   ProductDetail,
@@ -15,7 +19,12 @@ import {
   getProductList,
   getProductMovements,
   getStockHistory,
+  postAdjustment,
 } from "@/api/productsApi";
+import { useQueryMeta } from "./useMeta";
+
+export const ADJUST_TOAST_ID = "adjust-stock-toast";
+
 
 export function useQueryProductList(
   query: ProductListQuery,
@@ -66,3 +75,32 @@ export function useQueryStockHistory(
     enabled: Boolean(id) && (query?.days === undefined || query.days > 0),
   });
 }
+
+export function useMutationAdjustment(productId: string) {
+  const queryClient = useQueryClient();
+  const { data: meta } = useQueryMeta();
+
+  return useMutation<
+    AdjustmentResult,
+    Error,
+    { payload: Adjustment; idempotencyKey: string }
+  >({
+    mutationFn: ({ payload, idempotencyKey }) =>
+      postAdjustment(productId, payload, idempotencyKey),
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.products.all });
+      const toastInfo = getAdjustmentToast(variables.payload, meta?.stores ?? []);
+      toast.success(toastInfo.title, {
+        id: ADJUST_TOAST_ID,
+        description: toastInfo.description,
+      });
+    },
+    onError: (error) => {
+      toast.error("Couldn't save", {
+        id: ADJUST_TOAST_ID,
+        description: error.message,
+      });
+    },
+  });
+}
+

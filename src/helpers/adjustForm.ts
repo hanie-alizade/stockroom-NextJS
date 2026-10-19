@@ -3,7 +3,7 @@ import {
   STOCK_STATUS,
 } from "@/constants";
 import { getStatus, canRemoveStock } from "@/domain";
-import type { StockStatus } from "@/types";
+import type { Adjustment, StockStatus } from "@/types";
 
 export type AdjustmentType = (typeof ADJUSTMENT_TYPE)[keyof typeof ADJUSTMENT_TYPE];
 
@@ -176,3 +176,67 @@ export function calculatePreviewRows(params: CalculatePreviewParams): PreviewRow
     },
   ];
 }
+
+export interface AdjustmentToastInfo {
+  title: string;
+  description: string;
+}
+
+export type ToastStoreInput = {
+  id?: string;
+  storeId?: string;
+  name?: string;
+  storeName?: string;
+};
+
+/**
+ * Builds the toast title and description for an adjustment.
+ * Follows exact copy from docs/SCREENS.md.
+ */
+export function getAdjustmentToast(
+  adjustment: Adjustment,
+  stores: ToastStoreInput[],
+): AdjustmentToastInfo {
+  const getStoreName = (id: string) => {
+    const found = stores.find(
+      (s) => ("id" in s && s.id === id) || ("storeId" in s && s.storeId === id),
+    );
+    if (!found) return id;
+    return ("name" in found && found.name) || ("storeName" in found && found.storeName) || id;
+  };
+
+  const unitText = adjustment.quantity === 1 ? "unit" : "units";
+
+  switch (adjustment.type) {
+    case ADJUSTMENT_TYPE.TRANSFER: {
+      const fromName = getStoreName(adjustment.fromStoreId);
+      const toName = getStoreName(adjustment.toStoreId);
+      return {
+        title: "Transfer saved",
+        description: `${adjustment.quantity} ${unitText} moved from ${fromName} to ${toName}.`,
+      };
+    }
+    case ADJUSTMENT_TYPE.RECEIVE: {
+      const storeName = getStoreName(adjustment.storeId);
+      return {
+        title: "Stock received",
+        description: `+${adjustment.quantity} ${unitText} at ${storeName}.`,
+      };
+    }
+    case ADJUSTMENT_TYPE.SELL: {
+      const storeName = getStoreName(adjustment.storeId);
+      return {
+        title: "Sale recorded",
+        description: `\u2212${adjustment.quantity} ${unitText} at ${storeName}.`,
+      };
+    }
+    case ADJUSTMENT_TYPE.WRITE_OFF: {
+      const storeName = getStoreName(adjustment.storeId);
+      return {
+        title: "Write-off saved",
+        description: `${adjustment.quantity} ${unitText} written off at ${storeName}.`,
+      };
+    }
+  }
+}
+

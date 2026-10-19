@@ -1,22 +1,16 @@
 "use client";
 
-import { useCallback, useMemo, useState, type ReactElement } from "react";
-import {
-  ALL_STORES,
-  DEFAULT_PAGE,
-  DEFAULT_PAGE_SIZE,
-  DETAIL_TAB,
-  PERIOD,
-} from "@/constants";
-import type { DetailTab } from "@/constants";
-import { useQueryMeta, useQueryProductDetail, useQueryProductMovements } from "@/apiHooks";
-import { useProductDetailUrlState } from "@/hooks";
+import { useCallback, useMemo, useRef, useState, type ReactElement } from "react";
+import { ALL_STORES, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DETAIL_TAB, PERIOD, type DetailTab } from "@/constants";
+import { useMutationAdjustment, useQueryMeta, useQueryProductDetail, useQueryProductMovements } from "@/apiHooks";
+import { useIdempotencyKey, useProductDetailUrlState } from "@/hooks";
 import { Banner, QueryErrorState } from "@/components/common";
 import { PageContainer } from "@/components/layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, type AdjustStoreOption } from "@/helpers";
 import { useCurrentUser } from "@/providers/SessionProvider";
 import { AdjustStockDialog } from "@/components/adjust";
+import { ApiError } from "@/api/axiosConfig";
 import type { Adjustment } from "@/types";
 import { ProductDetailHeader } from "./ProductDetailHeader";
 import { StockChart } from "./StockChart";
@@ -32,27 +26,23 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
   const currentUser = useCurrentUser();
   const [isAdjustOpen, setIsAdjustOpen] = useState(false);
   const [adjustStoreId, setAdjustStoreId] = useState<string | undefined>(undefined);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const isSubmittingRef = useRef(false);
 
-  const {
-    query,
-    setStore,
-    setTab,
-    setType,
-    setPeriod,
-    clearFilters,
-    setPage,
-    setPageSize,
-  } = useProductDetailUrlState();
+  const idempotencyKey = useIdempotencyKey();
+  const adjustMutation = useMutationAdjustment(productId);
+
+  const { query, setStore, setTab, setType, setPeriod, clearFilters, setPage, setPageSize } =
+    useProductDetailUrlState();
 
   const {
     data: product,
-    isLoading,
     isError,
     error,
     refetch,
   } = useQueryProductDetail(productId, { store: query.store, fail: query.fail });
 
-  const { data: unscopedProduct } = useQueryProductDetail(productId);
+  const { data: unscopedProduct, refetch: refetchUnscoped } = useQueryProductDetail(productId);
 
   const { data: defaultMovements } = useQueryProductMovements(productId, {
     store: query.store,
@@ -66,34 +56,53 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
   const stores = useMemo(() => meta?.stores ?? [], [meta?.stores]);
   const currentStoreObj = stores.find((s) => s.id === query.store);
   const storeName = currentStoreObj?.name;
-
   const tabCount = defaultMovements?.total;
 
   const adjustStores: AdjustStoreOption[] = useMemo(() => {
     const carrying = unscopedProduct?.stockByStore ?? product?.stockByStore ?? [];
-    return carrying.map((item) => {
-      const name = stores.find((s) => s.id === item.storeId)?.name ?? item.storeId;
-      return {
-        storeId: item.storeId,
-        storeName: name,
-        onHand: item.onHand,
-        reorderLevel: item.reorderLevel,
-      };
-    });
+    return carrying.map((item) => ({
+      storeId: item.storeId,
+      storeName: stores.find((s) => s.id === item.storeId)?.name ?? item.storeId,
+      onHand: item.onHand,
+      reorderLevel: item.reorderLevel,
+    }));
   }, [unscopedProduct?.stockByStore, product?.stockByStore, stores]);
 
   const handleAdjust = useCallback(
     (storeId?: string) => {
       const initial = storeId ?? (query.store !== ALL_STORES ? query.store : undefined);
       setAdjustStoreId(initial);
+      setServerError(null);
       setIsAdjustOpen(true);
     },
     [query.store],
   );
 
-  const handleSubmitAdjustment = useCallback((_payload: Adjustment) => {
-    // TODO(hanie): wire the mutation (next task)
-  }, []);
+  const handleSubmitAdjustment = useCallback(
+    async (payload: Adjustment) => {
+      if (isSubmittingRef.current || adjustMutation.isPending) return;
+      isSubmittingRef.current = true;
+      setServerError(null);
+      const key = idempotencyKey.getKey(payload);
+
+      try {
+        await adjustMutation.mutateAsync({ payload, idempotencyKey: key });
+        idempotencyKey.onSuccess();
+        setIsAdjustOpen(false);
+      } catch (err: unknown) {
+        idempotencyKey.onError(err);
+        let message = "Something went wrong.";
+        if (err instanceof ApiError || err instanceof Error) {
+          message = err.message;
+        }
+        setServerError(message);
+        void refetchUnscoped();
+      } finally {
+        isSubmittingRef.current = false;
+      }
+    },
+    [adjustMutation, idempotencyKey, refetchUnscoped],
+  );
 
   if (!product) {
     if (isError) {
@@ -120,11 +129,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
   return (
     <PageContainer>
       {isError && (
-        <QueryErrorState
-          error={error}
-          onRetry={() => void refetch()}
-          hasData={true}
-        />
+        <QueryErrorState error={error} onRetry={() => void refetch()} hasData={true} />
       )}
 
       <ProductDetailHeader
@@ -236,13 +241,16 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
 
       <AdjustStockDialog
         open={isAdjustOpen}
-        onOpenChange={setIsAdjustOpen}
+        onOpenChange={(open) => {
+          setIsAdjustOpen(open);
+          if (!open) setServerError(null);
+        }}
         product={{ id: product.id, sku: product.sku, name: product.name }}
         stores={adjustStores}
         initialStoreId={adjustStoreId}
         user={currentUser}
-        isSaving={false}
-        serverError={null}
+        isSaving={adjustMutation.isPending}
+        serverError={serverError}
         onSubmit={handleSubmitAdjustment}
       />
     </PageContainer>

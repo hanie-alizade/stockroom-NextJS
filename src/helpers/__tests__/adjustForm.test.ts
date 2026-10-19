@@ -5,6 +5,7 @@ import {
   getOverStockErrorMessage,
   validateReason,
   calculatePreviewRows,
+  getAdjustmentToast,
   type AdjustStoreOption,
 } from "../adjustForm";
 import { ADJUSTMENT_TYPE, STOCK_STATUS } from "@/constants";
@@ -113,11 +114,9 @@ describe("adjustForm helpers", () => {
         storeId: "mont-kiara",
         quantityStr: "10",
       });
-      expect(rows).toHaveLength(1);
-      expect(rows[0].beforeOnHand).toBe(18);
-      expect(rows[0].afterOnHand).toBe(28);
-      expect(rows[0].status).toBe(STOCK_STATUS.IN_STOCK);
-      expect(rows[0].showBadge).toBe(false);
+      expect(rows).toEqual([
+        { storeId: "mont-kiara", storeName: "Mont Kiara", beforeOnHand: 18, afterOnHand: 28, status: STOCK_STATUS.IN_STOCK, showBadge: false },
+      ]);
     });
 
     it("calculates sell preview with low status badge", () => {
@@ -127,11 +126,9 @@ describe("adjustForm helpers", () => {
         storeId: "mont-kiara",
         quantityStr: "14",
       });
-      expect(rows).toHaveLength(1);
-      expect(rows[0].beforeOnHand).toBe(18);
-      expect(rows[0].afterOnHand).toBe(4);
-      expect(rows[0].status).toBe(STOCK_STATUS.LOW);
-      expect(rows[0].showBadge).toBe(true);
+      expect(rows).toEqual([
+        { storeId: "mont-kiara", storeName: "Mont Kiara", beforeOnHand: 18, afterOnHand: 4, status: STOCK_STATUS.LOW, showBadge: true },
+      ]);
     });
 
     it("calculates sell preview with out of stock badge", () => {
@@ -141,11 +138,9 @@ describe("adjustForm helpers", () => {
         storeId: "subang",
         quantityStr: "4",
       });
-      expect(rows).toHaveLength(1);
-      expect(rows[0].beforeOnHand).toBe(4);
-      expect(rows[0].afterOnHand).toBe(0);
-      expect(rows[0].status).toBe(STOCK_STATUS.OUT);
-      expect(rows[0].showBadge).toBe(true);
+      expect(rows).toEqual([
+        { storeId: "subang", storeName: "Subang", beforeOnHand: 4, afterOnHand: 0, status: STOCK_STATUS.OUT, showBadge: true },
+      ]);
     });
 
     it("returns null afterOnHand when quantity exceeds stock", () => {
@@ -155,8 +150,6 @@ describe("adjustForm helpers", () => {
         storeId: "subang",
         quantityStr: "10",
       });
-      expect(rows).toHaveLength(1);
-      expect(rows[0].beforeOnHand).toBe(4);
       expect(rows[0].afterOnHand).toBeNull();
       expect(rows[0].showBadge).toBe(false);
     });
@@ -168,7 +161,6 @@ describe("adjustForm helpers", () => {
         storeId: "subang",
         quantityStr: "",
       });
-      expect(rows).toHaveLength(1);
       expect(rows[0].afterOnHand).toBeNull();
       expect(rows[0].showBadge).toBe(false);
     });
@@ -181,25 +173,62 @@ describe("adjustForm helpers", () => {
         toStoreId: "subang",
         quantityStr: "12",
       });
-      expect(rows).toHaveLength(2);
-      expect(rows[0].storeName).toBe("Mont Kiara");
-      expect(rows[0].beforeOnHand).toBe(18);
-      expect(rows[0].afterOnHand).toBe(6);
-      expect(rows[0].showBadge).toBe(false);
-
-      expect(rows[1].storeName).toBe("Subang");
-      expect(rows[1].beforeOnHand).toBe(4);
-      expect(rows[1].afterOnHand).toBe(16);
-      expect(rows[1].showBadge).toBe(false);
+      expect(rows).toEqual([
+        { storeId: "mont-kiara", storeName: "Mont Kiara", beforeOnHand: 18, afterOnHand: 6, status: STOCK_STATUS.IN_STOCK, showBadge: false },
+        { storeId: "subang", storeName: "Subang", beforeOnHand: 4, afterOnHand: 16, status: STOCK_STATUS.IN_STOCK, showBadge: false },
+      ]);
     });
 
     it("hides preview when no store is chosen", () => {
-      const rows = calculatePreviewRows({
-        type: ADJUSTMENT_TYPE.SELL,
-        stores,
-        quantityStr: "5",
-      });
+      const rows = calculatePreviewRows({ type: ADJUSTMENT_TYPE.SELL, stores, quantityStr: "5" });
       expect(rows).toHaveLength(0);
+    });
+  });
+
+  describe("getAdjustmentToast", () => {
+    const toastStores = [
+      { id: "mont-kiara", name: "Mont Kiara" },
+      { id: "subang", name: "Subang" },
+    ];
+
+    it("formats Transfer toast (plural and singular)", () => {
+      expect(
+        getAdjustmentToast({ type: ADJUSTMENT_TYPE.TRANSFER, fromStoreId: "mont-kiara", toStoreId: "subang", quantity: 12 }, toastStores),
+      ).toEqual({ title: "Transfer saved", description: "12 units moved from Mont Kiara to Subang." });
+
+      expect(
+        getAdjustmentToast({ type: ADJUSTMENT_TYPE.TRANSFER, fromStoreId: "mont-kiara", toStoreId: "subang", quantity: 1 }, toastStores),
+      ).toEqual({ title: "Transfer saved", description: "1 unit moved from Mont Kiara to Subang." });
+    });
+
+    it("formats Receive toast (plural and singular)", () => {
+      expect(
+        getAdjustmentToast({ type: ADJUSTMENT_TYPE.RECEIVE, storeId: "mont-kiara", quantity: 20 }, toastStores),
+      ).toEqual({ title: "Stock received", description: "+20 units at Mont Kiara." });
+
+      expect(
+        getAdjustmentToast({ type: ADJUSTMENT_TYPE.RECEIVE, storeId: "mont-kiara", quantity: 1 }, toastStores),
+      ).toEqual({ title: "Stock received", description: "+1 unit at Mont Kiara." });
+    });
+
+    it("formats Sell toast (plural and singular with true minus sign)", () => {
+      const plural = getAdjustmentToast({ type: ADJUSTMENT_TYPE.SELL, storeId: "subang", quantity: 2 }, toastStores);
+      expect(plural).toEqual({ title: "Sale recorded", description: "−2 units at Subang." });
+      expect(plural.description).toContain("\u2212");
+
+      expect(
+        getAdjustmentToast({ type: ADJUSTMENT_TYPE.SELL, storeId: "subang", quantity: 1 }, toastStores),
+      ).toEqual({ title: "Sale recorded", description: "−1 unit at Subang." });
+    });
+
+    it("formats Write-off toast (plural and singular)", () => {
+      expect(
+        getAdjustmentToast({ type: ADJUSTMENT_TYPE.WRITE_OFF, storeId: "mont-kiara", quantity: 2, note: "Damaged" }, toastStores),
+      ).toEqual({ title: "Write-off saved", description: "2 units written off at Mont Kiara." });
+
+      expect(
+        getAdjustmentToast({ type: ADJUSTMENT_TYPE.WRITE_OFF, storeId: "mont-kiara", quantity: 1, note: "Expired" }, toastStores),
+      ).toEqual({ title: "Write-off saved", description: "1 unit written off at Mont Kiara." });
     });
   });
 });
