@@ -55,8 +55,8 @@ export function useProductDetailUrlState() {
   }, [router, pathname, query]);
 
   const setPage = useCallback(
-    (page: number) => {
-      setProductDetailPage(router, pathname, query, page);
+    (page: number, replace?: boolean) => {
+      setProductDetailPage(router, pathname, query, page, replace);
     },
     [router, pathname, query],
   );

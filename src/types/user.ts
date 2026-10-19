@@ -1,10 +1,10 @@
 import type { z } from "zod";
-import type { ACTION, ROLE } from "@/constants";
+import type { PERMISSION, ROLE } from "@/constants";
 import type { sessionBodySchema, sessionResponseSchema, userSchema } from "@/schemas";
 
 export type Role = (typeof ROLE)[keyof typeof ROLE];
 
-export type Action = (typeof ACTION)[keyof typeof ACTION];
+export type Permission = (typeof PERMISSION)[keyof typeof PERMISSION];
 
 export type User = z.infer<typeof userSchema>;
 

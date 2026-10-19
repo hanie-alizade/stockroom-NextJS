@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CheckIcon } from "@/components/icons";
 import { ROLE_LABEL } from "@/constants";
-import { ApiError } from "@/api";
+import { getErrorInfo } from "@/helpers";
 import { useQueryMeta, useMutationSwitchUser } from "@/apiHooks";
 import { useCurrentUser } from "@/providers";
 
@@ -32,12 +32,11 @@ export function UserProfileCard(): React.ReactElement | null {
 
     switchUserMutation.mutate(userId, {
       onSuccess: async () => {
-        queryClient.clear();
+        await queryClient.resetQueries();
         router.refresh();
       },
       onError: (error) => {
-        const message = error instanceof ApiError ? error.body.message : "An error occurred";
-        toast.error(message);
+        toast.error(getErrorInfo(error).message);
       },
     });
   };
@@ -74,7 +73,7 @@ export function UserProfileCard(): React.ReactElement | null {
         <DropdownMenuTrigger asChild disabled={switchUserMutation.isPending || !meta}>
           <button
             type="button"
-            className="text-accent-default hover:text-accent-hover focus-visible:ring-border-focus text-label transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="text-accent-default hover:text-accent-hover focus-visible:ring-border-focus text-label transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] min-w-[44px] inline-flex items-center justify-center"
           >
             Switch
           </button>

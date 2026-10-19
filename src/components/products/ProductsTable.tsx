@@ -3,14 +3,14 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ALL_STORES } from "@/constants";
-import { ApiError } from "@/api";
-import { Banner } from "@/components/common";
-import { StateBlock } from "@/components/common";
-import { CircleAlertIcon } from "@/components/icons";
+import { QueryErrorState } from "@/components/common";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/helpers";
 import { ProductsTableHead } from "./ProductsTableHead";
 import { ProductsTableRow } from "./ProductsTableRow";
 import { ProductsTableSkeleton } from "./ProductsTableSkeleton";
 import { ProductsEmptyState } from "./ProductsEmptyState";
+import { ProductCardList } from "./ProductCardList";
 import type {
   ProductListItem,
   ProductSortKey,
@@ -63,8 +63,6 @@ export function ProductsTable({
   const now = useMemo(() => new Date(), []);
   const storeParam = store && store !== ALL_STORES ? `?store=${store}` : "";
 
-  const statusCode = error instanceof ApiError ? error.status ?? 500 : 500;
-
   const handleRowClick = (id: string): void => {
     router.push(`/products/${id}${storeParam}`);
   };
@@ -78,18 +76,17 @@ export function ProductsTable({
   return (
     <div className="flex flex-col">
       {showErrorWithOldData && (
-        <div className="p-4 pb-0">
-          <Banner
-            variant="danger"
-            title="We couldn't load products"
-            description={`The server returned an error (${statusCode}). Your data hasn't changed.`}
-            actionText="Try again"
-            onAction={onRetry}
-          />
-        </div>
+        <QueryErrorState
+          error={error}
+          onRetry={onRetry}
+          hasData={true}
+          title="We couldn't load products"
+          className="p-4 pb-0"
+        />
       )}
 
-      <div className="overflow-x-auto">
+      {/* Desktop & tablet table: hidden below md */}
+      <div className="hidden md:block overflow-x-auto">
         <table
           aria-busy={isFetching ?? isLoading}
           className="w-full min-w-[900px] border-collapse text-left"
@@ -133,27 +130,60 @@ export function ProductsTable({
         </table>
       </div>
 
-      {showErrorEmpty && (
-        <div className="flex flex-col p-4">
-          <Banner
-            variant="danger"
-            title="We couldn't load products"
-            description={`The server returned an error (${statusCode}). Your data hasn't changed.`}
-            actionText="Try again"
-            onAction={onRetry}
-          />
-          <div className="mt-12 flex justify-center pb-12">
-            <StateBlock
-              icon={CircleAlertIcon}
-              iconVariant="danger"
-              title="Something went wrong"
-              description="We couldn't load this page. Your data is safe."
-              actionText="Try again"
-              onAction={onRetry}
-            />
+      {/* Mobile cards: hidden from md up */}
+      <div className={cn("md:hidden", showErrorWithOldData && "opacity-60")}>
+        {showLoading && (
+          <div className="flex flex-col gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="border-border-default bg-bg-surface flex flex-col gap-3 rounded-lg border p-4 animate-pulse"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="size-4 rounded-sm" />
+                    <Skeleton className="h-4 w-36" />
+                  </div>
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+                <div className="border-border-subtle grid grid-cols-3 gap-2 border-t pt-3">
+                  <Skeleton className="h-4 w-12" />
+                  <Skeleton className="h-4 w-12" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
+
+        {showEmpty && (
+          <ProductsEmptyState
+            hasFilters={hasFilters}
+            onClearFilters={onClearFilters}
+          />
+        )}
+
+        {!showLoading && (
+          <ProductCardList
+            items={items}
+            isSelected={isSelected}
+            storeParam={storeParam}
+            onSelect={onToggleSelect}
+            onCardClick={handleRowClick}
+          />
+        )}
+      </div>
+
+      {showErrorEmpty && (
+        <QueryErrorState
+          error={error}
+          onRetry={onRetry}
+          hasData={false}
+          variant="section"
+          title="We couldn't load products"
+        />
       )}
     </div>
   );
 }
+

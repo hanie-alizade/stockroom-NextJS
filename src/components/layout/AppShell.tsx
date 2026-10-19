@@ -9,15 +9,15 @@ interface AppShellProps {
 export function AppShell({ children }: AppShellProps): React.ReactElement {
   return (
     <div className="bg-bg-canvas flex min-h-screen">
-      {/* Desktop sidebar - hidden on mobile/tablet */}
-      <div className="hidden md:block sticky top-0 h-dvh">
+      {/* Desktop sidebar - visible from lg (1024) up */}
+      <div className="hidden lg:block sticky top-0 h-dvh">
         <Sidebar />
       </div>
 
       {/* Main content area */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Mobile header - visible only on mobile/tablet */}
-        <div className="md:hidden">
+        {/* Mobile/tablet top bar - visible below lg */}
+        <div className="lg:hidden">
           <MobileHeader />
         </div>
 

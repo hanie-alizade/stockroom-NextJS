@@ -32,7 +32,7 @@ export function MovementsTable({
             <th
               scope="col"
               aria-sort="descending"
-              className="w-[185px] pl-xl px-md text-left text-label text-text-primary font-medium"
+              className="w-[185px] pl-xl px-md text-left text-label text-text-primary font-medium sticky left-0 z-10 bg-bg-subtle border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]"
             >
               <div className="flex items-center gap-xs">
                 <span>Date & time</span>
@@ -63,7 +63,7 @@ export function MovementsTable({
           {isLoading &&
             Array.from({ length: 9 }).map((_, i) => (
               <tr key={i} className="h-12 border-b border-border-default">
-                <td className="w-[185px] pl-xl px-md">
+                <td className="w-[185px] pl-xl px-md sticky left-0 z-10 bg-bg-surface border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]">
                   <Skeleton className="h-4 w-24 rounded-xs" />
                 </td>
                 <td className="w-[143px] px-md">
@@ -113,7 +113,7 @@ export function MovementsTable({
 
               return (
                 <tr key={m.id} className="h-12 border-b border-border-default">
-                  <td className="w-[185px] pl-xl px-md text-body-small text-text-secondary whitespace-nowrap">
+                  <td className="w-[185px] pl-xl px-md text-body-small text-text-secondary whitespace-nowrap sticky left-0 z-10 bg-bg-surface border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]">
                     {formatDateTime(m.createdAt)}
                   </td>
                   <td className="w-[143px] px-md">

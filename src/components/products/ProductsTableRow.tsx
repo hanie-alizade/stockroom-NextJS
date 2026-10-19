@@ -27,12 +27,15 @@ export function ProductsTableRow({
     <tr
       onClick={() => onRowClick(item.id)}
       className={cn(
-        "border-border-default h-[52px] cursor-pointer border-b transition-colors",
+        "group border-border-default h-[52px] cursor-pointer border-b transition-colors",
         isSelected ? "bg-accent-subtle" : "hover:bg-bg-subtle",
       )}
     >
       <td
-        className="w-[44px] px-md text-center align-middle"
+        className={cn(
+          "w-[44px] min-w-[44px] max-w-[44px] px-md text-center align-middle sticky left-0 z-10",
+          isSelected ? "bg-accent-subtle" : "bg-bg-surface group-hover:bg-bg-subtle",
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="inline-flex items-center">
@@ -44,11 +47,21 @@ export function ProductsTableRow({
         </div>
       </td>
 
-      <td className="text-mono text-text-secondary px-md align-middle whitespace-nowrap">
+      <td
+        className={cn(
+          "text-mono text-text-secondary w-[100px] min-w-[100px] max-w-[100px] px-md align-middle whitespace-nowrap sticky left-[44px] z-10",
+          isSelected ? "bg-accent-subtle" : "bg-bg-surface group-hover:bg-bg-subtle",
+        )}
+      >
         {item.sku}
       </td>
 
-      <td className="px-md align-middle">
+      <td
+        className={cn(
+          "w-[220px] min-w-[220px] max-w-[220px] px-md align-middle sticky left-[144px] z-10 border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]",
+          isSelected ? "bg-accent-subtle" : "bg-bg-surface group-hover:bg-bg-subtle",
+        )}
+      >
         <div className="flex flex-col">
           <Link
             href={`/products/${item.id}${storeParam}`}

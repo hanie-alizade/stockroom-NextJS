@@ -75,7 +75,7 @@ scripts/generate-seed.ts       deterministic seed generator (seeded PRNG)
 - `getStatus(onHand, reorderLevel)`: `out` if onHand is 0; `low` if onHand > 0 and onHand <= reorderLevel; otherwise `in_stock`. A reorder level of 0 can therefore never be Low.
 - `checkAdjustment(currentStock, type, qty)`: qty must be a whole number > 0; sell, write-off and transfer cannot take stock below 0.
 - `planTransfer(from, to, qty)`: returns the two movements. Invariant: the sum of the two signed quantities is 0.
-- `can(role, action)`: one policy table used by the server (authority) and the UI (lock or hide).
+- `roleHasPermission(role, permission)`: one policy table used by the server (authority) and the UI (lock or hide).
 - `validateImportRow(row, context)`: one function with a list of error codes. The browser uses it for preview, the server runs it again and decides.
 
 ## Request wrapper
@@ -85,7 +85,7 @@ Every route is wrapped with `withApi(handler, options)`, which does:
 1. Waits about 500 ms (`SIMULATED_LATENCY_MS`, default 500).
 2. If `?fail=1`, returns a 500 `INTERNAL_ERROR` before any state is touched.
 3. Reads the user from the cookie `stockroom_user` and takes the role from the server's user list (missing or unknown means the default Staff user, the least privilege).
-4. Checks `options.action` against `can(role, action)` and returns 403 `FORBIDDEN`.
+4. Checks `options.permission` against `roleHasPermission(role, permission)` and returns 403 `FORBIDDEN`.
 5. Runs the handler and maps thrown `AppError`s and `ZodError`s to the standard error shape (`VALIDATION_ERROR`, 422), mapping Zod issues to documented field codes (`REQUIRED`, `NOT_A_WHOLE_NUMBER`, `MUST_BE_POSITIVE`, `TOO_SHORT`, `TOO_LONG`, `VALIDATION_ERROR`).
 
 Having one wrapper means the error format, delay and fail switch cannot drift between routes.
@@ -129,8 +129,8 @@ Having one wrapper means the error format, delay and fail switch cannot drift be
 ## Permissions: why both places
 
 - UI: a locked control with an explanation is better UX than a hidden one that fails later, and Staff should see what exists.
-- Server: the UI can be bypassed (devtools, curl). The server is the only real enforcement, so every write route calls `can()` through `withApi`.
-- Both use the same `can()` function so the rules cannot disagree.
+- Server: the UI can be bypassed (devtools, curl). The server is the only real enforcement, so every write route calls `roleHasPermission()` through `withApi`.
+- Both use the same `roleHasPermission()` function so the rules cannot disagree.
 
 ## Seed data
 
@@ -167,7 +167,7 @@ src/types/store.ts
 
 src/types/user.ts
   type Role = "manager" | "staff"
-  type Action = "view" | "receive" | "sell" | "write_off" | "transfer" | "import"
+  type Permission = "view" | "receive" | "sell" | "write_off" | "transfer" | "import"
   type User = { id: string; name: string; initials: string; role: Role }
 
 src/types/product.ts
@@ -225,7 +225,7 @@ src/helpers/money.ts
   formatMoney(sen: number, options?: { withCurrency?: boolean }): string   // "68.00", "RM 68.00", "1,234.50"
 
 src/domain/policy.ts
-  can(role: Role, action: Action): boolean
+  roleHasPermission(role: Role, permission: Permission): boolean
 
 src/domain/stockRules.ts
   isValidQuantity(quantity: number): boolean            // whole number > 0

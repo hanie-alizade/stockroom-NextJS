@@ -12,8 +12,9 @@ import {
   setProductListPage,
   setProductListPageSize,
   toggleProductListSort,
+  setProductListSort,
 } from "@/helpers";
-import type { StockStatus, ProductSortKey, PageSize, StoreScope } from "@/types";
+import type { StockStatus, ProductSortKey, SortDirection, PageSize, StoreScope } from "@/types";
 
 export function useProductListUrlState() {
   const router = useRouter();
@@ -75,6 +76,13 @@ export function useProductListUrlState() {
     [router, pathname, query],
   );
 
+  const setSort = useCallback(
+    (column?: ProductSortKey, dir?: SortDirection) => {
+      setProductListSort(router, pathname, query, column, dir);
+    },
+    [router, pathname, query],
+  );
+
   return {
     query,
     setSearch,
@@ -85,5 +93,6 @@ export function useProductListUrlState() {
     setPage,
     setPageSize,
     toggleSort,
+    setSort,
   };
 }

@@ -1,26 +1,11 @@
-import { ACTION, ROLE } from "@/constants";
-import type { Action, Role, User } from "@/types";
+import { ROLE_PERMISSIONS } from "@/constants";
+import type { Permission, Role, User } from "@/types";
 
-export type { Action, Role, User };
-
-const STAFF_ACTIONS: Set<Action> = new Set([ACTION.VIEW, ACTION.RECEIVE, ACTION.SELL]);
-const MANAGER_ACTIONS: Set<Action> = new Set([
-  ACTION.VIEW,
-  ACTION.RECEIVE,
-  ACTION.SELL,
-  ACTION.WRITE_OFF,
-  ACTION.TRANSFER,
-  ACTION.IMPORT,
-]);
+export type { Permission, Role, User };
 
 /**
- * Check if a role is allowed to perform an action.
- * Staff can view, receive, sell. Manager can do everything.
+ * Pure check: does this role include the permission? Does not read the session.
  */
-export function can(role: Role, action: Action): boolean {
-  if (role === ROLE.STAFF) {
-    return STAFF_ACTIONS.has(action);
-  }
-
-  return MANAGER_ACTIONS.has(action);
+export function roleHasPermission(role: Role, permission: Permission): boolean {
+  return ROLE_PERMISSIONS[role].includes(permission);
 }

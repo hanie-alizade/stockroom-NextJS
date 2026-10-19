@@ -24,8 +24,7 @@ export function useQueryProductList(
     queryKey: queryKeys.products.list(query),
     queryFn: () => getProductList(query),
     placeholderData: (previousData) => previousData,
-    staleTime: 30_000,
-    retry: 2,
+    meta: { silent: true },
   });
 }
 
@@ -37,8 +36,7 @@ export function useQueryProductDetail(
     queryKey: queryKeys.products.detail(id, query),
     queryFn: () => getProductDetail(id, query),
     placeholderData: (previousData) => previousData,
-    staleTime: 30_000,
-    retry: false,
+    meta: { silent: true },
     enabled: Boolean(id),
   });
 }
@@ -51,8 +49,7 @@ export function useQueryProductMovements(
     queryKey: queryKeys.products.movements(id, query),
     queryFn: () => getProductMovements(id, query),
     placeholderData: (previousData) => previousData,
-    staleTime: 30_000,
-    retry: false,
+    meta: { silent: true },
     enabled: Boolean(id) && (query?.page === undefined || query.page >= 1),
   });
 }
@@ -65,8 +62,7 @@ export function useQueryStockHistory(
     queryKey: queryKeys.products.stockHistory(id, query),
     queryFn: () => getStockHistory(id, query),
     placeholderData: (previousData) => previousData,
-    staleTime: 30_000,
-    retry: false,
+    meta: { silent: true },
     enabled: Boolean(id) && (query?.days === undefined || query.days > 0),
   });
 }

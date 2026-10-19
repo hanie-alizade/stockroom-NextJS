@@ -72,7 +72,7 @@ export function ProductsChips({
   }
 
   return (
-    <div className="border-border-default flex h-[52px] items-center border-t px-4">
+    <div className="border-border-default flex min-h-[52px] py-2 items-center border-t px-4">
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex flex-wrap items-center gap-5">
           {chips.map((chip) => (

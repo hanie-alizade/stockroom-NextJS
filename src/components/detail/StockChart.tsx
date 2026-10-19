@@ -16,6 +16,7 @@ import { formatChartDay, formatDay } from "@/helpers";
 import { useQueryStockHistory } from "@/apiHooks";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
+import { QueryErrorState } from "@/components/common";
 import { StockChartTooltip } from "./StockChartTooltip";
 import type { StockHistoryPoint, StoreScope } from "@/types";
 
@@ -52,7 +53,7 @@ export function StockChart({
   );
   const days = DAYS_BY_RANGE[range];
 
-  const { data, isLoading, isFetching, isError, refetch } = useQueryStockHistory(productId, {
+  const { data, isLoading, isFetching, isError, error, refetch } = useQueryStockHistory(productId, {
     store,
     days,
     fail,
@@ -98,17 +99,11 @@ export function StockChart({
     chartBody = <Skeleton className="h-[200px] w-full rounded-md" />;
   } else if (isError) {
     chartBody = (
-      <div className="flex h-full flex-col items-center justify-center text-center">
-        <h3 className="text-body-strong text-text-primary">We couldn&apos;t load this chart</h3>
-        <p className="text-body-small text-text-secondary mt-1">Your data is safe.</p>
-        <button
-          type="button"
-          onClick={() => void refetch()}
-          className="border-border-default bg-bg-surface hover:bg-bg-subtle text-text-primary text-label mt-3 inline-flex h-8 cursor-pointer items-center justify-center rounded-md border px-3"
-        >
-          Try again
-        </button>
-      </div>
+      <QueryErrorState
+        error={error}
+        onRetry={() => void refetch()}
+        variant="inline"
+      />
     );
   } else if (points.length === 0) {
     chartBody = (
@@ -197,7 +192,7 @@ export function StockChart({
 
   return (
     <div className="bg-bg-surface border-border-default shadow-card rounded-lg border p-xl flex flex-col">
-      <div className="flex h-10 items-center justify-between">
+      <div className="flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-2 min-h-10">
         <div>
           <h2 className="text-card text-text-primary">On hand, last {days} days</h2>
           <p className="text-caption text-text-tertiary mt-2xs">{subtitle}</p>
@@ -208,7 +203,7 @@ export function StockChart({
           onValueChange={(val) => {
             if (val) setRange(val as RangeOption);
           }}
-          className="bg-bg-muted h-8 w-[152px] rounded-md p-[3px] flex items-center justify-between border-0 gap-0"
+          className="bg-bg-muted h-8 w-[152px] shrink-0 rounded-md p-[3px] flex items-center justify-between border-0 gap-0"
         >
           <ToggleGroupItem
             value="7d"
