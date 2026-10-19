@@ -4,29 +4,29 @@ Goal: code that is boring, consistent and easy to explain in a live walkthrough.
 
 ## 1. Naming
 
-| Thing                   | Style                                                                                      | Example                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
-| Files                   | component folder and file PascalCase (shadcn keeps kebab-case); all other files camelCase  | `Sidebar.tsx`, `StockByStoreTable.tsx`, `useProductFilters.ts`, `stockRules.ts`  |
-| Folders                 | component folder PascalCase (if >1 file); other folders lowercase, one word where possible | `components/Sidebar/`, `domain`, `helpers`                                       |
-| React components        | PascalCase export, one per file; component folder and file PascalCase                      | `Sidebar` in `Sidebar.tsx`, `StockByStoreTable` in `StockByStoreTable.tsx`       |
-| Hooks                   | `useXxx`, file `useXxx.ts`                                                                 | `useProductFilters` in `useProductFilters.ts`                                    |
-| Functions               | camelCase, start with a verb                                                               | `getStatus`, `planTransfer`, `parseMoneyToSen`                                   |
-| Variables               | camelCase, nouns                                                                           | `onHand`, `reorderLevel`                                                         |
-| Booleans                | `is` / `has` / `can` / `should` prefix                                                     | `isLocked`, `hasMovements`, `canWriteOff`                                        |
-| Types                   | PascalCase, no `I` prefix, no `Type` suffix; `type` for data shapes                       | `Product`, `Movement`                                                            |
-| Shared type files       | `src/types/<module>.ts`, camelCase                                                         | `product.ts`, `movement.ts`, `common.ts`                                         |
-| Props types             | local to the component file, `interface <Component>Props`                                 | `interface NavItemProps`                                                         |
-| Zod schemas             | in `src/schemas/`, camelCase + `Schema`; type inferred with same base name                 | `adjustmentSchema` -> `type Adjustment = z.infer<...>`                           |
-| Fixed values            | in `src/constants/` as `as const` objects; types derived from them                         | `export const ROLE = { MANAGER: "manager", STAFF: "staff" } as const;`           |
-| Constant usage          | use constant object members, no repeated strings or hard-coded literal unions              | `ROLE.MANAGER`                                                                   |
-| Money                   | suffix `Sen`, integer                                                                      | `unitCostSen`                                                                    |
-| Quantities              | `quantity` (input), `onHand` (state), `delta` (signed change)                              |                                                                                  |
-| Error codes             | UPPER_SNAKE_CASE strings                                                                   | `INSUFFICIENT_STOCK`                                                             |
-| Query keys              | built only in `src/constants/queryKeys.ts`                                                 | `queryKeys.products.list(params)`                                                |
-| API routes              | plural nouns, kebab-case                                                                   | `/api/products/:id/stock-history`                                                |
-| URL params              | camelCase, short                                                                           | `store`, `q`, `pageSize`                                                         |
-| Event handlers          | `handleXxx` in the component, `onXxx` as props                                             | `onSubmit`, `handleSubmit`                                                       |
-| Test files              | in `__tests__/` next to the code (where tests exist), same test-name style; e2e in `e2e/`   | `getStatus.test.ts`, `managerTransfer.spec.ts`                                   |
+| Thing             | Style                                                                                                                              | Example                                                                         |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Files             | component folder and file PascalCase (shadcn keeps kebab-case); all other files camelCase                                          | `Sidebar.tsx`, `StockByStoreTable.tsx`, `useProductFilters.ts`, `stockRules.ts` |
+| Folders           | component folder PascalCase (if >1 file); other folders lowercase, one word where possible                                         | `components/Sidebar/`, `domain`, `helpers`                                      |
+| React components  | PascalCase export, one per file; component folder and file PascalCase                                                              | `Sidebar` in `Sidebar.tsx`, `StockByStoreTable` in `StockByStoreTable.tsx`      |
+| Hooks             | `useXxx`, file `useXxx.ts`                                                                                                         | `useProductFilters` in `useProductFilters.ts`                                   |
+| Functions         | camelCase, start with a verb                                                                                                       | `getStatus`, `planTransfer`, `parseMoneyToSen`                                  |
+| Variables         | camelCase, nouns                                                                                                                   | `onHand`, `reorderLevel`                                                        |
+| Booleans          | `is` / `has` / `can` / `should` prefix                                                                                             | `isLocked`, `hasMovements`, `canWriteOff`                                       |
+| Types             | PascalCase, no `I` prefix, no `Type` suffix; `type` for data shapes                                                                | `Product`, `Movement`                                                           |
+| Shared type files | `src/types/<module>.ts`, camelCase                                                                                                 | `product.ts`, `movement.ts`, `common.ts`                                        |
+| Props types       | local to the component file, `interface <Component>Props`                                                                          | `interface NavItemProps`                                                        |
+| Zod schemas       | in `src/schemas/`, camelCase + `Schema`; type inferred with same base name                                                         | `adjustmentSchema` -> `type Adjustment = z.infer<...>`                          |
+| Fixed values      | in `src/constants/` as `as const` objects; types derived from them                                                                 | `export const ROLE = { MANAGER: "manager", STAFF: "staff" } as const;`          |
+| Constant usage    | use constant object members, no repeated strings or hard-coded literal unions                                                      | `ROLE.MANAGER`                                                                  |
+| Money             | suffix `Sen`, integer                                                                                                              | `unitCostSen`                                                                   |
+| Quantities        | `quantity` (input), `onHand` (state), `delta` (signed change)                                                                      |                                                                                 |
+| Error codes       | UPPER_SNAKE_CASE strings                                                                                                           | `INSUFFICIENT_STOCK`                                                            |
+| Query keys        | built only in `src/constants/queryKeys.ts`                                                                                         | `queryKeys.products.list(params)`                                               |
+| API routes        | plural nouns, kebab-case                                                                                                           | `/api/products/:id/stock-history`                                               |
+| URL params        | camelCase, short                                                                                                                   | `store`, `q`, `pageSize`                                                        |
+| Event handlers    | `handleXxx` in the component, `onXxx` as props                                                                                     | `onSubmit`, `handleSubmit`                                                      |
+| Test files        | in `__tests__/` next to the code, named after the module (`status.test.ts`, `route.test.ts`); e2e in `e2e/` as `camelCase.spec.ts` | `status.test.ts`, `managerTransfer.spec.ts`                                     |
 
 Exceptions to the file rule: files generated by shadcn in `components/ui/` keep their kebab-case names (do not rename them), and root config files, `scripts/` and `docs/` keep theirs.
 
@@ -36,7 +36,7 @@ No abbreviations except common ones (`id`, `url`, `sku`, `qty` is not allowed, w
 
 ## 2. Structure
 
-Target layout (target layout, migration in progress):
+Layout as built (details in `docs/ARCHITECTURE.md`):
 
 ```
 src/
@@ -49,20 +49,21 @@ src/
   types/
   domain/
   helpers/
-  hooks/ (+ hooks/api)
+  hooks/ (client hooks)
+  apiHooks/ (TanStack Query hooks)
   providers/
-  server/{http,repositories,services,session}
+  server/{http,repositories,services} + session.ts, guards.ts
 Outside src:
   tests/ (setup, helpers)
   e2e/
   data/
 ```
 
-- Imports go only downwards: `constants -> schemas -> types -> domain, helpers -> server, api, hooks -> components -> app`.
-- Import through barrels: `@/helpers`, `@/types`, `@/constants`, `@/schemas`, `@/domain`, `@/hooks`, `@/api`. No deep imports into these folders. No barrel at `src/server` root; server sub-folders have their own (`@/server/http`, `@/server/repositories`, `@/server/services`, `@/server/session`).
+- Imports go only downwards: `constants -> schemas -> types -> domain, helpers -> server, api, apiHooks, hooks -> components -> app`.
+- Import through barrels: `@/helpers`, `@/types`, `@/constants`, `@/schemas`, `@/domain`, `@/hooks`, `@/api`, `@/apiHooks`, `@/providers`. No deep imports into these folders. No barrel at `src/server` root; server sub-folders have their own (`@/server/http`, `@/server/repositories`, `@/server/services/<area>`). `src/server/session.ts` and `src/server/guards.ts` are single files imported by path.
 - Scope: a helper, hook or type used in more than one place goes to the shared folder. Used by one component only: next to it.
 - A component gets its own folder only if it has more than one file. Props use `interface XProps` in the component file. Data shapes use `type`.
-- No empty files or folders.
+- No empty files or folders. No `lib` folder: shared client code goes to `hooks` or `helpers`.
 - Size guidance (not lint errors): file up to 250 lines, component up to 150, function up to about 40, positional params up to 3 (an options object beyond that). Split by responsibility, not by line count.
 - Pure business logic lives in `src/domain` and `src/helpers`, and never imports React, Next or the server. It is shared by client and server.
 - Server-only code lives in `src/server` and starts with `import "server-only"` where it could leak.
@@ -151,29 +152,31 @@ Rules:
 - Arrange, Act, Assert, separated by a blank line.
 - One behavior per test. No logic (loops, ifs) in tests.
 - Domain tests: pure, no mocks. Table-driven with `it.each` for status and import rows.
-- Route tests: call the handler with a real `Request`, reset the store in `beforeEach`.
+- Route tests: call the handler with a real `Request`, reset the store in `beforeEach`, mock the cookie with `mockCookies("<userId>")`, and run with `SIMULATED_LATENCY_MS=0`. Assert the status and the error `code` in the unified body.
 - Component tests (React Testing Library): query by role and accessible name, then by label. `data-testid` is the last resort. Use `userEvent`, not `fireEvent`.
 - No snapshot tests. No testing implementation details or internal state.
 - No empty files or folders.
-- Playwright: role and label locators, no `waitForTimeout`, reset the store with the test route before each test, one user story per test.
+- Playwright: role and label locators, no `waitForTimeout`, reset the store with `POST /api/test/reset` before each test, one user story per test. Details and fixtures: `docs/TESTING.md`.
 - A bug fix starts with a failing test.
 
 ## 9. Commits and docs
 
-- Format: `<type>(<scope>): <short description>`, imperative, under 72 characters. Types: `feat`, `fix`, `refactor`, `test`, `style`, `perf`, `docs`, `chore`. Scope is the area: `domain`, `inventory`, `products`, `detail`, `import`, `api`, `ui`, `e2e`, `docs`.
+- Format: `<type>(<scope>): <short description>`, imperative, under 72 characters. Types: `feat`, `fix`, `refactor`, `test`, `style`, `perf`, `docs`, `chore`. Scope is the area: `domain`, `inventory`, `adjust`, `products`, `detail`, `import`, `api`, `http`, `session`, `layout`, `ui`, `e2e`, `docs`, `repo`.
 - Examples: `feat(inventory): add transfer service`, `test(domain): add failing tests for stock status`.
 - One logical change per commit. Update the docs in the same commit when behavior or a decision changes.
+- Branches: one per phase, named `phase-N-short-name` (see `docs/PLAN.md`). Avoid special characters such as `&` in branch names.
+- Line endings are LF (`.gitattributes`). Do not commit CRLF files.
 
 ## 10. What is enforced where
 
-| Check                                                                                                                                  | Where                                                              |
-| -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Types, strict, avoid `any`                                                                                                             | `tsc` (strict mode; ESLint warns on `any`)                         |
-| Default exports, `../../*` imports, max lines (warn), no-console, eqeqeq, no-nested-ternary (warn), hooks rules, consistent-type-imports, no-floating-promises | ESLint                                                             |
-| Formatting, class order                                                                                                                | Prettier                                                           |
-| Hex colors, `@ts-ignore`, console.log, float money                                                                                     | `scripts/check-rules.mjs` (note: `@ts-expect-error` and `eslint-disable` allowed with short reason) |
-| Behavior                                                                                                                               | Vitest, Playwright                                                 |
-| Staged files and types                                                                                                                 | pre-commit hook (`lint-staged`, `tsc`)                             |
-| Everything above except e2e                                                                                                            | pre-push hook (`npm run check`); `npm run check:full` at phase end |
+| Check                                                                                                                                                          | Where                                                                                               |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Types, strict, avoid `any`                                                                                                                                     | `tsc` (strict mode; ESLint warns on `any`)                                                          |
+| Default exports, `../../*` imports, max lines (warn), no-console, eqeqeq, no-nested-ternary (warn), hooks rules, consistent-type-imports, no-floating-promises | ESLint                                                                                              |
+| Formatting, class order                                                                                                                                        | Prettier                                                                                            |
+| Hex colors, `@ts-ignore`, console.log, float money                                                                                                             | `scripts/check-rules.mjs` (note: `@ts-expect-error` and `eslint-disable` allowed with short reason) |
+| Behavior                                                                                                                                                       | Vitest (`npm test`), Playwright (`npm run e2e`)                                                     |
+| Staged files and types                                                                                                                                         | pre-commit hook (`lint-staged`, `tsc`)                                                              |
+| Everything above except e2e                                                                                                                                    | pre-push hook (`npm run check`); `npm run check:full` at phase end                                  |
 
 A reviewer (human or AI) should spend time on what tools cannot check: correctness against the docs, naming quality, simplicity, test quality, accessibility.
