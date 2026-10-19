@@ -1,24 +1,21 @@
 import "server-only";
 
 import { ALL_STORES } from "@/constants";
-import { withApi } from "@/server/http/withApi";
+import { jsonResponse, parseQuery, withApi } from "@/server/http";
+import type { RouteContext } from "@/server/http";
 import { productDetailQuerySchema } from "@/schemas";
 import { getProductDetail } from "@/server/services/products";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> | { id: string } },
+  { params }: RouteContext,
 ): Promise<Response> {
-  return withApi(async ({ repo }) => {
+  return withApi(request, async ({ repo }) => {
     const { id } = await params;
-    const { searchParams } = new URL(request.url);
-    const rawParams = Object.fromEntries(searchParams.entries());
-
-    const parsed = productDetailQuerySchema.parse(rawParams);
+    const parsed = parseQuery(request, productDetailQuerySchema);
     const store = parsed.store ?? ALL_STORES;
 
     const result = await getProductDetail(repo, id, store);
-
-    return result;
-  }, { request });
+    return jsonResponse(result);
+  });
 }

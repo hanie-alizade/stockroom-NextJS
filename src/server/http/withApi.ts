@@ -11,19 +11,22 @@ import { env } from "@/config/env";
 import { ERROR_CODE, FIELD_ERROR_CODE, HTTP_STATUS } from "@/constants";
 
 export type WithApiOptions = {
-  request: Request;
   action?: Action;
 };
 
+/**
+ * Wraps Route Handler logic with latency simulation, error handling, session resolution, and authorization checks.
+ */
 export async function withApi<T>(
+  request: Request,
   handler: (context: { user: User; repo: ReturnType<typeof createRepository> }) => Promise<T>,
-  options: WithApiOptions,
+  options?: WithApiOptions,
 ): Promise<Response> {
   // Simulated latency
   await new Promise((resolve) => setTimeout(resolve, env.SIMULATED_LATENCY_MS));
 
   // Fail switch
-  const url = new URL(options.request.url);
+  const url = new URL(request.url);
   if (url.searchParams.get("fail") === "1") {
     return errorResponse(
       ERROR_CODE.INTERNAL_ERROR,
@@ -37,7 +40,7 @@ export async function withApi<T>(
   const repo = createRepository();
 
   // Authorization
-  if (options.action && !can(user.role, options.action)) {
+  if (options?.action && !can(user.role, options.action)) {
     return errorResponse(
       ERROR_CODE.FORBIDDEN,
       HTTP_STATUS.FORBIDDEN,
@@ -58,7 +61,7 @@ export async function withApi<T>(
     if (error instanceof ZodError) {
       const fieldErrors: FieldError[] = error.issues.map((issue) => ({
         field: issue.path.join("."),
-        code: FIELD_ERROR_CODE.VALIDATION_ERROR,
+        code: mapZodIssueToFieldCode(issue),
         message: issue.message,
       }));
       return errorResponse(
@@ -85,3 +88,23 @@ function errorResponse(
 ): Response {
   return Response.json({ error: code, message, fieldErrors }, { status });
 }
+
+function mapZodIssueToFieldCode(issue: ZodError["issues"][number]): string {
+  if (issue.code === "invalid_type" && issue.received === "undefined") {
+    return FIELD_ERROR_CODE.REQUIRED;
+  }
+  if (issue.code === "invalid_type" && issue.expected === "integer") {
+    return FIELD_ERROR_CODE.NOT_A_WHOLE_NUMBER;
+  }
+  if (issue.code === "too_small" && issue.type === "number") {
+    return FIELD_ERROR_CODE.MUST_BE_POSITIVE;
+  }
+  if (issue.code === "too_small" && issue.type === "string") {
+    return FIELD_ERROR_CODE.TOO_SHORT;
+  }
+  if (issue.code === "too_big" && issue.type === "string") {
+    return FIELD_ERROR_CODE.TOO_LONG;
+  }
+  return FIELD_ERROR_CODE.VALIDATION_ERROR;
+}
+

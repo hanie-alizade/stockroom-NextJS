@@ -33,7 +33,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns product details for KL-1042", async () => {
     const url = new URL("http://localhost/api/products/KL-1042");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -46,7 +46,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns stock value sen summed across all carrying stores", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -55,7 +55,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns stock by store for all six carrying stores", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -64,7 +64,7 @@ describe("GET /api/products/:id", () => {
 
   it("stock by store includes on hand, reorder level and per-store status", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -116,7 +116,7 @@ describe("GET /api/products/:id", () => {
 
   it("scopes stock by store and stock value to a single store", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=mont-kiara");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -127,7 +127,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns totals and status for KL-1042", async () => {
     const url = new URL("http://localhost/api/products/KL-1042?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -139,7 +139,7 @@ describe("GET /api/products/:id", () => {
 
   it("returns 404 PRODUCT_NOT_FOUND for unknown product", async () => {
     const url = new URL("http://localhost/api/products/UNKNOWN-123");
-    const response = await GET(new Request(url), { params: { id: "UNKNOWN-123" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "UNKNOWN-123" }) });
     const data = await response.json();
 
     expect(response.status).toBe(404);
