@@ -170,6 +170,244 @@ const PRODUCT_NAMES: Record<string, string[]> = {
   ],
 };
 
+const TIME_ZONE = "Asia/Kuala_Lumpur";
+
+const CATEGORY_CONFIG: Record<string, { bases: string[]; sizes: string[]; suppliers: string[] }> = {
+  Coffee: {
+    bases: [
+      "Arabica beans",
+      "Robusta beans",
+      "Espresso blend",
+      "Decaf beans",
+      "Single origin Colombia",
+      "Ethiopian Yirgacheffe",
+      "House blend",
+      "Cold brew concentrate",
+      "Sumatra Mandheling",
+      "Guatemala Antigua",
+    ],
+    sizes: [
+      "200g",
+      "250g",
+      "350g",
+      "500g",
+      "1 kg",
+      "2 kg",
+      "beans 250g",
+      "beans 500g",
+      "ground 250g",
+      "ground 500g",
+      "drip bags 10pcs",
+    ],
+    suppliers: ["Highland Roasters", "Kopi Lane roastery"],
+  },
+  "Dairy & alt.": {
+    bases: [
+      "Oat milk",
+      "Almond milk",
+      "Whole milk",
+      "Soy milk",
+      "Coconut milk",
+      "Condensed milk",
+      "Low fat milk",
+      "Skim milk",
+      "Cashew milk",
+    ],
+    sizes: [
+      "200ml",
+      "250ml",
+      "330ml",
+      "500ml",
+      "1 L",
+      "2 L",
+      "organic 1 L",
+      "barista edition 1 L",
+      "unsweetened 1 L",
+      "can 397g",
+    ],
+    suppliers: ["Valley Dairy", "Green Field Oats"],
+  },
+  Packaging: {
+    bases: [
+      "Paper cups 8oz",
+      "Paper cups 12oz",
+      "Paper cups 16oz",
+      "Lids 8oz",
+      "Lids 12oz",
+      "Lids 16oz",
+      "Paper straws",
+      "Cup sleeves",
+      "Takeaway bags",
+      "Cup carriers",
+    ],
+    sizes: [
+      "50pcs",
+      "100pcs",
+      "200pcs",
+      "250pcs",
+      "500pcs",
+      "1000pcs",
+      "kraft 500pcs",
+      "white 500pcs",
+      "black 500pcs",
+      "biodegradable 500pcs",
+    ],
+    suppliers: ["PackRight"],
+  },
+  Syrups: {
+    bases: [
+      "Vanilla syrup",
+      "Caramel syrup",
+      "Hazelnut syrup",
+      "Chocolate syrup",
+      "Mint syrup",
+      "Cinnamon syrup",
+      "Toffee nut syrup",
+      "Salted caramel syrup",
+      "Lavender syrup",
+    ],
+    sizes: [
+      "250ml",
+      "375ml",
+      "500ml",
+      "750ml",
+      "1 L",
+      "sugar-free 750ml",
+      "organic 750ml",
+      "classic 750ml",
+    ],
+    suppliers: ["Sweet Bar Co."],
+  },
+  Bakery: {
+    bases: [
+      "Croissants",
+      "Chocolate croissants",
+      "Almond croissants",
+      "Blueberry muffins",
+      "Chocolate chip cookies",
+      "Banana bread",
+      "Cinnamon rolls",
+      "Sourdough loaf",
+      "Bagels",
+    ],
+    sizes: [
+      "2pcs",
+      "4pcs",
+      "6pcs",
+      "12pcs",
+      "24pcs",
+      "1 loaf",
+      "mini 12pcs",
+      "large 6pcs",
+      "fresh baked 6pcs",
+    ],
+    suppliers: ["Golden Crumb Bakery"],
+  },
+  Tea: {
+    bases: [
+      "Earl Grey tea",
+      "English Breakfast tea",
+      "Green tea",
+      "Chamomile tea",
+      "Peppermint tea",
+      "Jasmine tea",
+      "Oolong tea",
+      "Chai tea",
+      "Matcha powder",
+    ],
+    sizes: [
+      "20 bags",
+      "25 bags",
+      "50 bags",
+      "100 bags",
+      "loose leaf 100g",
+      "loose leaf 250g",
+      "tin 100g",
+      "organic 50 bags",
+    ],
+    suppliers: ["Highland Roasters", "Kopi Lane roastery"],
+  },
+};
+
+function makeProductsUnique(products: Product[]): Product[] {
+  const usedNames = new Set<string>();
+  const categoryPools: Record<string, string[]> = {};
+  const supplierCounters: Record<string, number> = {};
+
+  for (const [cat, cfg] of Object.entries(CATEGORY_CONFIG)) {
+    const pool: string[] = [];
+    for (const size of cfg.sizes) {
+      for (const base of cfg.bases) {
+        const candidate = base.endsWith(size) ? base : `${base} ${size}`;
+        if (!pool.includes(candidate)) {
+          pool.push(candidate);
+        }
+      }
+    }
+    categoryPools[cat] = pool;
+    supplierCounters[cat] = 0;
+  }
+
+  // Preserve fixtures so their names are reserved
+  usedNames.add("Arabica beans 1 kg");
+  usedNames.add("Robusta beans 1 kg");
+  usedNames.add("Oat milk 1 L");
+
+  return products.map((p) => {
+    if (p.sku === "KL-1042") {
+      return {
+        ...p,
+        name: "Arabica beans 1 kg",
+        category: "Coffee",
+        supplier: "Highland Roasters",
+        unitCostSen: 6800,
+      };
+    }
+    if (p.sku === "KL-1043") {
+      return {
+        ...p,
+        name: "Robusta beans 1 kg",
+        category: "Coffee",
+        supplier: "Highland Roasters",
+        unitCostSen: 5500,
+      };
+    }
+    if (p.sku === "KL-2210") {
+      return {
+        ...p,
+        name: "Oat milk 1 L",
+        category: "Dairy & alt.",
+        supplier: "Green Field Oats",
+        unitCostSen: 1200,
+      };
+    }
+
+    const cfg = CATEGORY_CONFIG[p.category];
+    const pool = categoryPools[p.category] || [];
+
+    let newName = p.name;
+    for (const candidate of pool) {
+      if (!usedNames.has(candidate)) {
+        newName = candidate;
+        break;
+      }
+    }
+    usedNames.add(newName);
+
+    const supList = cfg ? cfg.suppliers : ["Highland Roasters"];
+    const supIndex = supplierCounters[p.category] ?? 0;
+    supplierCounters[p.category] = supIndex + 1;
+    const supplier = supList[supIndex % supList.length];
+
+    return {
+      ...p,
+      name: newName,
+      supplier,
+    };
+  });
+}
+
+
 const PRODUCT_FIXTURES: Product[] = [
   {
     sku: "KL-1042",
@@ -600,49 +838,41 @@ function generateSeed() {
     randomStock[0].reorderLevel = 0;
   }
 
-  // Compare products and stock with current seed.json
   let differed = false;
+  let movements: Movement[] = [];
+
   if (existingSeed) {
-    const productsMatch =
-      JSON.stringify(finalProducts) === JSON.stringify(existingSeed.products);
-    const stockMatch =
-      JSON.stringify(finalStockMap) === JSON.stringify(existingSeed.stock);
+    finalProducts = makeProductsUnique(existingSeed.products);
+    finalStockMap = existingSeed.stock;
+    movements = existingSeed.movements;
+  } else {
+    finalProducts = makeProductsUnique(finalProducts);
 
-    if (!productsMatch || !stockMatch) {
-      differed = true;
-      console.log(
-        "Products/stock differed from existing seed.json; preserving existing products and stock.",
+    const now = new Date();
+    const todayStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: TIME_ZONE,
+    }).format(now);
+    const currentYear = todayStr.split("-")[0];
+    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+
+    for (const product of finalProducts) {
+      const rows = finalStockMap[product.sku] || [];
+      movements.push(
+        ...generateProductMovements(
+          product,
+          rows,
+          now,
+          ninetyDaysAgo,
+          todayStr,
+          currentYear,
+        ),
       );
-      finalProducts = existingSeed.products;
-      finalStockMap = existingSeed.stock;
     }
-  }
 
-  const now = new Date();
-  const todayStr = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kuala_Lumpur",
-  }).format(now);
-  const currentYear = todayStr.split("-")[0];
-  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-
-  const movements: Movement[] = [];
-  for (const product of finalProducts) {
-    const rows = finalStockMap[product.sku] || [];
-    movements.push(
-      ...generateProductMovements(
-        product,
-        rows,
-        now,
-        ninetyDaysAgo,
-        todayStr,
-        currentYear,
-      ),
+    movements.sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
   }
-
-  movements.sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-  );
 
   return {
     differed,

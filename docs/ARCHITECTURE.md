@@ -86,7 +86,7 @@ Every route is wrapped with `withApi(handler, options)`, which does:
 2. If `?fail=1`, returns a 500 `INTERNAL_ERROR` before any state is touched.
 3. Reads the user from the cookie `stockroom_user` and takes the role from the server's user list (missing or unknown means the default Staff user, the least privilege).
 4. Checks `options.action` against `can(role, action)` and returns 403 `FORBIDDEN`.
-5. Runs the handler and maps thrown `AppError`s and `ZodError`s to the standard error shape.
+5. Runs the handler and maps thrown `AppError`s and `ZodError`s to the standard error shape (`VALIDATION_ERROR`, 422), mapping Zod issues to documented field codes (`REQUIRED`, `NOT_A_WHOLE_NUMBER`, `MUST_BE_POSITIVE`, `TOO_SHORT`, `TOO_LONG`, `VALIDATION_ERROR`).
 
 Having one wrapper means the error format, delay and fail switch cannot drift between routes.
 
@@ -137,6 +137,7 @@ Having one wrapper means the error format, delay and fail switch cannot drift be
 - `scripts/generate-seed.ts` writes `data/seed.json` using a seeded PRNG, so the data is stable between runs.
 - 248 products, 6 stores, 6 categories, 7 suppliers, 3 users. A product is "carried" at a store when it has a stock row there, with its own on hand and reorder level. Mont Kiara carries exactly 212 products, the other stores a similar share (the design shows 212 and 248).
 - 90 days of movements per product that add up to the current stock (the chart ranges are 7, 30 and 90 days). Movements have a note and the user who made them, and transfers come as linked pairs.
+- Seed freshness: at load time (skipped in test mode `NODE_ENV === "test"`), movement timestamps are rebased by whole days so that the newest movement is today in `Asia/Kuala_Lumpur` timezone, ensuring chart ranges and recent movements stay fresh.
 - Fixtures taken from the design, used in tests: KL-1042 Arabica beans 1 kg (Coffee, Highland Roasters, 6800 sen; Mont Kiara 18, Subang 4, Cheras 0, Damansara 22, Puchong 15, Shah Alam 25; reorder level 5 everywhere, so 84 on hand and 30 reorder in total); KL-1043 Robusta beans 1 kg; KL-2210 Oat milk 1 L (out of stock everywhere).
 - Must include on purpose: out of stock, low stock, reorder level 0, a product with no movements, a product with one history point, a product not carried at some stores, two long names.
 

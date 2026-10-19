@@ -112,1204 +112,1204 @@
     },
     {
       "sku": "KL-1000",
-      "name": "Condensed milk 397g",
+      "name": "Oat milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Valley Dairy",
       "unitCostSen": 3489
     },
     {
       "sku": "KL-1001",
-      "name": "Coconut milk 500ml",
+      "name": "Almond milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Green Field Oats",
       "unitCostSen": 4625
     },
     {
       "sku": "KL-1002",
-      "name": "Robusta beans 1 kg",
+      "name": "Arabica beans 200g",
       "category": "Coffee",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 6747
     },
     {
       "sku": "KL-1003",
-      "name": "Caramel syrup 750ml",
+      "name": "Vanilla syrup 250ml",
       "category": "Syrups",
-      "supplier": "Valley Dairy",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 12360
     },
     {
       "sku": "KL-1004",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Caramel syrup 250ml",
       "category": "Syrups",
       "supplier": "Sweet Bar Co.",
       "unitCostSen": 12652
     },
     {
       "sku": "KL-1005",
-      "name": "Decaf beans 1 kg",
+      "name": "Robusta beans 200g",
       "category": "Coffee",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 6660
     },
     {
       "sku": "KL-1006",
-      "name": "Paper straws 1000pcs",
+      "name": "Paper cups 8oz 50pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 8738
     },
     {
       "sku": "KL-1007",
-      "name": "English Breakfast tea 100 bags",
+      "name": "Earl Grey tea 20 bags",
       "category": "Tea",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 7120
     },
     {
       "sku": "KL-1008",
-      "name": "Almond milk 1 L",
+      "name": "Whole milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Valley Dairy",
       "unitCostSen": 3666
     },
     {
       "sku": "KL-1009",
-      "name": "Robusta beans 1 kg",
+      "name": "Espresso blend 200g",
       "category": "Coffee",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Highland Roasters",
       "unitCostSen": 13351
     },
     {
       "sku": "KL-1010",
-      "name": "Lids 8oz 1000pcs",
+      "name": "Paper cups 12oz 50pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 3054
     },
     {
       "sku": "KL-1011",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Hazelnut syrup 250ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 11430
     },
     {
       "sku": "KL-1012",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Croissants 2pcs",
       "category": "Bakery",
       "supplier": "Golden Crumb Bakery",
       "unitCostSen": 14468
     },
     {
       "sku": "KL-1013",
-      "name": "Paper cups 12oz 1000pcs",
+      "name": "Paper cups 16oz 50pcs",
       "category": "Packaging",
-      "supplier": "Valley Dairy",
+      "supplier": "PackRight",
       "unitCostSen": 5423
     },
     {
       "sku": "KL-1014",
-      "name": "Caramel syrup 750ml",
+      "name": "Chocolate syrup 250ml",
       "category": "Syrups",
-      "supplier": "Green Field Oats",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 13214
     },
     {
       "sku": "KL-1015",
-      "name": "Coconut milk 500ml",
+      "name": "Soy milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Green Field Oats",
       "unitCostSen": 6081
     },
     {
       "sku": "KL-1016",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Lids 8oz 50pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 12705
     },
     {
       "sku": "KL-1017",
-      "name": "Jasmine tea 100 bags",
+      "name": "English Breakfast tea 20 bags",
       "category": "Tea",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 9292
     },
     {
       "sku": "KL-1018",
-      "name": "Lids 8oz 1000pcs",
+      "name": "Lids 12oz 50pcs",
       "category": "Packaging",
-      "supplier": "Valley Dairy",
+      "supplier": "PackRight",
       "unitCostSen": 5214
     },
     {
       "sku": "KL-1019",
-      "name": "Mint syrup 750ml",
+      "name": "Mint syrup 250ml",
       "category": "Syrups",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 9711
     },
     {
       "sku": "KL-1020",
-      "name": "Decaf beans 1 kg",
+      "name": "Decaf beans 200g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 7577
     },
     {
       "sku": "KL-1021",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Lids 16oz 50pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 11506
     },
     {
       "sku": "KL-1022",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Chocolate croissants 2pcs",
       "category": "Bakery",
       "supplier": "Golden Crumb Bakery",
       "unitCostSen": 6136
     },
     {
       "sku": "KL-1023",
-      "name": "Cinnamon syrup 750ml",
+      "name": "Cinnamon syrup 250ml",
       "category": "Syrups",
-      "supplier": "PackRight",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 3667
     },
     {
       "sku": "KL-1024",
-      "name": "Lids 8oz 1000pcs",
+      "name": "Paper straws 50pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 13591
     },
     {
       "sku": "KL-1025",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Cup sleeves 50pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 14372
     },
     {
       "sku": "KL-1026",
-      "name": "Jasmine tea 100 bags",
+      "name": "Green tea 20 bags",
       "category": "Tea",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Highland Roasters",
       "unitCostSen": 4876
     },
     {
       "sku": "KL-1027",
-      "name": "Peppermint tea 100 bags",
+      "name": "Chamomile tea 20 bags",
       "category": "Tea",
-      "supplier": "Highland Roasters",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 607
     },
     {
       "sku": "KL-1028",
-      "name": "Paper straws 1000pcs",
+      "name": "Takeaway bags 50pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 13791
     },
     {
       "sku": "KL-1029",
-      "name": "Espresso blend 500g",
+      "name": "Single origin Colombia 200g",
       "category": "Coffee",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Highland Roasters",
       "unitCostSen": 11290
     },
     {
       "sku": "KL-1030",
-      "name": "Soy milk 1 L",
+      "name": "Coconut milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Valley Dairy",
       "unitCostSen": 13145
     },
     {
       "sku": "KL-1031",
-      "name": "Chocolate syrup 750ml",
+      "name": "Toffee nut syrup 250ml",
       "category": "Syrups",
-      "supplier": "Green Field Oats",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 4358
     },
     {
       "sku": "KL-1032",
-      "name": "Cold brew concentrate 1L",
+      "name": "Ethiopian Yirgacheffe 200g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 12342
     },
     {
       "sku": "KL-1033",
-      "name": "Soy milk 1 L",
+      "name": "Condensed milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Green Field Oats",
       "unitCostSen": 11941
     },
     {
       "sku": "KL-1034",
-      "name": "Blueberry muffins 12pcs",
+      "name": "Almond croissants 2pcs",
       "category": "Bakery",
-      "supplier": "Green Field Oats",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 3944
     },
     {
       "sku": "KL-1035",
-      "name": "Chocolate syrup 750ml",
+      "name": "Salted caramel syrup 250ml",
       "category": "Syrups",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 2946
     },
     {
       "sku": "KL-1036",
-      "name": "Chamomile tea 100 bags",
+      "name": "Peppermint tea 20 bags",
       "category": "Tea",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 10467
     },
     {
       "sku": "KL-1037",
-      "name": "Peppermint tea 100 bags",
+      "name": "Jasmine tea 20 bags",
       "category": "Tea",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 4400
     },
     {
       "sku": "KL-1038",
-      "name": "Espresso blend 500g",
+      "name": "House blend 200g",
       "category": "Coffee",
-      "supplier": "Valley Dairy",
+      "supplier": "Highland Roasters",
       "unitCostSen": 4844
     },
     {
       "sku": "KL-1039",
-      "name": "Paper straws 1000pcs",
+      "name": "Cup carriers 50pcs",
       "category": "Packaging",
-      "supplier": "Highland Roasters",
+      "supplier": "PackRight",
       "unitCostSen": 10601
     },
     {
       "sku": "KL-1040",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Lavender syrup 250ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 7329
     },
     {
       "sku": "KL-1041",
-      "name": "Cup sleeves 500pcs",
+      "name": "Paper cups 8oz 100pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 14964
     },
     {
       "sku": "KL-1044",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Paper cups 12oz 100pcs",
       "category": "Packaging",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "PackRight",
       "unitCostSen": 8424
     },
     {
       "sku": "KL-1045",
-      "name": "Paper straws 1000pcs",
+      "name": "Paper cups 16oz 100pcs",
       "category": "Packaging",
-      "supplier": "Valley Dairy",
+      "supplier": "PackRight",
       "unitCostSen": 13224
     },
     {
       "sku": "KL-1046",
-      "name": "Decaf beans 1 kg",
+      "name": "Cold brew concentrate 200g",
       "category": "Coffee",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 5884
     },
     {
       "sku": "KL-1047",
-      "name": "Condensed milk 397g",
+      "name": "Low fat milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Valley Dairy",
       "unitCostSen": 10554
     },
     {
       "sku": "KL-1048",
-      "name": "Green tea 100 bags",
+      "name": "Oolong tea 20 bags",
       "category": "Tea",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 2064
     },
     {
       "sku": "KL-1049",
-      "name": "Espresso blend 500g",
+      "name": "Sumatra Mandheling 200g",
       "category": "Coffee",
       "supplier": "Highland Roasters",
       "unitCostSen": 8233
     },
     {
       "sku": "KL-1050",
-      "name": "Coconut milk 500ml",
+      "name": "Skim milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Green Field Oats",
       "unitCostSen": 14891
     },
     {
       "sku": "KL-1051",
-      "name": "Paper cups 12oz 1000pcs",
+      "name": "Lids 8oz 100pcs",
       "category": "Packaging",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "PackRight",
       "unitCostSen": 6718
     },
     {
       "sku": "KL-1052",
-      "name": "Espresso blend 500g",
+      "name": "Guatemala Antigua 200g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 4314
     },
     {
       "sku": "KL-1053",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Lids 12oz 100pcs",
       "category": "Packaging",
-      "supplier": "Valley Dairy",
+      "supplier": "PackRight",
       "unitCostSen": 12132
     },
     {
       "sku": "KL-1054",
-      "name": "Vanilla syrup 750ml",
+      "name": "Vanilla syrup 375ml",
       "category": "Syrups",
-      "supplier": "Valley Dairy",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 12551
     },
     {
       "sku": "KL-1055",
-      "name": "Soy milk 1 L",
+      "name": "Cashew milk 200ml",
       "category": "Dairy & alt.",
-      "supplier": "Highland Roasters",
+      "supplier": "Valley Dairy",
       "unitCostSen": 12210
     },
     {
       "sku": "KL-1056",
-      "name": "Croissants 12pcs",
+      "name": "Blueberry muffins 2pcs",
       "category": "Bakery",
-      "supplier": "PackRight",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 8231
     },
     {
       "sku": "KL-1057",
-      "name": "Jasmine tea 100 bags",
+      "name": "Chai tea 20 bags",
       "category": "Tea",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 13153
     },
     {
       "sku": "KL-1058",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Caramel syrup 375ml",
       "category": "Syrups",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 11922
     },
     {
       "sku": "KL-1059",
-      "name": "Decaf beans 1 kg",
+      "name": "Arabica beans 250g",
       "category": "Coffee",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 5028
     },
     {
       "sku": "KL-1060",
-      "name": "Croissants 12pcs",
+      "name": "Chocolate chip cookies 2pcs",
       "category": "Bakery",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 12490
     },
     {
       "sku": "KL-1061",
-      "name": "English Breakfast tea 100 bags",
+      "name": "Matcha powder 20 bags",
       "category": "Tea",
       "supplier": "Highland Roasters",
       "unitCostSen": 11891
     },
     {
       "sku": "KL-1062",
-      "name": "Almond milk 1 L",
+      "name": "Oat milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "Valley Dairy",
+      "supplier": "Green Field Oats",
       "unitCostSen": 13842
     },
     {
       "sku": "KL-1063",
-      "name": "Banana bread 1 loaf",
+      "name": "Banana bread 2pcs",
       "category": "Bakery",
-      "supplier": "Green Field Oats",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 3552
     },
     {
       "sku": "KL-1064",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Robusta beans 250g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 7397
     },
     {
       "sku": "KL-1065",
-      "name": "Jasmine tea 100 bags",
+      "name": "Earl Grey tea 25 bags",
       "category": "Tea",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 9805
     },
     {
       "sku": "KL-1066",
-      "name": "Lids 8oz 1000pcs",
+      "name": "Lids 16oz 100pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 781
     },
     {
       "sku": "KL-1067",
-      "name": "Banana bread 1 loaf",
+      "name": "Cinnamon rolls 2pcs",
       "category": "Bakery",
-      "supplier": "Green Field Oats",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 9579
     },
     {
       "sku": "KL-1068",
-      "name": "Banana bread 1 loaf",
+      "name": "Sourdough loaf 2pcs",
       "category": "Bakery",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 14164
     },
     {
       "sku": "KL-1069",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Paper straws 100pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 9572
     },
     {
       "sku": "KL-1070",
-      "name": "Single origin Colombia 500g",
+      "name": "Espresso blend 250g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 13021
     },
     {
       "sku": "KL-1071",
-      "name": "Coconut milk 500ml",
+      "name": "Almond milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Valley Dairy",
       "unitCostSen": 14747
     },
     {
       "sku": "KL-1072",
-      "name": "Robusta beans 1 kg",
+      "name": "Decaf beans 250g",
       "category": "Coffee",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 14146
     },
     {
       "sku": "KL-1073",
-      "name": "Arabica beans 1 kg",
+      "name": "Single origin Colombia 250g",
       "category": "Coffee",
       "supplier": "Highland Roasters",
       "unitCostSen": 6934
     },
     {
       "sku": "KL-1074",
-      "name": "Chocolate croissants 12pcs",
+      "name": "Bagels 2pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 11580
     },
     {
       "sku": "KL-1075",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Croissants 4pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 6494
     },
     {
       "sku": "KL-1076",
-      "name": "Coconut milk 500ml",
+      "name": "Whole milk 250ml",
       "category": "Dairy & alt.",
       "supplier": "Green Field Oats",
       "unitCostSen": 11627
     },
     {
       "sku": "KL-1077",
-      "name": "Chamomile tea 100 bags",
+      "name": "English Breakfast tea 25 bags",
       "category": "Tea",
       "supplier": "Highland Roasters",
       "unitCostSen": 1410
     },
     {
       "sku": "KL-1078",
-      "name": "Oat milk 1 L",
+      "name": "Soy milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "Highland Roasters",
+      "supplier": "Valley Dairy",
       "unitCostSen": 8919
     },
     {
       "sku": "KL-1079",
-      "name": "Chocolate syrup 750ml",
+      "name": "Hazelnut syrup 375ml",
       "category": "Syrups",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 4383
     },
     {
       "sku": "KL-1080",
-      "name": "Peppermint tea 100 bags",
+      "name": "Green tea 25 bags",
       "category": "Tea",
-      "supplier": "Green Field Oats",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 13430
     },
     {
       "sku": "KL-1081",
-      "name": "Coconut milk 500ml",
+      "name": "Coconut milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "PackRight",
+      "supplier": "Green Field Oats",
       "unitCostSen": 8879
     },
     {
       "sku": "KL-1082",
-      "name": "Peppermint tea 100 bags",
+      "name": "Chamomile tea 25 bags",
       "category": "Tea",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 14286
     },
     {
       "sku": "KL-1083",
-      "name": "Decaf beans 1 kg",
+      "name": "Ethiopian Yirgacheffe 250g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 12834
     },
     {
       "sku": "KL-1084",
-      "name": "Cup sleeves 500pcs",
+      "name": "Cup sleeves 100pcs",
       "category": "Packaging",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "PackRight",
       "unitCostSen": 1160
     },
     {
       "sku": "KL-1085",
-      "name": "Almond croissants 12pcs",
+      "name": "Chocolate croissants 4pcs",
       "category": "Bakery",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 7407
     },
     {
       "sku": "KL-1086",
-      "name": "Cinnamon syrup 750ml",
+      "name": "Chocolate syrup 375ml",
       "category": "Syrups",
-      "supplier": "Green Field Oats",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 8922
     },
     {
       "sku": "KL-1087",
-      "name": "Paper cups 12oz 1000pcs",
+      "name": "Takeaway bags 100pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 6582
     },
     {
       "sku": "KL-1088",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Cup carriers 100pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 5421
     },
     {
       "sku": "KL-1089",
-      "name": "Soy milk 1 L",
+      "name": "Condensed milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "PackRight",
+      "supplier": "Valley Dairy",
       "unitCostSen": 4182
     },
     {
       "sku": "KL-1090",
-      "name": "Oat milk 1 L",
+      "name": "Low fat milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "PackRight",
+      "supplier": "Green Field Oats",
       "unitCostSen": 2294
     },
     {
       "sku": "KL-1091",
-      "name": "Coconut milk 500ml",
+      "name": "Skim milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "Green Field Oats",
+      "supplier": "Valley Dairy",
       "unitCostSen": 6992
     },
     {
       "sku": "KL-1092",
-      "name": "Robusta beans 1 kg",
+      "name": "House blend 250g",
       "category": "Coffee",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Highland Roasters",
       "unitCostSen": 14257
     },
     {
       "sku": "KL-1093",
-      "name": "Coconut milk 500ml",
+      "name": "Cashew milk 250ml",
       "category": "Dairy & alt.",
-      "supplier": "Valley Dairy",
+      "supplier": "Green Field Oats",
       "unitCostSen": 5881
     },
     {
       "sku": "KL-1094",
-      "name": "Cinnamon syrup 750ml",
+      "name": "Mint syrup 375ml",
       "category": "Syrups",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 8838
     },
     {
       "sku": "KL-1095",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Cinnamon syrup 375ml",
       "category": "Syrups",
-      "supplier": "Green Field Oats",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 14505
     },
     {
       "sku": "KL-1096",
-      "name": "Robusta beans 1 kg",
+      "name": "Cold brew concentrate 250g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 5167
     },
     {
       "sku": "KL-1097",
-      "name": "Espresso blend 500g",
+      "name": "Sumatra Mandheling 250g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 5697
     },
     {
       "sku": "KL-1098",
-      "name": "Paper cups 12oz 1000pcs",
+      "name": "Paper cups 8oz 200pcs",
       "category": "Packaging",
-      "supplier": "Highland Roasters",
+      "supplier": "PackRight",
       "unitCostSen": 5188
     },
     {
       "sku": "KL-1099",
-      "name": "Condensed milk 397g",
+      "name": "Oat milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Green Field Oats",
+      "supplier": "Valley Dairy",
       "unitCostSen": 3325
     },
     {
       "sku": "KL-1100",
-      "name": "Robusta beans 1 kg",
+      "name": "Guatemala Antigua 250g",
       "category": "Coffee",
-      "supplier": "Green Field Oats",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 14811
     },
     {
       "sku": "KL-1101",
-      "name": "English Breakfast tea 100 bags",
+      "name": "Peppermint tea 25 bags",
       "category": "Tea",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 14105
     },
     {
       "sku": "KL-1102",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Arabica beans 350g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 10113
     },
     {
       "sku": "KL-1103",
-      "name": "Peppermint tea 100 bags",
+      "name": "Jasmine tea 25 bags",
       "category": "Tea",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 13310
     },
     {
       "sku": "KL-1104",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Almond croissants 4pcs",
       "category": "Bakery",
-      "supplier": "Highland Roasters",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 10292
     },
     {
       "sku": "KL-1105",
-      "name": "Paper cups 12oz 1000pcs",
+      "name": "Paper cups 12oz 200pcs",
       "category": "Packaging",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "PackRight",
       "unitCostSen": 1520
     },
     {
       "sku": "KL-1106",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Paper cups 16oz 200pcs",
       "category": "Packaging",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "PackRight",
       "unitCostSen": 11998
     },
     {
       "sku": "KL-1107",
-      "name": "Blueberry muffins 12pcs",
+      "name": "Blueberry muffins 4pcs",
       "category": "Bakery",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 4601
     },
     {
       "sku": "KL-1108",
-      "name": "Soy milk 1 L",
+      "name": "Almond milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Green Field Oats",
       "unitCostSen": 8778
     },
     {
       "sku": "KL-1109",
-      "name": "Cup sleeves 500pcs",
+      "name": "Lids 8oz 200pcs",
       "category": "Packaging",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "PackRight",
       "unitCostSen": 10100
     },
     {
       "sku": "KL-1110",
-      "name": "Green tea 100 bags",
+      "name": "Oolong tea 25 bags",
       "category": "Tea",
-      "supplier": "Green Field Oats",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 5348
     },
     {
       "sku": "KL-1111",
-      "name": "Cup sleeves 500pcs",
+      "name": "Lids 12oz 200pcs",
       "category": "Packaging",
-      "supplier": "Highland Roasters",
+      "supplier": "PackRight",
       "unitCostSen": 9475
     },
     {
       "sku": "KL-1112",
-      "name": "Soy milk 1 L",
+      "name": "Whole milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Valley Dairy",
       "unitCostSen": 2369
     },
     {
       "sku": "KL-1113",
-      "name": "Blueberry muffins 12pcs",
+      "name": "Chocolate chip cookies 4pcs",
       "category": "Bakery",
       "supplier": "Golden Crumb Bakery",
       "unitCostSen": 7038
     },
     {
       "sku": "KL-1114",
-      "name": "Condensed milk 397g",
+      "name": "Soy milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Valley Dairy",
+      "supplier": "Green Field Oats",
       "unitCostSen": 4004
     },
     {
       "sku": "KL-1115",
-      "name": "Earl Grey tea 100 bags",
+      "name": "Chai tea 25 bags",
       "category": "Tea",
-      "supplier": "Valley Dairy",
+      "supplier": "Highland Roasters",
       "unitCostSen": 14846
     },
     {
       "sku": "KL-1116",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Lids 16oz 200pcs",
       "category": "Packaging",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "PackRight",
       "unitCostSen": 9796
     },
     {
       "sku": "KL-1117",
-      "name": "Soy milk 1 L",
+      "name": "Coconut milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Green Field Oats",
+      "supplier": "Valley Dairy",
       "unitCostSen": 1459
     },
     {
       "sku": "KL-1118",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Banana bread 4pcs",
       "category": "Bakery",
       "supplier": "Golden Crumb Bakery",
       "unitCostSen": 11464
     },
     {
       "sku": "KL-1119",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Toffee nut syrup 375ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 578
     },
     {
       "sku": "KL-1120",
-      "name": "Soy milk 1 L",
+      "name": "Condensed milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Green Field Oats",
       "unitCostSen": 12347
     },
     {
       "sku": "KL-1121",
-      "name": "Mint syrup 750ml",
+      "name": "Salted caramel syrup 375ml",
       "category": "Syrups",
-      "supplier": "Highland Roasters",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 9182
     },
     {
       "sku": "KL-1122",
-      "name": "Oat milk 1 L",
+      "name": "Low fat milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "PackRight",
+      "supplier": "Valley Dairy",
       "unitCostSen": 1450
     },
     {
       "sku": "KL-1123",
-      "name": "Decaf beans 1 kg",
+      "name": "Robusta beans 350g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 4292
     },
     {
       "sku": "KL-1124",
-      "name": "Chocolate syrup 750ml",
+      "name": "Lavender syrup 375ml",
       "category": "Syrups",
-      "supplier": "Valley Dairy",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 8951
     },
     {
       "sku": "KL-1125",
-      "name": "Chamomile tea 100 bags",
+      "name": "Matcha powder 25 bags",
       "category": "Tea",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 7596
     },
     {
       "sku": "KL-1126",
-      "name": "Oat milk 1 L",
+      "name": "Skim milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Valley Dairy",
+      "supplier": "Green Field Oats",
       "unitCostSen": 2688
     },
     {
       "sku": "KL-1127",
-      "name": "Soy milk 1 L",
+      "name": "Cashew milk 330ml",
       "category": "Dairy & alt.",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Valley Dairy",
       "unitCostSen": 12477
     },
     {
       "sku": "KL-1128",
-      "name": "Paper straws 1000pcs",
+      "name": "Paper straws 200pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 8702
     },
     {
       "sku": "KL-1129",
-      "name": "Arabica beans 1 kg",
+      "name": "Espresso blend 350g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 9662
     },
     {
       "sku": "KL-1130",
-      "name": "English Breakfast tea 100 bags",
+      "name": "Earl Grey tea 50 bags",
       "category": "Tea",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 2321
     },
     {
       "sku": "KL-1131",
-      "name": "Decaf beans 1 kg",
+      "name": "Decaf beans 350g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 4863
     },
     {
       "sku": "KL-1132",
-      "name": "Vanilla syrup 750ml",
+      "name": "Vanilla syrup 500ml",
       "category": "Syrups",
-      "supplier": "Highland Roasters",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 13892
     },
     {
       "sku": "KL-1133",
-      "name": "Croissants 12pcs",
+      "name": "Cinnamon rolls 4pcs",
       "category": "Bakery",
-      "supplier": "PackRight",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 2831
     },
     {
       "sku": "KL-1134",
-      "name": "Croissants 12pcs",
+      "name": "Sourdough loaf 4pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 3169
     },
     {
       "sku": "KL-1135",
-      "name": "Cold brew concentrate 1L",
+      "name": "Single origin Colombia 350g",
       "category": "Coffee",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 2444
     },
     {
       "sku": "KL-1136",
-      "name": "Jasmine tea 100 bags",
+      "name": "English Breakfast tea 50 bags",
       "category": "Tea",
-      "supplier": "PackRight",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 14471
     },
     {
       "sku": "KL-1137",
-      "name": "Cinnamon syrup 750ml",
+      "name": "Caramel syrup 500ml",
       "category": "Syrups",
       "supplier": "Sweet Bar Co.",
       "unitCostSen": 12432
     },
     {
       "sku": "KL-1138",
-      "name": "Chocolate syrup 750ml",
+      "name": "Hazelnut syrup 500ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 9454
     },
     {
       "sku": "KL-1139",
-      "name": "Chocolate croissants 12pcs",
+      "name": "Bagels 4pcs",
       "category": "Bakery",
-      "supplier": "Highland Roasters",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 7323
     },
     {
       "sku": "KL-1140",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Croissants 6pcs",
       "category": "Bakery",
-      "supplier": "Green Field Oats",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 13289
     },
     {
       "sku": "KL-1141",
-      "name": "Banana bread 1 loaf",
+      "name": "Chocolate croissants 6pcs",
       "category": "Bakery",
-      "supplier": "PackRight",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 13236
     },
     {
       "sku": "KL-1142",
-      "name": "Single origin Colombia 500g",
+      "name": "Ethiopian Yirgacheffe 350g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 9024
     },
     {
       "sku": "KL-1143",
-      "name": "Chocolate croissants 12pcs",
+      "name": "Almond croissants 6pcs",
       "category": "Bakery",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 3862
     },
     {
       "sku": "KL-1144",
-      "name": "Almond croissants 12pcs",
+      "name": "Blueberry muffins 6pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 8800
     },
     {
       "sku": "KL-1145",
-      "name": "Robusta beans 1 kg",
+      "name": "House blend 350g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 8107
     },
     {
       "sku": "KL-1146",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Cup sleeves 200pcs",
       "category": "Packaging",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "PackRight",
       "unitCostSen": 1588
     },
     {
       "sku": "KL-1147",
-      "name": "Soy milk 1 L",
+      "name": "Oat milk 500ml",
       "category": "Dairy & alt.",
-      "supplier": "Valley Dairy",
+      "supplier": "Green Field Oats",
       "unitCostSen": 13194
     },
     {
       "sku": "KL-1148",
-      "name": "Caramel syrup 750ml",
+      "name": "Chocolate syrup 500ml",
       "category": "Syrups",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 7793
     },
     {
       "sku": "KL-1149",
-      "name": "Peppermint tea 100 bags",
+      "name": "Green tea 50 bags",
       "category": "Tea",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 13134
     },
     {
       "sku": "KL-1150",
-      "name": "Paper straws 1000pcs",
+      "name": "Takeaway bags 200pcs",
       "category": "Packaging",
-      "supplier": "Valley Dairy",
+      "supplier": "PackRight",
       "unitCostSen": 12162
     },
     {
       "sku": "KL-1151",
-      "name": "Croissants 12pcs",
+      "name": "Chocolate chip cookies 6pcs",
       "category": "Bakery",
-      "supplier": "Highland Roasters",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 11646
     },
     {
       "sku": "KL-1152",
-      "name": "Paper straws 1000pcs",
+      "name": "Cup carriers 200pcs",
       "category": "Packaging",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "PackRight",
       "unitCostSen": 12554
     },
     {
       "sku": "KL-1153",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Mint syrup 500ml",
       "category": "Syrups",
-      "supplier": "Highland Roasters",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 1691
     },
     {
       "sku": "KL-1154",
-      "name": "Caramel syrup 750ml",
+      "name": "Cinnamon syrup 500ml",
       "category": "Syrups",
-      "supplier": "PackRight",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 12730
     },
     {
       "sku": "KL-1155",
-      "name": "Blueberry muffins 12pcs",
+      "name": "Banana bread 6pcs",
       "category": "Bakery",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 9603
     },
     {
       "sku": "KL-1156",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Paper cups 8oz 250pcs",
       "category": "Packaging",
-      "supplier": "Highland Roasters",
+      "supplier": "PackRight",
       "unitCostSen": 13148
     },
     {
       "sku": "KL-1157",
-      "name": "Cup sleeves 500pcs",
+      "name": "Paper cups 12oz 250pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 8961
     },
     {
       "sku": "KL-1158",
-      "name": "House blend 1 kg",
+      "name": "Cold brew concentrate 350g",
       "category": "Coffee",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 5461
     },
     {
       "sku": "KL-1159",
-      "name": "Croissants 12pcs",
+      "name": "Cinnamon rolls 6pcs",
       "category": "Bakery",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 1520
     },
     {
       "sku": "KL-1160",
-      "name": "Caramel syrup 750ml",
+      "name": "Toffee nut syrup 500ml",
       "category": "Syrups",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 5593
     },
     {
       "sku": "KL-1161",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Sumatra Mandheling 350g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 6117
     },
     {
       "sku": "KL-1162",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Guatemala Antigua 350g",
       "category": "Coffee",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 12485
     },
     {
       "sku": "KL-1163",
-      "name": "Croissants 12pcs",
+      "name": "Sourdough loaf 6pcs",
       "category": "Bakery",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 13044
     },
     {
       "sku": "KL-1164",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Paper cups 16oz 250pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 3182
     },
     {
       "sku": "KL-1165",
-      "name": "Banana bread 1 loaf",
+      "name": "Bagels 6pcs",
       "category": "Bakery",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 12000
     },
     {
       "sku": "KL-1166",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Salted caramel syrup 500ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 4626
     },
     {
       "sku": "KL-1167",
-      "name": "Chamomile tea 100 bags",
+      "name": "Chamomile tea 50 bags",
       "category": "Tea",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 4355
     },
     {
       "sku": "KL-1168",
-      "name": "Coconut milk 500ml",
+      "name": "Almond milk 500ml",
       "category": "Dairy & alt.",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Valley Dairy",
       "unitCostSen": 1620
     },
     {
       "sku": "KL-1169",
-      "name": "Almond croissants 12pcs",
+      "name": "Croissants 12pcs",
       "category": "Bakery",
-      "supplier": "Highland Roasters",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 10500
     },
     {
       "sku": "KL-1170",
-      "name": "Cup sleeves 500pcs",
+      "name": "Lids 8oz 250pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 10895
     },
     {
       "sku": "KL-1171",
-      "name": "Decaf beans 1 kg",
+      "name": "Arabica beans 500g",
       "category": "Coffee",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 1646
     },
     {
       "sku": "KL-1172",
-      "name": "Almond milk 1 L",
+      "name": "Whole milk 500ml",
       "category": "Dairy & alt.",
       "supplier": "Green Field Oats",
       "unitCostSen": 3350
     },
     {
       "sku": "KL-1173",
-      "name": "Vanilla syrup 750ml",
+      "name": "Lavender syrup 500ml",
       "category": "Syrups",
       "supplier": "Sweet Bar Co.",
       "unitCostSen": 3250
@@ -1323,380 +1323,380 @@
     },
     {
       "sku": "KL-1175",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Robusta beans 500g",
       "category": "Coffee",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 6050
     },
     {
       "sku": "KL-1176",
-      "name": "Coconut milk 500ml",
+      "name": "Soy milk 500ml",
       "category": "Dairy & alt.",
       "supplier": "Valley Dairy",
       "unitCostSen": 11324
     },
     {
       "sku": "KL-1177",
-      "name": "Jasmine tea 100 bags",
+      "name": "Peppermint tea 50 bags",
       "category": "Tea",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Highland Roasters",
       "unitCostSen": 3007
     },
     {
       "sku": "KL-1178",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Lids 12oz 250pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 1809
     },
     {
       "sku": "KL-1179",
-      "name": "Oat milk 1 L",
+      "name": "Coconut milk 500ml",
       "category": "Dairy & alt.",
-      "supplier": "Highland Roasters",
+      "supplier": "Green Field Oats",
       "unitCostSen": 6135
     },
     {
       "sku": "KL-1180",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Espresso blend 500g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 12436
     },
     {
       "sku": "KL-1181",
-      "name": "Chocolate syrup 750ml",
+      "name": "Vanilla syrup 750ml",
       "category": "Syrups",
-      "supplier": "PackRight",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 13392
     },
     {
       "sku": "KL-1182",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Lids 16oz 250pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 8944
     },
     {
       "sku": "KL-1183",
-      "name": "Blueberry muffins 12pcs",
+      "name": "Almond croissants 12pcs",
       "category": "Bakery",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 11822
     },
     {
       "sku": "KL-1184",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Paper straws 250pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 6569
     },
     {
       "sku": "KL-1185",
-      "name": "Mint syrup 750ml",
+      "name": "Caramel syrup 750ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 6176
     },
     {
       "sku": "KL-1186",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Blueberry muffins 12pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 9670
     },
     {
       "sku": "KL-1187",
-      "name": "Cold brew concentrate 1L",
+      "name": "Decaf beans 500g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 8862
     },
     {
       "sku": "KL-1188",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Cup sleeves 250pcs",
       "category": "Packaging",
-      "supplier": "Highland Roasters",
+      "supplier": "PackRight",
       "unitCostSen": 3082
     },
     {
       "sku": "KL-1189",
-      "name": "Whole milk 1 L",
+      "name": "Condensed milk 500ml",
       "category": "Dairy & alt.",
-      "supplier": "Highland Roasters",
+      "supplier": "Valley Dairy",
       "unitCostSen": 3857
     },
     {
       "sku": "KL-1190",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Takeaway bags 250pcs",
       "category": "Packaging",
-      "supplier": "Green Field Oats",
+      "supplier": "PackRight",
       "unitCostSen": 10380
     },
     {
       "sku": "KL-1191",
-      "name": "Paper cups 8oz 1000pcs",
+      "name": "Cup carriers 250pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 3502
     },
     {
       "sku": "KL-1192",
-      "name": "Croissants 12pcs",
+      "name": "Chocolate chip cookies 12pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 12634
     },
     {
       "sku": "KL-1193",
-      "name": "English Breakfast tea 100 bags",
+      "name": "Jasmine tea 50 bags",
       "category": "Tea",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 14478
     },
     {
       "sku": "KL-1194",
-      "name": "Cold brew concentrate 1L",
+      "name": "Single origin Colombia 500g",
       "category": "Coffee",
-      "supplier": "Valley Dairy",
+      "supplier": "Highland Roasters",
       "unitCostSen": 10248
     },
     {
       "sku": "KL-1195",
-      "name": "Cinnamon syrup 750ml",
+      "name": "Hazelnut syrup 750ml",
       "category": "Syrups",
       "supplier": "Sweet Bar Co.",
       "unitCostSen": 12446
     },
     {
       "sku": "KL-1196",
-      "name": "Caramel syrup 750ml",
+      "name": "Chocolate syrup 750ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 7055
     },
     {
       "sku": "KL-1197",
       "name": "Ethiopian Yirgacheffe 500g",
       "category": "Coffee",
-      "supplier": "Green Field Oats",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 11689
     },
     {
       "sku": "KL-1198",
-      "name": "Chocolate croissants 12pcs",
+      "name": "Banana bread 12pcs",
       "category": "Bakery",
-      "supplier": "PackRight",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 12705
     },
     {
       "sku": "KL-1199",
-      "name": "Chocolate croissants 12pcs",
+      "name": "Cinnamon rolls 12pcs",
       "category": "Bakery",
       "supplier": "Golden Crumb Bakery",
       "unitCostSen": 12504
     },
     {
       "sku": "KL-1200",
-      "name": "Soy milk 1 L",
+      "name": "Low fat milk 500ml",
       "category": "Dairy & alt.",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Green Field Oats",
       "unitCostSen": 7161
     },
     {
       "sku": "KL-1201",
-      "name": "House blend 1 kg",
+      "name": "House blend 500g",
       "category": "Coffee",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 5436
     },
     {
       "sku": "KL-1202",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Mint syrup 750ml",
       "category": "Syrups",
-      "supplier": "Valley Dairy",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 14081
     },
     {
       "sku": "KL-1203",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Cold brew concentrate 500g",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 1975
     },
     {
       "sku": "KL-1204",
-      "name": "Soy milk 1 L",
+      "name": "Skim milk 500ml",
       "category": "Dairy & alt.",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Valley Dairy",
       "unitCostSen": 14645
     },
     {
       "sku": "KL-1205",
-      "name": "Single origin Colombia 500g",
+      "name": "Sumatra Mandheling 500g",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 10688
     },
     {
       "sku": "KL-1206",
-      "name": "Paper straws 1000pcs",
+      "name": "Paper cups 8oz 500pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 6754
     },
     {
       "sku": "KL-1207",
-      "name": "Chocolate chip cookies 24pcs",
+      "name": "Sourdough loaf 12pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 7991
     },
     {
       "sku": "KL-1208",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Cinnamon syrup 750ml",
       "category": "Syrups",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 5032
     },
     {
       "sku": "KL-1209",
-      "name": "Coconut milk 500ml",
+      "name": "Cashew milk 500ml",
       "category": "Dairy & alt.",
-      "supplier": "Valley Dairy",
+      "supplier": "Green Field Oats",
       "unitCostSen": 12989
     },
     {
       "sku": "KL-1210",
-      "name": "Blueberry muffins 12pcs",
+      "name": "Bagels 12pcs",
       "category": "Bakery",
-      "supplier": "Valley Dairy",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 9120
     },
     {
       "sku": "KL-1211",
-      "name": "Soy milk 1 L",
+      "name": "Almond milk 1 L",
       "category": "Dairy & alt.",
       "supplier": "Valley Dairy",
       "unitCostSen": 10247
     },
     {
       "sku": "KL-1212",
-      "name": "Cold brew concentrate 1L",
+      "name": "Guatemala Antigua 500g",
       "category": "Coffee",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 1548
     },
     {
       "sku": "KL-1213",
-      "name": "Coconut milk 500ml",
+      "name": "Whole milk 1 L",
       "category": "Dairy & alt.",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Green Field Oats",
       "unitCostSen": 14937
     },
     {
       "sku": "KL-1214",
-      "name": "English Breakfast tea 100 bags",
+      "name": "Oolong tea 50 bags",
       "category": "Tea",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 8373
     },
     {
       "sku": "KL-1215",
-      "name": "Chocolate croissants 12pcs",
+      "name": "Croissants 24pcs",
       "category": "Bakery",
-      "supplier": "PackRight",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 7255
     },
     {
       "sku": "KL-1216",
-      "name": "Hazelnut syrup 750ml",
+      "name": "Toffee nut syrup 750ml",
       "category": "Syrups",
-      "supplier": "Green Field Oats",
+      "supplier": "Sweet Bar Co.",
       "unitCostSen": 14473
     },
     {
       "sku": "KL-1217",
-      "name": "Decaf beans 1 kg",
+      "name": "Espresso blend 1 kg",
       "category": "Coffee",
-      "supplier": "Golden Crumb Bakery",
+      "supplier": "Highland Roasters",
       "unitCostSen": 12238
     },
     {
       "sku": "KL-1218",
-      "name": "Single origin Colombia 500g",
+      "name": "Decaf beans 1 kg",
       "category": "Coffee",
-      "supplier": "Valley Dairy",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 9347
     },
     {
       "sku": "KL-1219",
-      "name": "Cold brew concentrate 1L",
+      "name": "Single origin Colombia 1 kg",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 9759
     },
     {
       "sku": "KL-1220",
-      "name": "Almond croissants 12pcs",
+      "name": "Chocolate croissants 24pcs",
       "category": "Bakery",
-      "supplier": "Green Field Oats",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 10681
     },
     {
       "sku": "KL-1221",
-      "name": "Paper straws 1000pcs",
+      "name": "Paper cups 12oz 500pcs",
       "category": "Packaging",
-      "supplier": "Valley Dairy",
+      "supplier": "PackRight",
       "unitCostSen": 6483
     },
     {
       "sku": "KL-1222",
-      "name": "Cold brew concentrate 1L",
+      "name": "Ethiopian Yirgacheffe 1 kg",
       "category": "Coffee",
       "supplier": "Kopi Lane roastery",
       "unitCostSen": 8610
     },
     {
       "sku": "KL-1223",
-      "name": "Jasmine tea 100 bags",
+      "name": "Chai tea 50 bags",
       "category": "Tea",
-      "supplier": "PackRight",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 10585
     },
     {
       "sku": "KL-1224",
-      "name": "Jasmine tea 100 bags",
+      "name": "Matcha powder 50 bags",
       "category": "Tea",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 12965
     },
     {
       "sku": "KL-1225",
       "name": "Earl Grey tea 100 bags",
       "category": "Tea",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 1963
     },
     {
       "sku": "KL-1226",
-      "name": "Jasmine tea 100 bags",
+      "name": "English Breakfast tea 100 bags",
       "category": "Tea",
       "supplier": "Highland Roasters",
       "unitCostSen": 2319
     },
     {
       "sku": "KL-1227",
-      "name": "English Breakfast tea 100 bags",
+      "name": "Green tea 100 bags",
       "category": "Tea",
-      "supplier": "PackRight",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 2381
     },
     {
       "sku": "KL-1228",
-      "name": "Jasmine tea 100 bags",
+      "name": "Chamomile tea 100 bags",
       "category": "Tea",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 14269
     },
     {
@@ -1708,121 +1708,121 @@
     },
     {
       "sku": "KL-1230",
-      "name": "Chocolate syrup 750ml",
+      "name": "Salted caramel syrup 750ml",
       "category": "Syrups",
       "supplier": "Sweet Bar Co.",
       "unitCostSen": 14225
     },
     {
       "sku": "KL-1231",
-      "name": "Espresso blend 500g",
+      "name": "House blend 1 kg",
       "category": "Coffee",
-      "supplier": "Green Field Oats",
+      "supplier": "Highland Roasters",
       "unitCostSen": 12364
     },
     {
       "sku": "KL-1232",
-      "name": "Oat milk 1 L",
+      "name": "Coconut milk 1 L",
       "category": "Dairy & alt.",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "Green Field Oats",
       "unitCostSen": 11042
     },
     {
       "sku": "KL-1233",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Cold brew concentrate 1 kg",
       "category": "Coffee",
-      "supplier": "Valley Dairy",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 7065
     },
     {
       "sku": "KL-1234",
-      "name": "Green tea 100 bags",
+      "name": "Peppermint tea 100 bags",
       "category": "Tea",
-      "supplier": "Valley Dairy",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 4926
     },
     {
       "sku": "KL-1235",
-      "name": "House blend 1 kg",
+      "name": "Sumatra Mandheling 1 kg",
       "category": "Coffee",
-      "supplier": "Sweet Bar Co.",
+      "supplier": "Highland Roasters",
       "unitCostSen": 14564
     },
     {
       "sku": "KL-1236",
-      "name": "Decaf beans 1 kg",
+      "name": "Guatemala Antigua 1 kg",
       "category": "Coffee",
-      "supplier": "Highland Roasters",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 13934
     },
     {
       "sku": "KL-1237",
-      "name": "Lids 8oz 1000pcs",
+      "name": "Paper cups 16oz 500pcs",
       "category": "Packaging",
-      "supplier": "Kopi Lane roastery",
+      "supplier": "PackRight",
       "unitCostSen": 13956
     },
     {
       "sku": "KL-1238",
-      "name": "Cup sleeves 500pcs",
+      "name": "Lids 8oz 500pcs",
       "category": "Packaging",
-      "supplier": "Highland Roasters",
+      "supplier": "PackRight",
       "unitCostSen": 3675
     },
     {
       "sku": "KL-1239",
-      "name": "Ethiopian Yirgacheffe 500g",
+      "name": "Arabica beans 2 kg",
       "category": "Coffee",
-      "supplier": "PackRight",
+      "supplier": "Highland Roasters",
       "unitCostSen": 14996
     },
     {
       "sku": "KL-1240",
-      "name": "Single origin Colombia 500g",
+      "name": "Robusta beans 2 kg",
       "category": "Coffee",
-      "supplier": "Valley Dairy",
+      "supplier": "Kopi Lane roastery",
       "unitCostSen": 8871
     },
     {
       "sku": "KL-1241",
-      "name": "Croissants 12pcs",
+      "name": "Almond croissants 24pcs",
       "category": "Bakery",
-      "supplier": "PackRight",
+      "supplier": "Golden Crumb Bakery",
       "unitCostSen": 9845
     },
     {
       "sku": "KL-1242",
-      "name": "Green tea 100 bags",
+      "name": "Jasmine tea 100 bags",
       "category": "Tea",
-      "supplier": "Valley Dairy",
+      "supplier": "Highland Roasters",
       "unitCostSen": 11540
     },
     {
       "sku": "KL-1243",
-      "name": "Whole milk 1 L",
+      "name": "Condensed milk 1 L",
       "category": "Dairy & alt.",
       "supplier": "Valley Dairy",
       "unitCostSen": 11863
     },
     {
       "sku": "KL-1244",
-      "name": "Lids 12oz 1000pcs",
+      "name": "Lids 12oz 500pcs",
       "category": "Packaging",
       "supplier": "PackRight",
       "unitCostSen": 5079
     },
     {
       "sku": "KL-1245",
-      "name": "Premium Italian dark roast coffee beans from single origin plantation 1kg",
+      "name": "Espresso blend 2 kg",
       "category": "Coffee",
       "supplier": "Highland Roasters",
       "unitCostSen": 12000
     },
     {
       "sku": "KL-1246",
-      "name": "Organic grass-fed whole milk from local farm with no added preservatives 1L",
+      "name": "Low fat milk 1 L",
       "category": "Dairy & alt.",
-      "supplier": "Valley Dairy",
+      "supplier": "Green Field Oats",
       "unitCostSen": 2500
     }
   ],
