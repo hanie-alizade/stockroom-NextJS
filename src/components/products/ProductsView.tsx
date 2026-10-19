@@ -14,6 +14,7 @@ import {
   ALL_STORES,
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
+  TIME_ZONE,
 } from "@/constants";
 import { useCurrentUser } from "@/providers";
 import { ProductsHeader } from "./ProductsHeader";
@@ -117,7 +118,7 @@ export function ProductsView(): React.ReactElement {
 
     const content = buildCsv(productCsvColumns, sortedItems);
     const dateStr = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Kuala_Lumpur",
+      timeZone: TIME_ZONE,
     }).format(new Date());
 
     downloadCsv(`stockroom-products-${dateStr}.csv`, content);

@@ -1,5 +1,6 @@
+import { TIME_ZONE } from "@/constants";
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const APP_TIME_ZONE = "Asia/Kuala_Lumpur";
 
 function parseDate(date: Date | string): Date {
   const result = typeof date === "string" ? new Date(date) : date;
@@ -9,7 +10,18 @@ function parseDate(date: Date | string): Date {
   return result;
 }
 
-function getCalendarParts(date: Date): {
+export function toDateString(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return formatter.format(d);
+}
+
+export function getCalendarParts(date: Date): {
   year: number;
   month: number;
   day: number;
@@ -17,7 +29,7 @@ function getCalendarParts(date: Date): {
   minute: number;
 } {
   const formatter = new Intl.DateTimeFormat("en-GB", {
-    timeZone: APP_TIME_ZONE,
+    timeZone: TIME_ZONE,
     hourCycle: "h23",
     year: "numeric",
     month: "numeric",

@@ -1,20 +1,18 @@
 import "server-only";
 
 import { ALL_STORES, DEFAULT_PAGE } from "@/constants";
-import { withApi } from "@/server/http/withApi";
+import { jsonResponse, parseQuery, withApi } from "@/server/http";
+import type { RouteContext } from "@/server/http";
 import { movementListQuerySchema } from "@/schemas";
 import { getProductMovements } from "@/server/services/products";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> | { id: string } },
+  { params }: RouteContext,
 ): Promise<Response> {
-  return withApi(async ({ repo }) => {
+  return withApi(request, async ({ repo }) => {
     const { id } = await params;
-    const { searchParams } = new URL(request.url);
-    const rawParams = Object.fromEntries(searchParams.entries());
-
-    const parsed = movementListQuerySchema.parse(rawParams);
+    const parsed = parseQuery(request, movementListQuerySchema);
 
     const result = await getProductMovements(repo, id, {
       store: parsed.store ?? ALL_STORES,
@@ -26,6 +24,6 @@ export async function GET(
       pageSize: parsed.pageSize,
     });
 
-    return result;
-  }, { request });
+    return jsonResponse(result);
+  });
 }

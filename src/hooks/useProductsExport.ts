@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { getProductList } from "@/api";
+import { TIME_ZONE } from "@/constants";
 import { buildCsv, downloadCsv, productCsvColumns } from "@/helpers";
 import type { ProductListItem, ProductListQuery } from "@/types";
 
@@ -47,7 +48,7 @@ export function useProductsExport(query: ProductListQuery): {
 
       const content = buildCsv(productCsvColumns, allItems);
       const dateStr = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Kuala_Lumpur",
+        timeZone: TIME_ZONE,
       }).format(new Date());
 
       downloadCsv(`stockroom-products-${dateStr}.csv`, content);

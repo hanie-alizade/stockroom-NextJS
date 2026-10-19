@@ -72,26 +72,6 @@ export type StockHistoryPoint = {
 export type StockHistory = {
   points: StockHistoryPoint[];
   reorderLevel: number;
-  days?: number;
-};
-
-export type StockHistoryResult = {
-  points: StockHistoryPoint[];
-  reorderLevel: number;
   days: number;
 };
 
-// Repository internal types
-export type ProductRecord = {
-  sku: string;
-  name: string;
-  category: string;
-  supplier: string;
-  unitCostSen: number;
-};
-
-export type StockRecord = {
-  storeId: string;
-  onHand: number;
-  reorderLevel: number;
-};

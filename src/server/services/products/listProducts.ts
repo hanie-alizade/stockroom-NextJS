@@ -5,6 +5,7 @@ import {
   DEFAULT_DIR,
   DEFAULT_PAGE,
   DEFAULT_PAGE_SIZE,
+  DEFAULT_PRODUCT_UPDATED_AT,
   DEFAULT_SORT,
   PRODUCT_SORT_KEY,
   SORT_DIRECTION,
@@ -13,12 +14,11 @@ import {
 } from "@/constants";
 import { getStatus } from "@/domain";
 import { normalizePageSize, paginate } from "@/helpers";
-import type { Repository } from "@/server/repositories";
+import type { ProductRecord, Repository } from "@/server/repositories";
 import type {
   ProductListItem,
   ProductListResponse,
   ProductListSummary,
-  ProductRecord,
   StockStatus,
 } from "@/types";
 import { getStockForScope, sumStock } from "./stockScope";
@@ -75,7 +75,7 @@ function filterProducts(
     const movements = stores.flatMap((s) => repo.getMovements(product.sku, s.id, { limit: 1 }));
     const updatedAt = movements.reduce(
       (latest, m) => (m.createdAt > latest ? m.createdAt : latest),
-      movements[0]?.createdAt ?? "2026-01-01T00:00:00Z",
+      movements[0]?.createdAt ?? DEFAULT_PRODUCT_UPDATED_AT,
     );
 
     return [{
@@ -135,6 +135,9 @@ function buildSummary(
   };
 }
 
+/**
+ * Retrieves a filtered, sorted, and paginated product list along with summary statistics.
+ */
 export async function listProducts(
   repo: Repository,
   params: {
@@ -164,8 +167,7 @@ export async function listProducts(
 
   const filtered = filterProducts(repo, allProducts, { store, q, category, status });
   const sorted = sortProducts(filtered, sort, dir);
-  const shouldPaginate = pageSize !== undefined || (!category && !status);
-  const items = shouldPaginate ? paginate(sorted, page, validatedPageSize) : sorted;
+  const items = paginate(sorted, page, validatedPageSize);
   const summary = buildSummary(repo, allProducts, store);
 
   return {

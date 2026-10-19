@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET } from "../route";
 import { createRepository } from "@/server/repositories";
 import { cookies } from "next/headers";
-import type { Movement, Product, Stock } from "@/server/repositories";
+import { TIME_ZONE } from "@/constants";
+import type { MovementRecord, ProductRecord, StockRecord } from "@/server/repositories";
 
 import { mockCookies, mockRepository } from "tests/helpers";
 
@@ -19,7 +20,7 @@ describe("GET /api/products/:id/stock-history", () => {
     process.env.SIMULATED_LATENCY_MS = "0";
     vi.clearAllMocks();
 
-    const mockProduct: Product = {
+    const mockProduct: ProductRecord = {
       sku: "KL-1042",
       name: "Arabica Beans 1kg",
       category: "Coffee",
@@ -27,7 +28,7 @@ describe("GET /api/products/:id/stock-history", () => {
       unitCostSen: 6800,
     };
 
-    const mockStocks: Stock[] = [
+    const mockStocks: StockRecord[] = [
       { storeId: "s_mont_kiara", onHand: 18, reorderLevel: 5 },
       { storeId: "s_subang", onHand: 4, reorderLevel: 5 },
       { storeId: "s_cheras", onHand: 0, reorderLevel: 5 },
@@ -55,7 +56,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("returns stock history for a product", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -66,7 +67,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("default days is 30", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -76,7 +77,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("supports 7 days", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history?days=7");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -86,7 +87,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("supports 90 days", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history?days=90");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -96,7 +97,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("points include date, on hand, and reorder level", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -109,7 +110,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("points are sorted by date ascending", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -121,7 +122,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("scopes to all stores and sums reorder level", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history?store=all");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -131,7 +132,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("scopes to a single store", async () => {
     const url = new URL("http://localhost/api/products/KL-1042/stock-history?store=s_mont_kiara");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -142,7 +143,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("returns 404 for unknown product", async () => {
     const url = new URL("http://localhost/api/products/UNKNOWN-123/stock-history");
-    const response = await GET(new Request(url), { params: { id: "UNKNOWN-123" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "UNKNOWN-123" }) });
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -151,7 +152,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
   it("returns one point for a product with no history", async () => {
     const url = new URL("http://localhost/api/products/KL-2210/stock-history");
-    const response = await GET(new Request(url), { params: { id: "KL-2210" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-2210" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -159,10 +160,19 @@ describe("GET /api/products/:id/stock-history", () => {
     expect(data.points[0].onHand).toBe(0);
   });
 
+  it("returns 422 VALIDATION_ERROR when days is not 7, 30 or 90", async () => {
+    const url = new URL("http://localhost/api/products/KL-1042/stock-history?days=14");
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
+    const data = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(data.error).toBe("VALIDATION_ERROR");
+  });
+
   it("rebuilds with two movements (history before and after a sell)", async () => {
     const now = new Date();
     const todayStr = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Kuala_Lumpur",
+      timeZone: TIME_ZONE,
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -170,7 +180,7 @@ describe("GET /api/products/:id/stock-history", () => {
 
     const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const yesterdayStr = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Kuala_Lumpur",
+      timeZone: TIME_ZONE,
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -178,13 +188,13 @@ describe("GET /api/products/:id/stock-history", () => {
 
     const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
     const twoDaysAgoStr = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Kuala_Lumpur",
+      timeZone: TIME_ZONE,
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }).format(twoDaysAgo);
 
-    const mockProduct: Product = {
+    const mockProduct: ProductRecord = {
       sku: "KL-1042",
       name: "Arabica Beans 1kg",
       category: "Coffee",
@@ -192,11 +202,11 @@ describe("GET /api/products/:id/stock-history", () => {
       unitCostSen: 6800,
     };
 
-    const mockStocks: Stock[] = [
+    const mockStocks: StockRecord[] = [
       { storeId: "s_mont_kiara", onHand: 18, reorderLevel: 5 },
     ];
 
-    const mockMovements: Movement[] = [
+    const mockMovements: MovementRecord[] = [
       {
         id: "m_sell",
         productId: "KL-1042",
@@ -233,7 +243,7 @@ describe("GET /api/products/:id/stock-history", () => {
     vi.mocked(createRepository).mockReturnValue(mockRepo);
 
     const url = new URL("http://localhost/api/products/KL-1042/stock-history?store=s_mont_kiara&days=7");
-    const response = await GET(new Request(url), { params: { id: "KL-1042" } });
+    const response = await GET(new Request(url), { params: Promise.resolve({ id: "KL-1042" }) });
     const data = await response.json();
 
     expect(response.status).toBe(200);
