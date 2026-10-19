@@ -2,8 +2,8 @@ import "server-only";
 
 import { ZodError } from "zod";
 
-import { AppError, can } from "@/domain";
-import type { Action, ErrorCode, FieldError, User } from "@/types";
+import { AppError, roleHasPermission } from "@/domain";
+import type { ErrorCode, FieldError, Permission, User } from "@/types";
 import { createRepository } from "@/server/repositories";
 import { getCurrentUser } from "@/server/session";
 
@@ -11,7 +11,7 @@ import { env } from "@/config/env";
 import { ERROR_CODE, FIELD_ERROR_CODE, HTTP_STATUS } from "@/constants";
 
 export type WithApiOptions = {
-  action?: Action;
+  permission?: Permission;
 };
 
 /**
@@ -40,7 +40,7 @@ export async function withApi<T>(
   const repo = createRepository();
 
   // Authorization
-  if (options?.action && !can(user.role, options.action)) {
+  if (options?.permission && !roleHasPermission(user.role, options.permission)) {
     return errorResponse(
       ERROR_CODE.FORBIDDEN,
       HTTP_STATUS.FORBIDDEN,

@@ -1,5 +1,5 @@
 export * from "./roles";
-export * from "./actions";
+export * from "./permissions";
 export * from "./stockStatus";
 export * from "./movementTypes";
 export * from "./adjustmentTypes";

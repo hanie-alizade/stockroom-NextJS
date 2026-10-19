@@ -3,12 +3,13 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { BoxIcon, UploadIcon, SupplierIcon, ReportIcon } from "@/components/icons";
 import { NavItem } from "./NavItem";
-import { useCan } from "@/providers";
+import { useHasPermission } from "@/providers";
+import { PERMISSION } from "@/constants";
 
 export function Navigation(): React.ReactElement {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const canImport = useCan("import");
+  const hasImportPermission = useHasPermission(PERMISSION.IMPORT);
 
   const isProductsActive = pathname.startsWith("/products");
   const isImportActive = pathname === "/import";
@@ -16,7 +17,7 @@ export function Navigation(): React.ReactElement {
   const currentStore = searchParams.get("store");
   const productsHref = currentStore ? `/products?store=${currentStore}` : "/products";
 
-  const showImport = canImport;
+  const showImport = hasImportPermission;
 
   return (
     <nav className="flex flex-col gap-1">

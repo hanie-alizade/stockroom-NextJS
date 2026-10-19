@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/server/session";
-import { can } from "@/domain";
-import { ACTION } from "@/constants";
+import { roleHasPermission } from "@/domain";
+import { PERMISSION } from "@/constants";
 
 export default async function ImportPage(): Promise<React.ReactElement> {
   const user = await getCurrentUser();
-  if (!can(user.role, ACTION.IMPORT)) {
+  if (!roleHasPermission(user.role, PERMISSION.IMPORT)) {
     redirect("/products?notice=managers-only");
   }
 

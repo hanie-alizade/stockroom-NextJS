@@ -88,7 +88,7 @@ Import through barrels: `@/constants`, `@/schemas`, `@/types`.
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `common.ts`     | cross-cutting types: `ErrorCode`, `FieldError`, `ApiErrorBody`, `Paginated<T>`, `PageSize`, `SortDirection`, `IconProps`, `IconComponent` |
 | `store.ts`      | `StoreId`, `Store`, `StoreScope`                                                                                                          |
-| `user.ts`       | `Role`, `Action`, `User`                                                                                                                  |
+| `user.ts`       | `Role`, `Permission`, `User`                                                                                                              |
 | `product.ts`    | `StockStatus`, product list and detail shapes, list query, summary, stock by store, stock history                                         |
 | `movement.ts`   | `MovementType`, `MovementDraft`, `Movement`, movement list query and response                                                             |
 | `adjustment.ts` | `Adjustment`, `AdjustmentResult`                                                                                                          |

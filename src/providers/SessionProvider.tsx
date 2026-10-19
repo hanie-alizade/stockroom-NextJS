@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import type { Action, User } from "@/types";
-import { can } from "@/domain";
+import type { Permission, User } from "@/types";
+import { roleHasPermission } from "@/domain";
 
 interface SessionContextValue {
   user: User;
@@ -27,7 +27,10 @@ export function useCurrentUser(): User {
   return context.user;
 }
 
-export function useCan(action: Action): boolean {
+/**
+ * Does the signed-in user have the permission? Reads the user from the session context.
+ */
+export function useHasPermission(permission: Permission): boolean {
   const user = useCurrentUser();
-  return can(user.role, action);
+  return roleHasPermission(user.role, permission);
 }

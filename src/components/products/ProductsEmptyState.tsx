@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { BoxIcon, SearchIcon } from "@/components/icons";
 import { EmptyState } from "@/components/common";
-import { useCan } from "@/providers";
-import { ACTION } from "@/constants";
+import { useHasPermission } from "@/providers";
+import { PERMISSION } from "@/constants";
 
 interface ProductsEmptyStateProps {
   hasFilters: boolean;
@@ -16,7 +16,7 @@ export function ProductsEmptyState({
   onClearFilters,
 }: ProductsEmptyStateProps): React.ReactElement {
   const router = useRouter();
-  const canImport = useCan(ACTION.IMPORT);
+  const hasImportPermission = useHasPermission(PERMISSION.IMPORT);
 
   if (hasFilters) {
     return (
@@ -36,10 +36,10 @@ export function ProductsEmptyState({
       icon={BoxIcon}
       title="No products yet"
       description="Import a CSV to get started. You can download a template first."
-      actionText={canImport ? "Import CSV" : undefined}
-      onAction={canImport ? () => router.push("/import") : undefined}
+      actionText={hasImportPermission ? "Import CSV" : undefined}
+      onAction={hasImportPermission ? () => router.push("/import") : undefined}
       actionElement={
-        !canImport ? (
+        !hasImportPermission ? (
           <p className="text-body-small text-text-tertiary">
             Ask a manager to import products.
           </p>

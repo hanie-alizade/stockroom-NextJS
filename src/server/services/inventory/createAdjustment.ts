@@ -1,13 +1,13 @@
 import "server-only";
 
 import {
-  ADJUSTMENT_ACTION,
+  ADJUSTMENT_PERMISSION,
   ADJUSTMENT_TYPE,
   ERROR_CODE,
   FIELD_ERROR_CODE,
   HTTP_STATUS,
 } from "@/constants";
-import { AppError, can, isValidQuantity } from "@/domain";
+import { AppError, isValidQuantity, roleHasPermission } from "@/domain";
 import type { Repository } from "@/server/repositories";
 import type { AdjustmentInput, AdjustmentResult } from "@/types";
 
@@ -35,8 +35,8 @@ export async function createAdjustment(
     );
   }
 
-  const action = ADJUSTMENT_ACTION[input.type];
-  if (!can(ctx.user.role, action)) {
+  const permission = ADJUSTMENT_PERMISSION[input.type];
+  if (!roleHasPermission(ctx.user.role, permission)) {
     throw new AppError(
       ERROR_CODE.FORBIDDEN,
       HTTP_STATUS.FORBIDDEN,

@@ -80,7 +80,7 @@ describe("withApi", () => {
 
       const handler = vi.fn();
       const response = await withApi(new Request("http://localhost"), handler, {
-        action: "write_off",
+        permission: "write_off",
       });
 
       expect(response.status).toBe(403);
@@ -98,7 +98,7 @@ describe("withApi", () => {
 
       const handler = vi.fn();
       const response = await withApi(new Request("http://localhost"), handler, {
-        action: "transfer",
+        permission: "transfer",
       });
 
       expect(response.status).toBe(403);
@@ -116,7 +116,7 @@ describe("withApi", () => {
 
       const handler = vi.fn();
       const response = await withApi(new Request("http://localhost"), handler, {
-        action: "import",
+        permission: "import",
       });
 
       expect(response.status).toBe(403);
@@ -134,7 +134,7 @@ describe("withApi", () => {
 
       const handler = vi.fn(async () => ({ success: true }));
       const response = await withApi(new Request("http://localhost"), handler, {
-        action: "write_off",
+        permission: "write_off",
       });
 
       expect(response.status).toBe(200);
@@ -146,7 +146,7 @@ describe("withApi", () => {
 
       const handler = vi.fn(async () => ({ success: true }));
       const response = await withApi(new Request("http://localhost"), handler, {
-        action: "transfer",
+        permission: "transfer",
       });
 
       expect(response.status).toBe(200);
@@ -158,7 +158,7 @@ describe("withApi", () => {
 
       const handler = vi.fn(async () => ({ success: true }));
       const response = await withApi(new Request("http://localhost"), handler, {
-        action: "import",
+        permission: "import",
       });
 
       expect(response.status).toBe(200);

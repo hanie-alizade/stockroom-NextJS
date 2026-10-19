@@ -39,7 +39,7 @@ All scripts exit by themselves (no watch mode).
 1. TypeScript strict. Avoid `any`. Type assertions (`as`) and non-null `!` are allowed when they are the simple solution; prefer Zod or a type guard where data comes from outside (API, cookies, files). `@ts-ignore` is not allowed. `@ts-expect-error` and `eslint-disable` are allowed only with a short reason in the same comment. Parse unknown data with Zod.
 2. Money is integer sen. Never floats.
 3. Status is calculated, never stored: use `getStatus()`.
-4. Every write checks `can(role, action)` on the server. The UI uses the same function only to lock things.
+4. Every write checks `roleHasPermission(role, permission)` on the server. The UI uses the same function only to lock things.
 5. Route Handlers stay thin. Rules live in `lib/domain` and `lib/server/services`. Services use the repository interface only.
 6. One error shape everywhere (`docs/API.md`).
 7. Theme tokens and text-style utilities only. No hex colors, no raw `text-sm` or `font-bold`. Icons only from `src/components/icons/` (Figma SVGs, `currentColor`, colored with `text-*` classes, typed `IconComponent`). Never `lucide-react` in our own components.

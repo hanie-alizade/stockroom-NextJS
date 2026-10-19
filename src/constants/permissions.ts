@@ -1,4 +1,4 @@
-export const ACTION = {
+export const PERMISSION = {
   VIEW: "view",
   RECEIVE: "receive",
   SELL: "sell",

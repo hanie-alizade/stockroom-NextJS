@@ -2,9 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import { ACTION, ALL_STORES } from "@/constants";
+import { ALL_STORES, PERMISSION } from "@/constants";
 import { DownloadIcon, UploadIcon } from "@/components/icons";
-import { useCan } from "@/providers";
+import { useHasPermission } from "@/providers";
 import { useQueryMeta } from "@/apiHooks";
 import { formatRelativeTime } from "@/helpers";
 import { useNow } from "@/hooks";
@@ -27,7 +27,7 @@ export function ProductsHeader({
   onExport,
   isExporting = false,
 }: ProductsHeaderProps): React.ReactElement {
-  const canImport = useCan(ACTION.IMPORT);
+  const hasImportPermission = useHasPermission(PERMISSION.IMPORT);
   const { data: meta } = useQueryMeta();
   const mounted = useSyncExternalStore(
     emptySubscribe,
@@ -77,7 +77,7 @@ export function ProductsHeader({
           <span>{isExporting ? "Exporting…" : "Export"}</span>
         </button>
 
-        {canImport && (
+        {hasImportPermission && (
           <Link
             href="/import"
             className="bg-accent-default hover:bg-accent-hover text-text-on-accent text-label inline-flex h-9 items-center gap-2 rounded-md px-3 transition-colors"
