@@ -14,20 +14,20 @@ Never cut: server permissions, server validation, idempotency, atomic transfer, 
 
 ## Phases and status
 
-Branch names follow the phase. Phases 0 to 4 are on `main` (`dc56958`). Phase 5 lives on `Phase-5-adjustment` and `Phase-5-adjustment&import` and is not on `main` or on `origin` yet.
+Branch names follow the phase. Phases 0 through 6 and deployment are completed.
 
-| Phase | Name                            | Branch                      | Status      |
-| ----- | ------------------------------- | --------------------------- | ----------- |
-| 0     | Foundations                     | `phase-0-foundations`       | done        |
-| 1     | Domain rules and API            | `phase-1-domain-rules-api`  | done        |
-| 2     | UI shell                        | `Phase-2-ui-shell`          | done        |
-| 3     | Products list                   | `Phase-3-products`          | done        |
-| 4     | Product detail                  | `Phase-4-product-details`   | done        |
-| 5     | Adjust stock and Import         | `Phase-5-adjustment&import` | done        |
-| 6     | Playwright                      | to be created               | in progress |
-| 7     | Deploy to Vercel                | to be created               | planned     |
-| 8     | Postman collection              | to be created               | planned     |
-| 9     | Nice-to-have items of the brief | to be created               | planned     |
+| Phase | Name                            | Branch                      | Status               |
+| ----- | ------------------------------- | --------------------------- | -------------------- |
+| 0     | Foundations                     | `phase-0-foundations`       | done                 |
+| 1     | Domain rules and API            | `phase-1-domain-rules-api`  | done                 |
+| 2     | UI shell                        | `Phase-2-ui-shell`          | done                 |
+| 3     | Products list                   | `Phase-3-products`          | done                 |
+| 4     | Product detail                  | `Phase-4-product-details`   | done                 |
+| 5     | Adjust stock and Import         | `Phase-5-adjustment&import` | done                 |
+| 6     | Playwright                      | `e2e`                       | done                 |
+| 7     | Deploy to Vercel                | `main`                      | deployed, see README |
+| 8     | Postman collection              | -                           | cut                  |
+| 9     | Nice-to-have items of the brief | -                           | done                 |
 
 ### Phase 0: Foundations (15 to 16 Oct)
 
@@ -68,72 +68,60 @@ Branch names follow the phase. Phases 0 to 4 are on `main` (`dc56958`). Phase 5 
 - Refactor pass: unified role permissions (`policy`, `PermissionGate`, server guard), centralized client error info, query error states and route fallbacks, responsive shell, mobile card list with filter sheet, responsive detail page.
 - Adjust dialog: form, "After this change" preview, Staff locks, wired to the API with idempotency keys and toasts. List, cards, detail and movements update without reload.
 - Import backend: parser, row validation, `validate` and `commit` routes, sample CSV (63 rows), template file.
-- Import UI: wizard with Upload, Map columns and Review. The Done step component and commit wiring are present in the code.
-- Check before merging: the last commit message on the branch says "steps 1 to 3". Make sure the Done step and the commit wiring are committed too (`git status` must be clean).
+- Import UI: wizard with Upload, Map columns, Review and Done steps.
+- Done when: adjust dialog and import wizard are fully wired, tested, and integrated.
 
-### Phase 6: Playwright (in progress)
+### Phase 6: Playwright (done)
 
-Required by the brief:
+Two specs in `e2e/`:
 
-1. A Manager filters the list, opens a product, transfers stock and sees both stores' numbers change.
-2. Write-off and Transfer are locked for Staff.
+1. `e2e/manager-transfer.spec.ts`: Manager filters the list, opens a product, transfers stock and sees both stores' numbers change.
+2. `e2e/staff-locked.spec.ts`: Write-off and Transfer are locked for Staff, and opening `/import` redirects with a notice message.
 
-Also planned in this phase, in this order:
+Delivered in this phase:
 
-- Route handler gaps listed in `docs/TESTING.md` (Staff 403 for transfer at route level, oversell at route level, idempotency at route level).
-- E2E helpers: reset endpoint call and a user switch through the cookie.
-- Vitest speed: set `SIMULATED_LATENCY_MS=0` once in `vitest.config.ts` (most route tests currently wait 500 ms per request).
-- Staff opening `/import` is redirected (extra assertion in the Staff test).
-- Nice-to-have E2E if time allows: dialog focus trap, Esc, focus returns to the opener; URL state restored on reload.
-- README "Tests" section with the exact commands.
-- Done when: `npm test` and `npm run e2e` each run with one command and pass.
+- Two Playwright test suites in `e2e/` with `e2e/helpers.ts` (`resetData`, `switchUser`).
+- Route-level gap tests closed in `src/app/api/products/[id]/adjustments/__tests__/route.test.ts`.
+- `POST /api/test/reset` test seam guarded by environment (`development` or `E2E=1`).
+- `npm run e2e` script in `package.json` builds the app and executes Playwright tests.
 
-### Phase 7: Deploy to Vercel (planned)
+### Phase 7: Deploy to Vercel (deployed, see README)
 
-- Merge the phase branches to `main` and push (Vercel builds from `main`).
-- Set environment variables (see `docs/DEPLOYMENT.md`), run `npm run check:full` first.
-- Smoke test on the live URL as Manager and as Staff: list, detail, transfer, import with the sample file, `?fail=1`.
-- Put the URL in the README. Known limit to state there: each serverless instance has its own memory.
+- Deployed to Vercel at https://stockroom-vert-one.vercel.app as documented in `README.md`.
+- Environment variables configured per `docs/DEPLOYMENT.md`.
+- Documented in README: in-memory state limitation across serverless instances.
 
-### Phase 8: Postman collection (planned)
+### Phase 8: Postman collection (cut)
 
-Goal: let a reviewer try the API without the UI, and show that the server decides.
+Cut because no Postman collection was created; the Route Handlers and server decisions are thoroughly covered by Vitest route tests, curl examples in docs, and the Playwright suite.
 
-- One collection file in the repo (for example `docs/postman/stockroom.postman_collection.json`) and one environment file with `baseUrl`.
-- Requests for: session switch (Manager and Staff), meta, products list, product detail, movements, stock history, adjustments (receive, sell, write-off, transfer), import validate, import commit, test reset (local only).
-- Pre-request script that generates a UUID for the `Idempotency-Key` header.
-- Tests per request: status code, error code (`FORBIDDEN`, `INSUFFICIENT_STOCK`, `IDEMPOTENCY_KEY_REUSED`), and the unified error shape.
-- Folders "Manager" and "Staff" to show the 403 cases on purpose, plus a "Replay" request that sends the same key twice.
-- A short section in `docs/API.md` or the README on how to import and run it.
+### Phase 9: Nice-to-have items of the brief (done)
 
-### Phase 9: Nice-to-have items of the brief (planned)
+Most priority-3 items were built alongside the screens they belong to:
 
-Most of the priority-3 items were built earlier together with the screens they belong to. This phase re-checks them against the brief and closes what is left.
+- **Bulk export of selected rows**: built (`ProductsSelectionToolbar` with "Export selected", full-list and selection CSV export in `useProductsExport`).
+- **Clickable summary cards**: built (cards use `aria-pressed`, clicking toggles `low_stock` or `out_of_stock` filter chips).
+- **Chart tooltip**: built (`StockChartTooltip` displaying date, stock on hand, and price across 7d, 30d, 90d intervals).
+- **Mobile layouts beyond "usable"**: built (`MobileHeader` with drawer sheet, product cards at <768px, bottom filter sheet with draft state, responsive table containers, responsive detail page).
 
-| Item in the brief                        | State in code                                                          | Left to do                                     |
-| ---------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------- |
-| Bulk export of selected rows             | built (selection toolbar, "Export selected")                           | check against 375px and Back behavior          |
-| Clickable Low stock / Out of stock cards | built (`aria-pressed`, click toggles the status filter)                | add a test                                     |
-| Chart tooltip                            | built (`StockChartTooltip`, 7d / 30d / 90d)                            | keyboard focus check                           |
-| Mobile layouts beyond "usable"           | built (MobileHeader sheet, card list, filter sheet, responsive detail) | walk through at 375px; fix what breaks         |
-| Row actions menu (`···`)                 | button renders but has no menu or handler                              | wire it to "Adjust stock" or remove it         |
-| React Testing Library component tests    | none yet (hook and helper tests only)                                  | at least the adjust dialog validation messages |
+Gaps acknowledged in README under "What I cut":
+
+- Row actions menu (`···`): button renders in table rows but has no menu (omitted per brief priority).
+- React Testing Library component tests: omitted in favor of unit, integration, and E2E coverage.
 
 ## Cut order if time runs short (phases 6 to 9)
 
-1. Phase 9 polish items.
+1. Phase 9 polish items (row actions menu, component tests).
 2. Nice-to-have E2E (focus trap, URL restore).
-3. Postman collection down to the core requests (adjustments, import, 403 cases).
+3. Postman collection (cut).
 4. Never cut: the two required Playwright tests, the route-level Staff 403 tests, the deploy, the README answers.
 
 ## Risks
 
-- Phase 5 is not on `main` or `origin`. Merge and push before the deploy, or Vercel will build old code.
 - In-memory data on Vercel: each serverless instance has its own memory. A transfer can look "lost" on the next request. Fine for the demo, must be said in the README.
 - Playwright tests share the in-memory store: call `POST /api/test/reset` before each test (`E2E=1` is set by the Playwright config).
 - Query keys differ between server and client: they are built only in `src/constants/queryKeys.ts`.
 - Code the author cannot explain: read every diff before committing, and keep the AI usage section honest.
-- Branch name `Phase-5-adjustment&import` contains `&`, which needs quoting in shells and CI. Rename it before pushing if it causes trouble.
 
 ## Plan history
 
