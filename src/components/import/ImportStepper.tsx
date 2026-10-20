@@ -52,12 +52,12 @@ export function ImportStepper({
             >
               <div className="flex items-center gap-sm">
                 {isDone && (
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-default text-white">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-default text-text-on-accent">
                     <CheckIcon className="size-3.5" />
                   </span>
                 )}
                 {isCurrent && (
-                  <span className="text-label flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-default font-semibold text-white">
+                  <span className="text-label flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-default font-semibold text-text-on-accent">
                     {step.number}
                   </span>
                 )}

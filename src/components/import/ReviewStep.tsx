@@ -38,22 +38,20 @@ export function ReviewStep({
   className,
 }: ReviewStepProps): ReactElement {
   const validateMutation = useMutationValidateImport();
-  const hasTriggeredRef = useRef(false);
+  const triggeredKeyRef = useRef<string | null>(null);
+  const currentKey = `${file.name}-${file.size}-${storeId}-${JSON.stringify(mapping)}`;
 
   useEffect(() => {
-    if (!validationResult && !hasTriggeredRef.current) {
-      hasTriggeredRef.current = true;
+    if (!validationResult && triggeredKeyRef.current !== currentKey) {
+      triggeredKeyRef.current = currentKey;
       const formData = buildImportFormData(file.file, storeId, mapping);
       validateMutation.mutate(formData, {
         onSuccess: (result) => {
           onValidated(result);
         },
-        onError: () => {
-          hasTriggeredRef.current = false;
-        },
       });
     }
-  }, [file, storeId, mapping, validationResult, validateMutation, onValidated]);
+  }, [currentKey, file, storeId, mapping, validationResult, validateMutation, onValidated]);
 
   const [selectedTab, setSelectedTab] = useState<ReviewTabValue | null>(null);
   const activeTab: ReviewTabValue =

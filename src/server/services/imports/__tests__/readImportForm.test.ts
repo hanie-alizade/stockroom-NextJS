@@ -63,7 +63,93 @@ describe("readImportForm", () => {
     await expect(readImportForm(request, repo)).rejects.toMatchObject({
       code: ERROR_CODE.INVALID_FILE,
       status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      message: "CSV file is empty",
+      fieldErrors: [{ field: "file", message: "CSV file is empty" }],
     });
+  });
+
+  it("rejects header-only file (0 data rows) with 422 INVALID_FILE", async () => {
+    const form = new FormData();
+    form.append(
+      "file",
+      new File(["SKU,Name,Category,Quantity,Unit cost"], "header-only.csv", {
+        type: "text/csv",
+      }),
+    );
+    form.append("storeId", "mont-kiara");
+    form.append("mapping", JSON.stringify(defaultMapping));
+
+    const request = createMultipartRequest(
+      "http://localhost/api/imports/validate",
+      form,
+    );
+
+    await expect(readImportForm(request, repo)).rejects.toMatchObject({
+      code: ERROR_CODE.INVALID_FILE,
+      status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      message: "This file has no data rows.",
+      fieldErrors: [{ field: "file", message: "This file has no data rows." }],
+    });
+  });
+
+  it("rejects non-CSV file type with 422 INVALID_FILE", async () => {
+    const form = new FormData();
+    form.append(
+      "file",
+      new File(["some binary data"], "image.png", {
+        type: "image/png",
+      }),
+    );
+    form.append("storeId", "mont-kiara");
+    form.append("mapping", JSON.stringify(defaultMapping));
+
+    const request = createMultipartRequest(
+      "http://localhost/api/imports/validate",
+      form,
+    );
+
+    await expect(readImportForm(request, repo)).rejects.toMatchObject({
+      code: ERROR_CODE.INVALID_FILE,
+      status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      message: "Only CSV files are supported.",
+      fieldErrors: [{ field: "file", message: "Only CSV files are supported." }],
+    });
+  });
+
+  it("successfully reads and parses real sample CSV (50+ rows)", async () => {
+    const fs = await import("fs");
+    const path = await import("path");
+    const sampleCsvContent = fs.readFileSync(
+      path.resolve(process.cwd(), "samples/import-sample.csv"),
+      "utf-8",
+    );
+    const sampleMapping: ImportMapping = {
+      [IMPORT_FIELD.SKU]: "Item code",
+      [IMPORT_FIELD.NAME]: "Description",
+      [IMPORT_FIELD.CATEGORY]: "Group",
+      [IMPORT_FIELD.QUANTITY]: "Qty",
+      [IMPORT_FIELD.UNIT_COST]: "Cost (RM)",
+    };
+
+    const form = new FormData();
+    form.append(
+      "file",
+      new File([sampleCsvContent], "import-sample.csv", {
+        type: "text/csv",
+      }),
+    );
+    form.append("storeId", "mont-kiara");
+    form.append("mapping", JSON.stringify(sampleMapping));
+
+    const request = createMultipartRequest(
+      "http://localhost/api/imports/validate",
+      form,
+    );
+
+    const result = await readImportForm(request, repo);
+    expect(result.storeId).toBe("mont-kiara");
+    expect(result.fileName).toBe("import-sample.csv");
+    expect(result.fileText).toContain("KL-1042");
   });
 
   it("rejects file with more than 2000 data rows with 422 IMPORT_TOO_LARGE", async () => {

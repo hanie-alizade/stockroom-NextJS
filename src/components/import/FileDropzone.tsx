@@ -71,6 +71,12 @@ export function FileDropzone({
         return;
       }
 
+      if (rowCount === 0) {
+        setErrorMessage("This file has no data rows.");
+        setIsLoading(false);
+        return;
+      }
+
       if (rowCount > IMPORT_LIMITS.maxRows) {
         setErrorMessage("This file has more than 2,000 rows.");
         setIsLoading(false);

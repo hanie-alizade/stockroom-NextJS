@@ -12,6 +12,7 @@ export function useMutationValidateImport(): UseMutationResult<
 > {
   return useMutation({
     mutationFn: (formData: FormData) => postImportValidate(formData),
+    retry: false,
     meta: { silent: true },
   });
 }
