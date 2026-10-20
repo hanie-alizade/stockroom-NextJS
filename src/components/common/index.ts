@@ -6,3 +6,4 @@ export { StateBlock } from "./StateBlock";
 export { EmptyState } from "./EmptyState";
 export { QueryErrorState } from "./QueryErrorState";
 export { PermissionGate } from "./PermissionGate";
+export { ProgressBar } from "./ProgressBar";

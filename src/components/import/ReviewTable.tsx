@@ -59,7 +59,7 @@ export function ReviewTable({ rows, className }: ReviewTableProps): ReactElement
   return (
     <div
       className={cn(
-        "rounded-lg border border-border-default bg-bg-surface overflow-x-auto",
+        "relative rounded-lg border border-border-default bg-bg-surface overflow-x-auto",
         className,
       )}
     >

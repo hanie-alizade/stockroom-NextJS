@@ -15,7 +15,7 @@ export function AppShell({ children }: AppShellProps): React.ReactElement {
       </div>
 
       {/* Main content area */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden">
+      <div className="relative flex min-w-0 flex-1 flex-col overflow-x-hidden">
         {/* Mobile/tablet top bar - visible below lg */}
         <div className="lg:hidden">
           <MobileHeader />

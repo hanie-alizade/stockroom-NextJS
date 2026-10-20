@@ -33,7 +33,7 @@ export function MobileHeader(): React.ReactElement {
         <SheetContent
           side="left"
           showCloseButton={false}
-          className="w-[85vw] max-w-[320px] p-0 bg-bg-surface border-r border-border-default flex flex-col h-full overflow-y-auto"
+          className="w-[85vw] max-w-[320px] sm:max-w-[320px] p-0 bg-bg-surface border-r border-border-default flex flex-col h-full overflow-y-auto"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation menu</SheetTitle>

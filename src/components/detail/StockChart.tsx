@@ -12,13 +12,13 @@ import {
   YAxis,
 } from "recharts";
 import { ALL_STORES } from "@/constants";
-import { formatChartDay, formatDay } from "@/helpers";
+import { cn, formatChartDay, formatDay } from "@/helpers";
 import { useQueryStockHistory } from "@/apiHooks";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
-import { QueryErrorState } from "@/components/common";
+import { ProgressBar, QueryErrorState } from "@/components/common";
 import { StockChartTooltip } from "./StockChartTooltip";
-import type { StockHistoryPoint, StoreScope } from "@/types";
+import type { MovementPeriod, StoreScope } from "@/types";
 
 export interface StockChartProps {
   productId: string;
@@ -26,16 +26,13 @@ export interface StockChartProps {
   storeName?: string;
   reorderLevel: number;
   fail?: string;
+  period?: MovementPeriod;
+  onPeriodChange?: (period: MovementPeriod) => void;
 }
 
 type RangeOption = "7d" | "30d" | "90d";
-
-const DAYS_BY_RANGE: Record<RangeOption, number> = {
-  "7d": 7,
-  "30d": 30,
-  "90d": 90,
-};
-
+const RANGE_OPTIONS: RangeOption[] = ["7d", "30d", "90d"];
+const DAYS_BY_RANGE: Record<RangeOption, number> = { "7d": 7, "30d": 30, "90d": 90 };
 const emptySubscribe = () => () => {};
 
 export function StockChart({
@@ -44,20 +41,36 @@ export function StockChart({
   storeName,
   reorderLevel: initialReorderLevel,
   fail,
+  period,
+  onPeriodChange,
 }: StockChartProps): ReactElement {
-  const [range, setRange] = useState<RangeOption>("30d");
-  const isMounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false,
-  );
-  const days = DAYS_BY_RANGE[range];
+  const [internalRange, setInternalRange] = useState<RangeOption>("30d");
+  const [optimisticRange, setOptimisticRange] = useState<RangeOption | null>(null);
+
+  const effectiveRange: RangeOption =
+    optimisticRange && optimisticRange !== period
+      ? optimisticRange
+      : (period as RangeOption) ?? internalRange;
+
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const days = DAYS_BY_RANGE[effectiveRange];
 
   const { data, isLoading, isFetching, isError, error, refetch } = useQueryStockHistory(productId, {
     store,
     days,
     fail,
   });
+
+  const handleRangeChange = (val: string) => {
+    if (!val || val === effectiveRange) return;
+    const nextRange = val as RangeOption;
+    setOptimisticRange(nextRange);
+    if (onPeriodChange) {
+      onPeriodChange(nextRange as MovementPeriod);
+    } else {
+      setInternalRange(nextRange);
+    }
+  };
 
   const points = useMemo(() => data?.points ?? [], [data?.points]);
   const reorderLevel = data?.reorderLevel ?? initialReorderLevel;
@@ -98,13 +111,7 @@ export function StockChart({
   if (!isMounted || (isLoading && !data)) {
     chartBody = <Skeleton className="h-[200px] w-full rounded-md" />;
   } else if (isError) {
-    chartBody = (
-      <QueryErrorState
-        error={error}
-        onRetry={() => void refetch()}
-        variant="inline"
-      />
-    );
+    chartBody = <QueryErrorState error={error} onRetry={() => void refetch()} variant="inline" />;
   } else if (points.length === 0) {
     chartBody = (
       <div className="flex h-full flex-col items-center justify-center text-center">
@@ -114,11 +121,7 @@ export function StockChart({
   } else {
     chartBody = (
       <ResponsiveContainer width="100%" height={200}>
-        <AreaChart
-          accessibilityLayer
-          data={points}
-          margin={{ top: 4, right: 16, bottom: 0, left: 0 }}
-        >
+        <AreaChart accessibilityLayer data={points} margin={{ top: 4, right: 16, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--border-default)" />
           <YAxis
             width={32}
@@ -139,11 +142,8 @@ export function StockChart({
               const isFirst = index === 0;
               const isLast = index === (xTicks.length - 1);
               let anchor: "start" | "end" | "middle" = "middle";
-              if (isFirst) {
-                anchor = "start";
-              } else if (isLast) {
-                anchor = "end";
-              }
+              if (isFirst) anchor = "start";
+              else if (isLast) anchor = "end";
               return (
                 <text x={x} y={y} textAnchor={anchor} fill="var(--text-tertiary)" fontSize={11}>
                   {isLast ? "Today" : formatChartDay(payload.value)}
@@ -151,39 +151,16 @@ export function StockChart({
               );
             }}
           />
-          <Tooltip
-            content={<StockChartTooltip />}
-            offset={8}
-            cursor={{ stroke: "var(--border-strong)", strokeDasharray: "4 4" }}
-          />
-          <ReferenceLine
-            y={reorderLevel}
-            stroke="var(--status-warn-fg)"
-            strokeDasharray="4 4"
-            strokeWidth={1.5}
-          />
+          <Tooltip content={<StockChartTooltip />} offset={8} cursor={{ stroke: "var(--border-strong)", strokeDasharray: "4 4" }} />
+          <ReferenceLine y={reorderLevel} stroke="var(--status-warn-fg)" strokeDasharray="4 4" strokeWidth={1.5} />
           <Area
             type="linear"
             dataKey="onHand"
             stroke="var(--accent-default)"
             strokeWidth={1.5}
             fill="var(--accent-subtle)"
-            dot={
-              points.length === 1
-                ? {
-                    r: 4,
-                    fill: "var(--bg-surface)",
-                    stroke: "var(--accent-default)",
-                    strokeWidth: 2,
-                  }
-                : false
-            }
-            activeDot={{
-              r: 4,
-              fill: "var(--bg-surface)",
-              stroke: "var(--accent-default)",
-              strokeWidth: 2,
-            }}
+            dot={points.length === 1 ? { r: 4, fill: "var(--bg-surface)", stroke: "var(--accent-default)", strokeWidth: 2 } : false}
+            activeDot={{ r: 4, fill: "var(--bg-surface)", stroke: "var(--accent-default)", strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -191,7 +168,8 @@ export function StockChart({
   }
 
   return (
-    <div className="bg-bg-surface border-border-default shadow-card rounded-lg border p-xl flex flex-col">
+    <div className="relative bg-bg-surface border-border-default shadow-card rounded-lg border p-xl flex flex-col overflow-hidden">
+      {isFetching && <ProgressBar className="absolute top-0 left-0 right-0 z-10" />}
       <div className="flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-2 min-h-10">
         <div>
           <h2 className="text-card text-text-primary">On hand, last {days} days</h2>
@@ -199,35 +177,27 @@ export function StockChart({
         </div>
         <ToggleGroup
           type="single"
-          value={range}
-          onValueChange={(val) => {
-            if (val) setRange(val as RangeOption);
-          }}
-          className="bg-bg-muted h-8 w-[152px] shrink-0 rounded-md p-[3px] flex items-center justify-between border-0 gap-0"
+          value={effectiveRange}
+          onValueChange={handleRangeChange}
+          className={cn(
+            "bg-bg-muted h-8 w-[152px] shrink-0 rounded-md p-[3px] flex items-center justify-between border-0 gap-0",
+            isFetching && "pointer-events-none",
+          )}
         >
-          <ToggleGroupItem
-            value="7d"
-            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all hover:text-text-primary"
-          >
-            7d
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="30d"
-            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all hover:text-text-primary"
-          >
-            30d
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="90d"
-            className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all hover:text-text-primary"
-          >
-            90d
-          </ToggleGroupItem>
+          {RANGE_OPTIONS.map((opt) => (
+            <ToggleGroupItem
+              key={opt}
+              value={opt}
+              className="text-label text-text-secondary data-[state=on]:bg-bg-surface data-[state=on]:text-text-primary data-[state=on]:shadow-card h-[26px] min-w-[48px] rounded-md border-0 p-0 transition-all hover:text-text-primary"
+            >
+              {opt}
+            </ToggleGroupItem>
+          ))}
         </ToggleGroup>
       </div>
 
       <div
-        className="mt-lg h-[200px]"
+        className={cn("mt-lg h-[200px] transition-opacity", isFetching && "opacity-60")}
         role="img"
         aria-label={ariaLabel}
         aria-busy={isFetching}
@@ -236,9 +206,7 @@ export function StockChart({
       </div>
 
       {points.length === 1 && !isLoading && !isError && (
-        <p className="text-caption text-text-tertiary mt-2 text-center">
-          Only 1 data point so far
-        </p>
+        <p className="text-caption text-text-tertiary mt-2 text-center">Only 1 data point so far</p>
       )}
 
       <div className="mt-md flex items-center gap-lg text-caption text-text-secondary">

@@ -94,7 +94,7 @@ export function ProductsTable({
       )}
 
       {/* Desktop & tablet table: hidden below md */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden md:block relative overflow-x-auto">
         <table
           aria-busy={showSkeleton ? "true" : undefined}
           className="w-full min-w-[900px] border-collapse text-left"

@@ -264,6 +264,19 @@
   box-shadow: 0 0 0 3px #2f6b5547;
 }
 
+@keyframes indeterminate-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@utility animate-indeterminate-bar {
+  animation: indeterminate-bar 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 body {
   background: var(--bg-canvas);
   color: var(--text-primary);

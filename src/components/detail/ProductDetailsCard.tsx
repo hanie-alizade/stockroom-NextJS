@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { ALL_STORES } from "@/constants";
-import { formatMoney, formatWhen } from "@/helpers";
+import { cn, formatMoney, formatWhen } from "@/helpers";
+import { ProgressBar } from "@/components/common";
 import type { StoreScope } from "@/types";
 
 export interface ProductDetailsCardProps {
@@ -11,6 +12,7 @@ export interface ProductDetailsCardProps {
   supplier: string | null;
   lastMovementAt: string | null;
   store: StoreScope;
+  isFetching?: boolean;
 }
 
 export function ProductDetailsCard({
@@ -21,6 +23,7 @@ export function ProductDetailsCard({
   supplier,
   lastMovementAt,
   store,
+  isFetching,
 }: ProductDetailsCardProps): ReactElement {
   const onHandLabel = store === ALL_STORES ? "On hand (all stores)" : "On hand";
   const formattedLastMovement = lastMovementAt
@@ -28,8 +31,13 @@ export function ProductDetailsCard({
     : "—";
 
   return (
-    <div className="bg-bg-surface border-border-default shadow-card rounded-lg border p-xl">
-      <h2 className="text-card text-text-primary">Details</h2>
+    <div
+      aria-busy={isFetching}
+      className="relative bg-bg-surface border-border-default shadow-card rounded-lg border p-xl overflow-hidden"
+    >
+      {isFetching && <ProgressBar className="absolute top-0 left-0 right-0 z-10" />}
+      <div className={cn("transition-opacity", isFetching && "opacity-60")}>
+        <h2 className="text-card text-text-primary">Details</h2>
       <dl className="mt-sm flex flex-col">
         <div className="flex h-9 items-center justify-between">
           <dt className="text-body-small text-text-secondary">{onHandLabel}</dt>
@@ -60,6 +68,7 @@ export function ProductDetailsCard({
           <dd className="text-label text-text-primary">{formattedLastMovement}</dd>
         </div>
       </dl>
+      </div>
     </div>
   );
 }

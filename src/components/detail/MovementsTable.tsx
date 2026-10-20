@@ -22,7 +22,7 @@ export function MovementsTable({
   const storeMap = new Map(stores.map((s) => [s.id, s.name]));
 
   return (
-    <div className="overflow-x-auto w-full">
+    <div className="relative overflow-x-auto w-full">
       <div className="sr-only" role="status" aria-live="polite">
         {isLoading ? "Loading movements" : ""}
       </div>

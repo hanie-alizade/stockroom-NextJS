@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { STOCK_STATUS } from "@/constants";
 import { formatWhen, cn } from "@/helpers";
-import { StatusBadge } from "@/components/common";
+import { ProgressBar, StatusBadge } from "@/components/common";
 import { SupplierIcon } from "@/components/icons";
 import type { StockByStore, Store } from "@/types";
 
@@ -9,12 +9,14 @@ export interface StockByStoreTableProps {
   stockByStore: StockByStore[];
   stores: Store[];
   onAdjust: (storeId: string) => void;
+  isFetching?: boolean;
 }
 
 export function StockByStoreTable({
   stockByStore,
   stores,
   onAdjust,
+  isFetching,
 }: StockByStoreTableProps): ReactElement {
   const storeMap = new Map(stores.map((s) => [s.id, s.name]));
 
@@ -24,18 +26,20 @@ export function StockByStoreTable({
   ).length;
 
   return (
-    <div className="bg-bg-surface border-border-default shadow-card rounded-lg border overflow-hidden">
-      <div className="border-border-default flex h-[52px] items-center justify-between border-b px-xl">
-        <h2 className="text-card text-text-primary">Stock by store</h2>
-        {attentionCount > 0 && (
-          <span className="text-body-small text-status-warn-fg">
-            {attentionCount} of {totalCarryingStores} stores need attention
-          </span>
-        )}
-      </div>
+    <div className="relative bg-bg-surface border-border-default shadow-card rounded-lg border overflow-hidden">
+      {isFetching && <ProgressBar className="absolute top-0 left-0 right-0 z-10" />}
+      <div className={cn("transition-opacity", isFetching && "opacity-60")}>
+        <div className="border-border-default flex h-[52px] items-center justify-between border-b px-xl">
+          <h2 className="text-card text-text-primary">Stock by store</h2>
+          {attentionCount > 0 && (
+            <span className="text-body-small text-status-warn-fg">
+              {attentionCount} of {totalCarryingStores} stores need attention
+            </span>
+          )}
+        </div>
 
-      <div className="overflow-x-auto w-full">
-        <table className="w-full min-w-[800px] border-collapse">
+        <div className="relative overflow-x-auto w-full">
+          <table aria-busy={isFetching} className="w-full min-w-[800px] border-collapse">
           <thead>
             <tr className="bg-bg-subtle border-border-default h-10 border-b">
               <th
@@ -119,7 +123,7 @@ export function StockByStoreTable({
                     <button
                       type="button"
                       onClick={() => onAdjust(item.storeId)}
-                      className="text-label text-text-link hover:underline cursor-pointer"
+                      className={cn("text-label text-text-link hover:underline cursor-pointer", isFetching && "pointer-events-none")}
                       aria-label={`Adjust stock at ${storeName}`}
                     >
                       Adjust
@@ -130,6 +134,7 @@ export function StockByStoreTable({
             })}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

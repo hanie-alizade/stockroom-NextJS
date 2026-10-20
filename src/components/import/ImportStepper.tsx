@@ -36,7 +36,7 @@ export function ImportStepper({
   const isAllDone = currentStep === "done";
 
   return (
-    <nav aria-label="Import progress" className={cn("w-full overflow-x-auto", className)}>
+    <nav aria-label="Import progress" className={cn("relative w-full overflow-x-auto", className)}>
       <ol className="flex items-center gap-sm">
         {STEPS.map((step, index) => {
           const isDone = isAllDone || index < currentIndex;
