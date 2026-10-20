@@ -7,4 +7,5 @@ export * from "./MovementsFilters";
 export * from "./MovementsTable";
 export * from "./MovementsTab";
 export * from "./ProductDetailHeader";
+export * from "./ProductDetailSkeleton";
 export * from "./ProductDetailView";

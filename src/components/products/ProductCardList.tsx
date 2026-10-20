@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@/helpers";
 import type { ProductListItem } from "@/types";
 import { ProductCard } from "./ProductCard";
@@ -10,6 +8,7 @@ export interface ProductCardListProps {
   storeParam: string;
   onSelect: (item: ProductListItem) => void;
   onCardClick: (id: string) => void;
+  onAdjust?: (item: ProductListItem) => void;
   className?: string;
 }
 
@@ -19,6 +18,7 @@ export function ProductCardList({
   storeParam,
   onSelect,
   onCardClick,
+  onAdjust,
   className,
 }: ProductCardListProps): React.ReactElement {
   return (
@@ -31,6 +31,7 @@ export function ProductCardList({
           storeParam={storeParam}
           onSelect={onSelect}
           onClick={onCardClick}
+          onAdjust={onAdjust}
         />
       ))}
     </div>

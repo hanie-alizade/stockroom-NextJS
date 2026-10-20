@@ -2,6 +2,12 @@
 
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { StatusBadge } from "@/components/common";
 import { cn, formatMoney, formatWhen } from "@/helpers";
 import type { ProductListItem } from "@/types";
@@ -13,6 +19,7 @@ interface ProductsTableRowProps {
   now: Date;
   onSelect: (item: ProductListItem) => void;
   onRowClick: (id: string) => void;
+  onAdjust?: (item: ProductListItem) => void;
 }
 
 export function ProductsTableRow({
@@ -22,6 +29,7 @@ export function ProductsTableRow({
   now,
   onSelect,
   onRowClick,
+  onAdjust,
 }: ProductsTableRowProps): React.ReactElement {
   return (
     <tr
@@ -115,13 +123,27 @@ export function ProductsTableRow({
         className="w-[44px] pr-md text-right align-middle"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          type="button"
-          aria-label="Row actions"
-          className="text-text-tertiary hover:text-text-primary inline-flex size-8 items-center justify-center rounded-md text-sm transition-colors"
-        >
-          ···
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label={`Actions for ${item.name}`}
+              className="text-text-tertiary hover:text-text-primary inline-flex size-8 items-center justify-center rounded-md text-body-small transition-colors focus-visible:outline-none focus:focus-ring"
+            >
+              ···
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdjust?.(item);
+              }}
+            >
+              Adjust stock
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </td>
     </tr>
   );

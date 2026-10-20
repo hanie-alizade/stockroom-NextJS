@@ -43,7 +43,7 @@ export function WizardFooter({
       )}
     >
       {/* Left button */}
-      <div>
+      <div className="flex items-center gap-2">
         {step === "upload" && (
           <Button
             type="button"
@@ -55,15 +55,26 @@ export function WizardFooter({
           </Button>
         )}
         {(step === "map" || step === "review") && (
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={isSubmitting}
-            onClick={onBack}
-            className="w-full md:w-auto"
-          >
-            Back
-          </Button>
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={isSubmitting}
+              onClick={onBack}
+              className="w-full md:w-auto"
+            >
+              Back
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={isSubmitting}
+              onClick={onCancel}
+              className="w-full md:w-auto text-text-secondary hover:text-text-primary"
+            >
+              Cancel
+            </Button>
+          </>
         )}
       </div>
 

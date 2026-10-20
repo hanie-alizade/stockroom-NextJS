@@ -1,6 +1,6 @@
 # Decisions
 
-Format: what I chose, why, and what I gave up. Items marked `[verify]` need a quick check against the Figma Screens page before this goes into the README.
+Format: what I chose, why, and what I gave up. Section 1 and 2 feed the README answers. Section 3 holds smaller decisions. Section 4 lists known gaps that are decisions still open.
 
 ## 1. Answers to the Handoff "Open questions"
 
@@ -20,10 +20,11 @@ Show it honestly. One point is drawn as a visible dot with a tooltip, and a shor
 
 **Below 1024px**
 
+- Breakpoints: the sidebar is fixed from 1024px (`lg`); the table is used from 768px (`md`), cards below it.
 - 768 to 1023px: sidebar collapses into a top bar (MobileHeader) with a menu button and slide-in sheet; the table scrolls horizontally inside its own container with Checkbox, SKU, and Name columns sticky on the left; first columns of StockByStoreTable (Store) and MovementsTable (Date & time) are also sticky.
 - Under 768px (down to 375px): the sidebar is accessed via MobileHeader slide-in sheet; table rows become cards (name, mono SKU, status badge, on hand, reorder level, unit cost); filters collapse into a bottom "Filters" sheet with category, status, sort key and direction toggle (changes apply immediately to URL); selection toolbar and chips wrap; pagination places range text on its own row; touch targets are at least 44px for icon buttons and navigation.
 - Product detail below 1024px: header stacks (Adjust stock button full width under 640px), breadcrumb truncates product name, meta line wraps, Overview displays in 1 column (Chart then Details card then Stock by store), Movements filters wrap into a grid (1 column under 640px, 2 columns from 640px) with movements count text below.
-- Adjust stock dialog: responsive full-height sheet is reserved for the dialog task and excluded here.
+- Adjust stock dialog: stays a centered dialog (560px wide, never wider than the viewport minus 32px, never taller than the viewport minus 32px). The body scrolls, the footer stays visible. Under 640px the From and To fields stack, the swap button turns 90 degrees, and the footer buttons stack under the "Signed in as" line.
 - Why: a table is still the best format when it fits, cards avoid sideways scrolling on phones, and CSS-first breakpoints avoid layout shifts.
 
 **Import "Done" step**
@@ -39,13 +40,13 @@ Its own empty state: "No movements yet" with one sentence of explanation, and a 
 The link is hidden in the sidebar. If Staff open the URL anyway, the server-side page check redirects them to Products (as the Figma note suggests) with `?notice=managers-only`, and the list shows a small dismissible message "Import is available to managers only", so the person still understands why. The API also returns 403. (An earlier idea was a separate "Managers only" screen; the redirect is less code and follows the design.)
 
 **Saving state inside the dialog**
-While the request runs: the submit button shows a spinner and "Saving...", all fields are disabled, and closing is disabled until the request ends so the person cannot lose the result. On error the dialog stays open, keeps the typed values, shows the message at the top (and field messages under fields), and the button becomes "Try again". A retry reuses the same idempotency key for the same payload. On success, a toast appears, the dialog closes and focus returns to the button that opened it.
+While the request runs: the submit button shows a spinner and "Saving...", all fields are disabled, and closing is disabled until the request ends so the person cannot lose the result. On error the dialog stays open, keeps the typed values, shows the message at the top (and field messages under fields), and the button becomes "Try again". A retry after an unclear outcome (network error, timeout, 5xx) reuses the same idempotency key for the same payload, so it cannot apply twice. After a clear answer from the server (4xx such as 409 or 422) the next submit gets a new key. On success, a toast appears, the dialog closes and focus returns to the button that opened it.
 
 ## 3. Other decisions
 
 - **Summary cards ignore the search and filters.** They only follow the store scope. Otherwise clicking "Low stock" would change the very number you just clicked. The Figma note says the store scopes "cards, table, totals" and does not mention filters.
 - **Selection:** "select all" selects the current page only. Selection is cleared when the store, search or filters change (the design says a filter change resets it), and kept when only the page changes. The state keeps the selected rows' data, since rows from other pages are not loaded. Export CSV contains the selected rows as they are shown in the current scope (SKU, name, category, status, on hand, reorder level, unit cost). Money in the export uses the `68.00` form.
-- **URL state:** only non-default values are written to the URL. Filters, store, sort and page use `router.push` so Back works; the search box is debounced and uses `router.replace` while typing so history is not flooded. Changing a filter, search or the store resets page to 1.
+- **URL state and navigation history:** only non-default values are written to the URL. Discrete actions (filters, sort, page, page size, store, cards, clear) use `router.push` so Back returns to the previous view; search typing uses `router.push` on the first entry and `router.replace` on subsequent typing after the first entry so Back does not walk through each keystroke. Changing filters, search, sort or page size resets page to 1.
 - **Defaults:** sort by Updated, newest first, page size 25 (options 25, 50, 100). Both from the design.
 - **Status sort direction:** the design cycles descending, ascending, off for every column. For Status, descending is defined as Out, Low, In stock, so the first click shows the most urgent products and it matches the "Out first" answer above.
 - **Notes:** one `note` field on the movement. The design shows an optional Note (max 200) on Transfer and none on Sell. We also allow it on Receive (the history shows "PO-7781" on received rows). For Write-off the same field is required and labelled Reason (3 to 200 characters).
@@ -64,3 +65,16 @@ While the request runs: the submit button shows a spinner and "Saving...", all f
 - **Import "unchanged" vs "updated" and movements:** `unchanged` means nothing changed: name, category, unit cost and quantity are all identical. If only name, category or cost changed, the row is `updated` and no movement is written. A movement of type `import` (note: the file name, cut to 200 chars) is written only when quantity delta is not 0.
 - **New products have no supplier:** `supplier` is nullable (`string | null`) in ProductRecord, ProductListItem and ProductDetail. The UI hides the supplier line when null; the Details card shows an em dash.
 
+- **Product id is the SKU.** URLs and API ids use the SKU (`/products/KL-1042`). It is unique, readable and stable in the seed. Import identifies products by SKU too. Gave up: a SKU can never be renamed without breaking links.
+- **Idempotency key is global.** The repository stores keys without the user id. The request hash includes the product id and the body, so a key reused for another request gives 422 `IDEMPOTENCY_KEY_REUSED`. Two different users sending the same key with the same body would get the same replay. The client uses a random UUID per attempt, so this does not happen in practice. A real system would scope keys per user and expire them.
+- **A replayed adjustment answers 201.** Same status and body as the first call, plus the `Idempotent-Replay: true` header, so a client cannot tell the difference except by that header. Import commit replays with 200 like its first answer.
+- **Permission checks for adjustments.** The route handler parses `type` first and checks `ADJUSTMENT_PERMISSION[type]` so Staff requests for write-off/transfer immediately receive 403 `FORBIDDEN` even when the body is otherwise invalid. `createAdjustment` in the service also checks permissions as defense-in-depth. Import routes use the `withApi` permission option because the permission is fixed.
+- **Test reset route.** `POST /api/test/reset` exists only in development or with `E2E=1` and answers 404 otherwise. It is the only seam Playwright needs.
+- **Sample import file.** `samples/import-sample.csv` is generated from the seed by `npm run sample:import`: 63 rows, 8 broken ones (several error kinds), 15 new SKUs and 40 existing ones. Headers differ from the Stockroom names so auto-mapping can be seen working (`Item code`, `Description`, `Group`, `Qty`, `Cost (RM)`, plus `Barcode` and `Supplier`, which are skipped).
+- **Node and framework versions.** Node 22 (`.nvmrc`), Next.js 16, React 19, Tailwind 4. The brief asks for Next.js 14 or later.
+- **Loading states and server prefetch:** The first render has no skeleton on purpose because data and meta are prefetched on the server and hydrated directly into TanStack Query. Loading states can be inspected on demand with `?slow=1` (which skips prefetch so the client fetches through the API with the 500 ms simulated latency), or naturally while navigating when changing store, search, filters, sort, page, or page size. Error states are simulated with `?fail=1`. The table and card skeletons use TanStack Query's `isPlaceholderData`: when a new query key is requested, previous data becomes placeholder data, triggering skeleton rows with `aria-busy="true"` and polite live announcements while keeping the toolbar, headers, selection, and pagination intact. Conversely, a background refetch of the same key (such as after an adjustment mutation) keeps the existing rows visible without flashing skeletons.
+
+## 4. Known gaps (decisions still open)
+
+- **Component tests.** 3 component test files exist (`AdjustStockDialog.test.tsx`, `ProductsFiltersSheet.test.tsx`, `ProductsTable.test.tsx`, 21 tests total). Additional coverage for import wizard steps remains a future candidate.
+- **Detail page `···` button.** The design shows one next to "Adjust stock" with no items defined. Not built on purpose (the products table row menu is built and opens "Adjust stock").

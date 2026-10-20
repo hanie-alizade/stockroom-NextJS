@@ -44,6 +44,13 @@ export async function readImportForm(
       ERROR_CODE.INVALID_FILE,
       HTTP_STATUS.UNPROCESSABLE_ENTITY,
       "Invalid multipart form data",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.VALIDATION_ERROR,
+          message: "Invalid multipart form data",
+        },
+      ],
     );
   }
 
@@ -53,6 +60,13 @@ export async function readImportForm(
       ERROR_CODE.INVALID_FILE,
       HTTP_STATUS.UNPROCESSABLE_ENTITY,
       "Missing or invalid file",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.REQUIRED,
+          message: "Missing or invalid file",
+        },
+      ],
     );
   }
 
@@ -61,10 +75,36 @@ export async function readImportForm(
       ERROR_CODE.FILE_TOO_LARGE,
       HTTP_STATUS.PAYLOAD_TOO_LARGE,
       "This file is over 5 MB.",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.TOO_LONG,
+          message: "This file is over 5 MB.",
+        },
+      ],
     );
   }
 
   const fileName = (fileEntry as File).name || "import.csv";
+  const isCsv =
+    fileName.toLowerCase().endsWith(".csv") ||
+    fileEntry.type.includes("csv") ||
+    fileEntry.type === "text/plain";
+  if (!isCsv) {
+    throw new AppError(
+      ERROR_CODE.INVALID_FILE,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      "Only CSV files are supported.",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.VALIDATION_ERROR,
+          message: "Only CSV files are supported.",
+        },
+      ],
+    );
+  }
+
   let fileText: string;
   try {
     fileText = await readFileText(fileEntry);
@@ -73,6 +113,13 @@ export async function readImportForm(
       ERROR_CODE.INVALID_FILE,
       HTTP_STATUS.UNPROCESSABLE_ENTITY,
       "Unable to read file content",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.VALIDATION_ERROR,
+          message: "Unable to read file content",
+        },
+      ],
     );
   }
 
@@ -81,6 +128,13 @@ export async function readImportForm(
       ERROR_CODE.INVALID_FILE,
       HTTP_STATUS.UNPROCESSABLE_ENTITY,
       "CSV file is empty",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.REQUIRED,
+          message: "CSV file is empty",
+        },
+      ],
     );
   }
 
@@ -90,6 +144,28 @@ export async function readImportForm(
       ERROR_CODE.INVALID_FILE,
       HTTP_STATUS.UNPROCESSABLE_ENTITY,
       "CSV file has no header row",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.REQUIRED,
+          message: "CSV file has no header row",
+        },
+      ],
+    );
+  }
+
+  if (parsedCsv.rowCount === 0) {
+    throw new AppError(
+      ERROR_CODE.INVALID_FILE,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      "This file has no data rows.",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.REQUIRED,
+          message: "This file has no data rows.",
+        },
+      ],
     );
   }
 
@@ -98,6 +174,13 @@ export async function readImportForm(
       ERROR_CODE.IMPORT_TOO_LARGE,
       HTTP_STATUS.UNPROCESSABLE_ENTITY,
       "File exceeds limit of 2,000 rows",
+      [
+        {
+          field: "file",
+          code: FIELD_ERROR_CODE.TOO_MANY,
+          message: "File exceeds limit of 2,000 rows",
+        },
+      ],
     );
   }
 

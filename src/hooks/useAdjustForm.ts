@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { ADJUSTMENT_TYPE } from "@/constants";
 import {
   parsePositiveInteger,
+  validateQuantity,
   getOverStockErrorMessage,
   validateReason,
   type AdjustmentType,
@@ -92,11 +93,17 @@ export function useAdjustForm({
 
   const setToStoreId = useCallback((id: string) => {
     setToStoreIdState(id);
+    setFromStoreIdState((prevFrom) => (prevFrom === id ? undefined : prevFrom));
   }, []);
 
   const swapStores = useCallback(() => {
-    setFromStoreIdState(toStoreId);
-    setToStoreIdState(fromStoreId);
+    if (!fromStoreId || !toStoreId || fromStoreId === toStoreId) {
+      return;
+    }
+    const nextFrom = toStoreId;
+    const nextTo = fromStoreId;
+    setFromStoreIdState(nextFrom);
+    setToStoreIdState(nextTo);
   }, [fromStoreId, toStoreId]);
 
   const markTouched = useCallback((field: string) => {
@@ -119,9 +126,10 @@ export function useAdjustForm({
     const parsedQty = parsePositiveInteger(quantity);
 
     // Quantity error
-    if (!quantity.trim() || parsedQty === null) {
-      errs.quantity = "Enter a whole number above 0.";
-    } else {
+    const qtyValidationErr = validateQuantity(quantity);
+    if (qtyValidationErr) {
+      errs.quantity = qtyValidationErr;
+    } else if (parsedQty !== null) {
       if (type === ADJUSTMENT_TYPE.SELL || type === ADJUSTMENT_TYPE.WRITE_OFF) {
         const store = stores.find((s) => s.storeId === storeId);
         if (store && !canRemoveStock(store.onHand, parsedQty)) {
@@ -129,9 +137,20 @@ export function useAdjustForm({
         }
       } else if (type === ADJUSTMENT_TYPE.TRANSFER) {
         const fromStore = stores.find((s) => s.storeId === fromStoreId);
-        if (fromStore && !canRemoveStock(fromStore.onHand, parsedQty)) {
-          errs.quantity = getOverStockErrorMessage(fromStore.storeName, fromStore.onHand);
+        if (fromStore) {
+          if (fromStore.onHand === 0) {
+            errs.quantity = `${fromStore.storeName} has no stock to transfer.`;
+          } else if (!canRemoveStock(fromStore.onHand, parsedQty)) {
+            errs.quantity = getOverStockErrorMessage(fromStore.storeName, fromStore.onHand, true);
+          }
         }
+      }
+    }
+
+    if (type === ADJUSTMENT_TYPE.TRANSFER && fromStoreId) {
+      const fromStore = stores.find((s) => s.storeId === fromStoreId);
+      if (fromStore && fromStore.onHand === 0) {
+        errs.quantity = `${fromStore.storeName} has no stock to transfer.`;
       }
     }
 

@@ -22,9 +22,13 @@ export function MovementsTable({
   const storeMap = new Map(stores.map((s) => [s.id, s.name]));
 
   return (
-    <div className="overflow-x-auto w-full">
+    <div className="relative overflow-x-auto w-full">
+      <div className="sr-only" role="status" aria-live="polite">
+        {isLoading ? "Loading movements" : ""}
+      </div>
+
       <table
-        aria-busy={isFetching ?? isLoading}
+        aria-busy={isLoading ? "true" : undefined}
         className="w-full min-w-[900px] border-collapse text-left"
       >
         <thead>
@@ -62,7 +66,7 @@ export function MovementsTable({
         <tbody>
           {isLoading &&
             Array.from({ length: 9 }).map((_, i) => (
-              <tr key={i} className="h-12 border-b border-border-default">
+              <tr key={i} aria-hidden="true" className="h-12 border-b border-border-default">
                 <td className="w-[185px] pl-xl px-md sticky left-0 z-10 bg-bg-surface border-r border-border-default shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]">
                   <Skeleton className="h-4 w-24 rounded-xs" />
                 </td>

@@ -1,5 +1,6 @@
 import {
   ADJUSTMENT_TYPE,
+  MAX_QUANTITY,
   STOCK_STATUS,
 } from "@/constants";
 import { getStatus, canRemoveStock } from "@/domain";
@@ -24,15 +25,47 @@ export interface PreviewRow {
 }
 
 /**
- * Parses a string to a positive integer (whole number > 0).
- * Returns null for empty, non-integers, numbers <= 0, or invalid formats.
+ * Validates a raw quantity input string against formatting, range, and MAX_QUANTITY rules.
+ */
+export function validateQuantity(input: string): string | null {
+  const trimmed = input.trim();
+  if (!trimmed) {
+    return "Enter a whole number above 0.";
+  }
+
+  // Fractional / decimals
+  if (trimmed.includes(".") || /^-?\d+\.\d+$/.test(trimmed)) {
+    return "Enter a whole number.";
+  }
+
+  // Negative or zero
+  if (trimmed.startsWith("-") || /^0+$/.test(trimmed)) {
+    return "Enter a number above 0.";
+  }
+
+  // Non-digit characters
+  if (!/^\d+$/.test(trimmed)) {
+    return "Enter a whole number above 0.";
+  }
+
+  const num = Number(trimmed);
+  if (!Number.isSafeInteger(num) || num > MAX_QUANTITY) {
+    return "Quantity can't be more than 1,000,000.";
+  }
+
+  return null;
+}
+
+/**
+ * Parses a string to a positive integer (whole number > 0 and <= MAX_QUANTITY).
+ * Returns null for empty, non-integers, numbers <= 0, > MAX_QUANTITY, or invalid formats.
  */
 export function parsePositiveInteger(input: string): number | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
   if (!/^\d+$/.test(trimmed)) return null;
   const num = Number(trimmed);
-  if (!Number.isSafeInteger(num) || num <= 0) return null;
+  if (!Number.isSafeInteger(num) || num <= 0 || num > MAX_QUANTITY) return null;
   return num;
 }
 
@@ -45,7 +78,8 @@ const TYPE_BASE_LABELS: Record<AdjustmentType, string> = {
 
 /**
  * Returns the submit button label based on type, quantity input, and saving state.
- * When quantity is a whole number >= 1, includes the quantity and unit/units.
+ * When quantity is a whole number >= 1, includes the quantity and unit/units up to 9,999.
+ * For very large numbers, returns e.g. "Receive units" to prevent button overflow.
  */
 export function getSubmitButtonLabel(
   type: AdjustmentType,
@@ -60,6 +94,9 @@ export function getSubmitButtonLabel(
   const parsed = parsePositiveInteger(quantityInput);
 
   if (parsed !== null) {
+    if (parsed > 9999) {
+      return `${baseLabel} units`;
+    }
     const unitWord = parsed === 1 ? "unit" : "units";
     return `${baseLabel} ${parsed} ${unitWord}`;
   }
@@ -70,7 +107,14 @@ export function getSubmitButtonLabel(
 /**
  * Returns the over-stock error message formatted with store name and current stock.
  */
-export function getOverStockErrorMessage(storeName: string, onHand: number): string {
+export function getOverStockErrorMessage(
+  storeName: string,
+  onHand: number,
+  isTransfer = false,
+): string {
+  if (isTransfer && onHand <= 0) {
+    return `${storeName} has no stock to transfer.`;
+  }
   return `${storeName} only has ${onHand} on hand. Enter ${onHand} or less.`;
 }
 

@@ -6,6 +6,7 @@ export function ProductsTableSkeleton(): React.ReactElement {
       {Array.from({ length: 9 }).map((_, index) => (
         <tr
           key={index}
+          aria-hidden="true"
           className="border-border-default h-[52px] border-b"
         >
           <td className="w-[44px] min-w-[44px] max-w-[44px] px-md text-center align-middle sticky left-0 z-10 bg-bg-surface">

@@ -1,9 +1,14 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/helpers";
 import { Brand } from "./Brand";
 import { Navigation } from "./Navigation";
 import { StoreSelector } from "./StoreSelector";
 import { UserProfileCard } from "./UserProfileCard";
+
+export interface SidebarProps {
+  className?: string;
+}
 
 function SidebarContent(): React.ReactElement {
   return (
@@ -18,9 +23,14 @@ function SidebarContent(): React.ReactElement {
   );
 }
 
-export function Sidebar(): React.ReactElement {
+export function Sidebar({ className }: SidebarProps = {}): React.ReactElement {
   return (
-    <aside className="border-border-default bg-bg-surface flex h-full w-[248px] flex-col border-r px-[12px] py-[20px]">
+    <aside
+      className={cn(
+        "border-border-default bg-bg-surface flex h-full w-[248px] flex-col border-r px-[12px] py-[20px]",
+        className,
+      )}
+    >
       <Suspense
         fallback={
           <>

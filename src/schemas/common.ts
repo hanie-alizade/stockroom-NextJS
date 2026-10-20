@@ -1,11 +1,17 @@
 import { z } from "zod";
-import { PAGE_SIZE_OPTIONS } from "@/constants";
+import { MAX_QUANTITY, PAGE_SIZE_OPTIONS } from "@/constants";
 
 export const storeIdSchema = z.string().trim().min(1);
 
 export const storeScopeSchema = z.string().trim().min(1);
 
-export const quantitySchema = z.number().int().positive();
+export const quantitySchema = z
+  .number({
+    invalid_type_error: "Enter a whole number above 0.",
+  })
+  .int({ message: "Enter a whole number." })
+  .positive({ message: "Enter a number above 0." })
+  .max(MAX_QUANTITY, { message: "Quantity can't be more than 1,000,000." });
 
 export const noteSchema = z.string().trim().max(200);
 

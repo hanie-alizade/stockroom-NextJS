@@ -13,6 +13,7 @@ import { AdjustStockDialog } from "@/components/adjust";
 import { ApiError } from "@/api/axiosConfig";
 import type { Adjustment } from "@/types";
 import { ProductDetailHeader } from "./ProductDetailHeader";
+import { ProductDetailSkeleton } from "./ProductDetailSkeleton";
 import { StockChart } from "./StockChart";
 import { ProductDetailsCard } from "./ProductDetailsCard";
 import { StockByStoreTable } from "./StockByStoreTable";
@@ -37,6 +38,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
 
   const {
     data: product,
+    isFetching: isFetchingProduct,
     isError,
     error,
     refetch,
@@ -116,12 +118,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
       );
     }
 
-    return (
-      <PageContainer className="animate-pulse">
-        <div className="h-4 w-48 bg-bg-muted rounded" />
-        <div className="h-14 w-72 bg-bg-muted rounded" />
-      </PageContainer>
-    );
+    return <ProductDetailSkeleton tab={query.tab} />;
   }
 
   const isMovementsTabActive = query.tab === DETAIL_TAB.MOVEMENTS;
@@ -161,17 +158,17 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
       >
         <TabsList
           variant="line"
-          className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0 overflow-x-auto"
+          className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0 overflow-x-auto overflow-y-hidden"
         >
           <TabsTrigger
             value={DETAIL_TAB.OVERVIEW}
-            className="text-body-strong data-[state=active]:text-text-primary text-text-tertiary hover:text-text-secondary data-[state=active]:after:bg-accent-default rounded-none border-b-0 px-0 after:bottom-[-1px] data-[state=active]:after:h-[2px]"
+            className="text-body-strong data-[state=active]:text-text-primary text-text-tertiary hover:text-text-secondary data-[state=active]:after:bg-accent-default rounded-none border-b-0 px-0 after:bottom-0 data-[state=active]:after:h-[2px]"
           >
             Overview
           </TabsTrigger>
           <TabsTrigger
             value={DETAIL_TAB.MOVEMENTS}
-            className="text-body-strong data-[state=active]:text-text-primary text-text-tertiary hover:text-text-secondary data-[state=active]:after:bg-accent-default gap-sm rounded-none border-b-0 px-0 after:bottom-[-1px] data-[state=active]:after:h-[2px]"
+            className="text-body-strong data-[state=active]:text-text-primary text-text-tertiary hover:text-text-secondary data-[state=active]:after:bg-accent-default gap-sm rounded-none border-b-0 px-0 after:bottom-0 data-[state=active]:after:h-[2px]"
           >
             <span>Movements</span>
             {tabCount !== undefined && (
@@ -198,6 +195,8 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
                 storeName={storeName}
                 reorderLevel={product.reorderLevel}
                 fail={query.fail}
+                period={query.period}
+                onPeriodChange={setPeriod}
               />
               <ProductDetailsCard
                 onHand={product.onHand}
@@ -207,6 +206,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
                 supplier={product.supplier}
                 lastMovementAt={product.lastMovementAt}
                 store={query.store}
+                isFetching={isFetchingProduct}
               />
             </div>
 
@@ -214,6 +214,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
               stockByStore={product.stockByStore}
               stores={stores}
               onAdjust={handleAdjust}
+              isFetching={isFetchingProduct}
             />
           </div>
         </TabsContent>

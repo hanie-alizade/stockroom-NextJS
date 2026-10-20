@@ -39,7 +39,7 @@ export function ReviewTabs({
     >
       <TabsList
         variant="line"
-        className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0 overflow-x-auto"
+        className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0 overflow-x-auto overflow-y-hidden"
       >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.value;
@@ -48,7 +48,7 @@ export function ReviewTabs({
               key={tab.value}
               value={tab.value}
               disabled={disabled}
-              className="text-body-strong data-[state=active]:text-text-primary text-text-tertiary hover:text-text-secondary data-[state=active]:after:bg-accent-default gap-sm rounded-none border-b-0 px-0 after:bottom-[-1px] data-[state=active]:after:h-[2px]"
+              className="text-body-strong data-[state=active]:text-text-primary text-text-tertiary hover:text-text-secondary data-[state=active]:after:bg-accent-default gap-sm rounded-none border-b-0 px-0 after:bottom-0 data-[state=active]:after:h-[2px]"
             >
               <span>{tab.label}</span>
               <span

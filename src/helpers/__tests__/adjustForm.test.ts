@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   parsePositiveInteger,
+  validateQuantity,
   getSubmitButtonLabel,
   getOverStockErrorMessage,
   validateReason,
@@ -37,10 +38,44 @@ describe("adjustForm helpers", () => {
       expect(parsePositiveInteger("12a")).toBeNull();
     });
 
-    it("parses valid trimmed integers", () => {
+    it("rejects numbers exceeding MAX_QUANTITY", () => {
+      expect(parsePositiveInteger("1000001")).toBeNull();
+      expect(parsePositiveInteger("999999999999999999")).toBeNull();
+    });
+
+    it("parses valid trimmed integers up to MAX_QUANTITY", () => {
       expect(parsePositiveInteger(" 12 ")).toBe(12);
       expect(parsePositiveInteger("1")).toBe(1);
       expect(parsePositiveInteger("24")).toBe(24);
+      expect(parsePositiveInteger("1000000")).toBe(1000000);
+    });
+  });
+
+  describe("quantity validation messages", () => {
+    it("returns correct message for empty input", () => {
+      expect(validateQuantity("")).toBe("Enter a whole number above 0.");
+      expect(validateQuantity("   ")).toBe("Enter a whole number above 0.");
+    });
+
+    it("returns correct message for non-integer decimals", () => {
+      expect(validateQuantity("1.5")).toBe("Enter a whole number.");
+      expect(validateQuantity("0.5")).toBe("Enter a whole number.");
+    });
+
+    it("returns correct message for 0 or negative numbers", () => {
+      expect(validateQuantity("0")).toBe("Enter a number above 0.");
+      expect(validateQuantity("-5")).toBe("Enter a number above 0.");
+    });
+
+    it("returns correct message for numbers exceeding 1,000,000", () => {
+      expect(validateQuantity("1000001")).toBe("Quantity can't be more than 1,000,000.");
+      expect(validateQuantity("999999999999999999")).toBe("Quantity can't be more than 1,000,000.");
+    });
+
+    it("returns null for valid positive integer within limit", () => {
+      expect(validateQuantity("1")).toBeNull();
+      expect(validateQuantity("50")).toBeNull();
+      expect(validateQuantity("1000000")).toBeNull();
     });
   });
 
@@ -52,10 +87,17 @@ describe("adjustForm helpers", () => {
       expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.TRANSFER, "1")).toBe("Transfer 1 unit");
     });
 
-    it("formats plural units", () => {
+    it("formats plural units up to 9,999", () => {
       expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.RECEIVE, "20")).toBe("Receive 20 units");
       expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.SELL, "2")).toBe("Sell 2 units");
       expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.TRANSFER, "24")).toBe("Transfer 24 units");
+      expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.RECEIVE, "9999")).toBe("Receive 9999 units");
+    });
+
+    it("uses safe label without large numbers for 10,000+", () => {
+      expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.RECEIVE, "10000")).toBe("Receive units");
+      expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.SELL, "1000000")).toBe("Sell units");
+      expect(getSubmitButtonLabel(ADJUSTMENT_TYPE.TRANSFER, "50000")).toBe("Transfer units");
     });
 
     it("shows base label when quantity is empty or invalid", () => {
@@ -82,6 +124,12 @@ describe("adjustForm helpers", () => {
       );
       expect(getOverStockErrorMessage("Subang", 4)).toBe(
         "Subang only has 4 on hand. Enter 4 or less.",
+      );
+    });
+
+    it("formats zero-stock transfer error message correctly", () => {
+      expect(getOverStockErrorMessage("Cheras", 0, true)).toBe(
+        "Cheras has no stock to transfer.",
       );
     });
   });

@@ -95,15 +95,17 @@ export function StoreSelect({
         </SelectContent>
       </Select>
 
-      {hasError && (
-        <span
-          id={`${id}-error`}
-          aria-live="polite"
-          className="text-caption text-status-danger-fg"
-        >
-          {error}
-        </span>
-      )}
+      <div className="min-h-[18px]">
+        {hasError && (
+          <span
+            id={`${id}-error`}
+            aria-live="polite"
+            className="text-caption text-status-danger-fg block"
+          >
+            {error}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

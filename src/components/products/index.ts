@@ -13,3 +13,4 @@ export { ProductsSortHeader } from "./ProductsSortHeader";
 export { ProductCard } from "./ProductCard";
 export { ProductCardList } from "./ProductCardList";
 export { ProductsFiltersSheet } from "./ProductsFiltersSheet";
+export type { ProductsFiltersSheetProps, ProductsFiltersDraft } from "./ProductsFiltersSheet";

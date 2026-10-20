@@ -15,11 +15,7 @@ export class ApiError extends Error {
   }
 }
 
-export const axiosInstance = axios.create({
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+export const axiosInstance = axios.create();
 
 axiosInstance.interceptors.response.use(
   (response) => response,

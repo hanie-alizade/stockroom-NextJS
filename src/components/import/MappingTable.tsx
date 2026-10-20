@@ -47,7 +47,7 @@ export function MappingTable({
   return (
     <div className={cn("w-full flex-1", className)}>
       {/* Desktop Table View */}
-      <div className="hidden md:block rounded-lg border border-border-default bg-bg-surface overflow-hidden">
+      <div className="hidden md:block relative rounded-lg border border-border-default bg-bg-surface overflow-hidden">
         <table className="w-full table-fixed text-left">
           <thead>
             <tr className="h-10 bg-bg-subtle border-b border-border-default">

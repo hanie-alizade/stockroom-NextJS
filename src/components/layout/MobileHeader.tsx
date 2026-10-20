@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { MenuIcon } from "@/components/icons";
 import { Sidebar } from "./Sidebar";
 
@@ -30,8 +30,25 @@ export function MobileHeader(): React.ReactElement {
             <MenuIcon className="size-5" />
           </button>
         </SheetTrigger>
-        <SheetContent side="left" showCloseButton={false} className="w-[280px] max-w-[280px] p-0">
-          <Sidebar />
+        <SheetContent
+          side="left"
+          showCloseButton={false}
+          className="w-[85vw] max-w-[320px] sm:max-w-[320px] p-0 bg-bg-surface border-r border-border-default flex flex-col h-full overflow-y-auto"
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>Navigation menu</SheetTitle>
+          </SheetHeader>
+          <div
+            className="flex h-full w-full flex-col"
+            onClick={(e) => {
+              const target = e.target as HTMLElement;
+              if (target.closest("a")) {
+                setIsOpen(false);
+              }
+            }}
+          >
+            <Sidebar className="w-full border-r-0" />
+          </div>
         </SheetContent>
       </Sheet>
 

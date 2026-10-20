@@ -11,14 +11,10 @@ import {
   queryKeys,
 } from "@/constants";
 import { AppError } from "@/domain";
-import { parseProductDetailParams } from "@/helpers";
+import { parseProductDetailParams, shouldSkipPrefetch } from "@/helpers";
 import { createRepository } from "@/server/repositories";
 import { getMeta } from "@/server/services/meta";
-import {
-  getProductDetail,
-  getProductMovements,
-  getStockHistory,
-} from "@/server/services/products";
+import { getProductDetail, getProductMovements, getStockHistory } from "@/server/services/products";
 import { getCurrentUser } from "@/server/session";
 
 export const metadata: Metadata = {
@@ -40,7 +36,7 @@ export default async function ProductDetailPage({
 
   const queryClient = new QueryClient();
 
-  if (resolvedSearchParams.fail !== "1") {
+  if (!shouldSkipPrefetch(resolvedSearchParams)) {
     const repo = createRepository();
     const user = await getCurrentUser();
 
@@ -53,6 +49,9 @@ export default async function ProductDetailPage({
       if (err instanceof AppError && err.code === ERROR_CODE.PRODUCT_NOT_FOUND) {
         notFound();
       }
+      // A failed prefetch is not dehydrated, so the client refetches and shows the real error state with retry.
+      // eslint-disable-next-line no-console -- Server-side prefetch logging
+      console.error("[prefetch:product-detail]", err);
     }
 
     const defaultMovementsQuery = {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { QueryClient, HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { ProductsView } from "@/components/products";
-import { parseProductListParams } from "@/helpers";
+import { parseProductListParams, shouldSkipPrefetch } from "@/helpers";
 import { queryKeys } from "@/constants";
 import { createRepository } from "@/server/repositories";
 import { listProducts } from "@/server/services/products";
@@ -25,23 +25,30 @@ export default async function ProductsPage({
 
   const queryClient = new QueryClient();
 
-  if (resolvedSearchParams.fail !== "1") {
+  if (!shouldSkipPrefetch(resolvedSearchParams)) {
     const repo = createRepository();
     const user = await getCurrentUser();
 
+    // A failed prefetch is not dehydrated, so the client refetches and shows the real error state with retry.
     await Promise.all([
       queryClient
         .query({
           queryKey: queryKeys.products.list(parsedParams),
           queryFn: () => listProducts(repo, parsedParams),
         })
-        .catch(() => { }),
+        .catch((error: unknown) => {
+          // eslint-disable-next-line no-console -- Server-side prefetch logging
+          console.error("[prefetch:products]", error);
+        }),
       queryClient
         .query({
           queryKey: queryKeys.meta.all,
           queryFn: () => getMeta(repo, user),
         })
-        .catch(() => { }),
+        .catch((error: unknown) => {
+          // eslint-disable-next-line no-console -- Server-side prefetch logging
+          console.error("[prefetch:meta]", error);
+        }),
     ]);
   }
 

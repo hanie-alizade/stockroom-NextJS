@@ -90,7 +90,12 @@ export function ImportWizard({ store, className }: ImportWizardProps): ReactElem
   };
 
   const handleCancel = (): void => {
-    router.push("/products");
+    if (state.step === "upload") {
+      router.push("/products");
+    } else {
+      commitMutation.reset();
+      dispatch({ type: "RESET", initialStoreId: store });
+    }
   };
 
   const handleBack = (): void => {
