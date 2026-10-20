@@ -161,7 +161,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
       >
         <TabsList
           variant="line"
-          className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0 overflow-x-auto"
+          className="border-border-default h-10 w-full justify-start gap-2xl rounded-none border-b p-0 overflow-x-auto overflow-y-hidden"
         >
           <TabsTrigger
             value={DETAIL_TAB.OVERVIEW}

@@ -15,14 +15,14 @@ export function AppShell({ children }: AppShellProps): React.ReactElement {
       </div>
 
       {/* Main content area */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden">
         {/* Mobile/tablet top bar - visible below lg */}
         <div className="lg:hidden">
           <MobileHeader />
         </div>
 
         {/* Page content */}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 min-w-0">{children}</main>
       </div>
     </div>
   );

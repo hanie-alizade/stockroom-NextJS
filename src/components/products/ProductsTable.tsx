@@ -131,7 +131,7 @@ export function ProductsTable({
       </div>
 
       {/* Mobile cards: hidden from md up */}
-      <div className={cn("md:hidden", showErrorWithOldData && "opacity-60")}>
+      <div className={cn("md:hidden p-lg", showErrorWithOldData && "opacity-60")}>
         {showLoading && (
           <div className="flex flex-col gap-3">
             {Array.from({ length: 6 }).map((_, i) => (

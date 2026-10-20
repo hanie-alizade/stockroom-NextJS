@@ -78,7 +78,7 @@ export function UserProfileCard(): React.ReactElement | null {
             Switch
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="max-w-[calc(100vw-32px)] sm:max-w-[280px]">
           {meta ? (
             meta.users.map((user) => {
               const isCurrent = user.id === currentUser.id;
