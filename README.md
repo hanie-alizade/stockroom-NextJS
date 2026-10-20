@@ -98,6 +98,10 @@ The list and the detail page are Server Components. They read the search params,
 
 Two details that matter: query keys are built only in `src/constants/queryKeys.ts` from the normalised URL params, so the server and the client cannot disagree; and if the prefetch fails (for example with `?fail=1`) the failed query is not dehydrated, so the client fetches on its own and shows the real error state with a retry button instead of pretending the data is empty.
 
+### Why `_rsc` requests appear when scrolling
+
+In Next.js App Router, `<Link>` components automatically prefetch route payloads in the background as they enter the browser viewport. When scrolling through tables or product cards containing links to detail pages, the browser sends lightweight Server Component payload requests (`?_rsc=...`) so navigating to product details feels instantaneous.
+
 ### Where permissions are checked, and why in both places
 
 On the server, which is the only real enforcement:
@@ -179,6 +183,9 @@ Deployed on Vercel from `main`. No environment variable is needed (the delay def
 - **Saving state in the dialog.** While the request runs the button shows a spinner and "Saving...", the fields are disabled and the dialog cannot be closed, so nobody loses the result. On an error the dialog stays open, keeps the typed values and shows the server message. On success a toast appears, the dialog closes and focus goes back to the button that opened it.
 - **Product not carried at the chosen store.** The detail page shows "This product is not carried at <Store>" with a "View in all stores" action instead of zeros that look like "out of stock".
 - **Summary cards ignore search and filters.** They follow the store scope only. Otherwise clicking "Low stock" would change the very number you clicked.
+- **"All stores" status rule.** Under "All stores", product status is computed from summed on-hand stock across all stores against summed reorder levels across all stores, rather than aggregating individual store statuses. Total products and total stock on hand under "All stores" are greater than or equal to any single store, while low stock and out-of-stock counts can be lower because stock in other stores offsets a local deficit (per brief specification).
+- **Cancel behavior in the import wizard.** On step 1 (Upload), clicking "Cancel" exits the wizard and navigates to the products list (`/products`). On steps 2 and beyond (Map columns, Review), "Cancel" clears the wizard state (file, mapping, validation results) and resets back to step 1, whereas "Back" navigates to the previous step while preserving file and mapping selections.
+- **Mobile filter sheet draft state.** The mobile filter sheet maintains an isolated draft state within a child form component. Filter selections are committed to the URL in a single router transition (`router.push`) only when the user taps "Done", resetting pagination to page 1. Closing or dismissing the sheet without tapping "Done" discards uncommitted changes, avoiding noisy intermediate refetches.
 
 More small decisions (selection, URL state, dates and time zone, supplier is `null` for imported products, product id is the SKU) are in [docs/DECISIONS.md](docs/DECISIONS.md).
 
@@ -212,7 +219,6 @@ I used AI every day, in three ways.
 Nothing from priority 1 or 2 of the brief. These are the gaps that remain, and why:
 
 - **The row actions button (`···`) in the products table** renders but opens no menu. The design has one item ("Adjust stock"), and the detail page already covers it, so I left it unwired rather than ship a half-done menu. The `···` button next to "Adjust stock" on the detail page is not built because the design defines no items for it.
-- **Permission before validation on adjustments.** The body is validated before the permission is checked, so a Staff request with an invalid write-off body (for example no reason) gets 422 instead of 403. A valid Staff write-off or transfer gets 403 as the brief asks. The fix is known: read only `type` first, check the permission, then validate the rest.
 - **React component tests.** There are no React Testing Library tests for components. Domain, helpers, hooks, services, routes and two end-to-end journeys are covered.
 - **Keyboard focus on the chart.** The tooltip works on hover. I did not verify keyboard focus on the chart.
 - **Browsers.** Playwright runs Chromium only.
@@ -220,11 +226,10 @@ Nothing from priority 1 or 2 of the brief. These are the gaps that remain, and w
 
 ## What I would do next
 
-1. Close the permission-before-validation gap and add a route test for it.
-2. Wire the row actions menu to "Adjust stock", so a product can be adjusted from the list.
-3. Add React Testing Library tests, starting with the validation messages of the adjust dialog.
-4. Check the chart with the keyboard, and walk through every screen again at 375 px.
-5. Move `useDebouncedCallback` from `src/lib/client` to `src/hooks` (the only file that breaks the folder rules).
+1. Wire the row actions menu to "Adjust stock", so a product can be adjusted from the list.
+2. Add React Testing Library tests, starting with the validation messages of the adjust dialog.
+3. Check the chart with the keyboard, and walk through every screen again at 375 px.
+4. Move `useDebouncedCallback` from `src/lib/client` to `src/hooks` (the only file that breaks the folder rules).
 
 ## Three things I would change in a second version
 

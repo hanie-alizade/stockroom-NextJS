@@ -97,6 +97,46 @@ describe("POST /api/products/:id/adjustments", () => {
     expect(Array.isArray(data.fieldErrors)).toBe(true);
   });
 
+  it("returns 403 FORBIDDEN when staff attempts write_off with NO note", async () => {
+    vi.mocked(cookies).mockResolvedValue(staffCookies);
+    const req = createReq("KL-1042", { type: "write_off", storeId: "mont-kiara", quantity: 1 }, "staff-write-off-no-note");
+    const response = await POST(req, { params: Promise.resolve({ id: "KL-1042" }) });
+    const data = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(data.error).toBe("FORBIDDEN");
+  });
+
+  it("returns 403 FORBIDDEN when staff attempts transfer with same fromStoreId and toStoreId", async () => {
+    vi.mocked(cookies).mockResolvedValue(staffCookies);
+    const req = createReq("KL-1042", { type: "transfer", fromStoreId: "mont-kiara", toStoreId: "mont-kiara", quantity: 1 }, "staff-transfer-same-store");
+    const response = await POST(req, { params: Promise.resolve({ id: "KL-1042" }) });
+    const data = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(data.error).toBe("FORBIDDEN");
+  });
+
+  it("returns 403 FORBIDDEN when staff attempts write_off with negative quantity", async () => {
+    vi.mocked(cookies).mockResolvedValue(staffCookies);
+    const req = createReq("KL-1042", { type: "write_off", storeId: "mont-kiara", quantity: -5, note: "Damaged packaging" }, "staff-write-off-neg-qty");
+    const response = await POST(req, { params: Promise.resolve({ id: "KL-1042" }) });
+    const data = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(data.error).toBe("FORBIDDEN");
+  });
+
+  it("returns 422 VALIDATION_ERROR when manager submits unknown adjustment type", async () => {
+    vi.mocked(cookies).mockResolvedValue(managerCookies);
+    const req = createReq("KL-1042", { type: "unknown_type", storeId: "mont-kiara", quantity: 1 }, "manager-unknown-type");
+    const response = await POST(req, { params: Promise.resolve({ id: "KL-1042" }) });
+    const data = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(data.error).toBe("VALIDATION_ERROR");
+  });
+
   it("allows staff to receive and staff to sell returning 201", async () => {
     vi.mocked(cookies).mockResolvedValue(staffCookies);
 
