@@ -8,6 +8,7 @@ import {
   PRODUCT_SORT_KEY,
   SORT_DIRECTION,
   STOCK_STATUS,
+  DEV_PARAM,
 } from "@/constants";
 import type {
   PageSize,
@@ -84,8 +85,8 @@ export function parseProductListParams(
   const pageSizeRaw = Number(getParam(source, "pageSize"));
   const pageSize = normalizePageSize(pageSizeRaw);
 
-  const failRaw = getParam(source, "fail");
-  const fail = failRaw === "1" ? "1" : undefined;
+  const failRaw = getParam(source, DEV_PARAM.FAIL);
+  const fail = failRaw === DEV_PARAM.VALUE ? DEV_PARAM.VALUE : undefined;
 
   return {
     store,
@@ -125,8 +126,8 @@ export function buildProductListUrl(pathname: string, query: ProductListQuery): 
   if (query.pageSize && query.pageSize !== DEFAULT_PAGE_SIZE) {
     params.set("pageSize", String(query.pageSize));
   }
-  if (query.fail === "1") {
-    params.set("fail", "1");
+  if (query.fail === DEV_PARAM.VALUE) {
+    params.set(DEV_PARAM.FAIL, DEV_PARAM.VALUE);
   }
 
   const queryString = params.toString();
@@ -139,12 +140,19 @@ export function setProductListSearch(
   current: ProductListQuery,
   q?: string,
 ): void {
+  const trimmed = q?.trim() || undefined;
   const next: ProductListQuery = {
     ...current,
-    q: q?.trim() || undefined,
+    q: trimmed,
     page: DEFAULT_PAGE,
   };
-  router.replace(buildProductListUrl(pathname, next));
+  const url = buildProductListUrl(pathname, next);
+  const isFirstSearchEntry = !current.q && Boolean(trimmed);
+  if (isFirstSearchEntry || !trimmed) {
+    router.push(url);
+  } else {
+    router.replace(url);
+  }
 }
 
 export function setProductListCategory(
@@ -253,6 +261,7 @@ export function toggleProductListSort(
     ...current,
     sort: nextSort,
     dir: nextDir,
+    page: DEFAULT_PAGE,
   };
   router.push(buildProductListUrl(pathname, next));
 }
@@ -268,6 +277,7 @@ export function setProductListSort(
     ...current,
     sort,
     dir: sort ? (dir ?? SORT_DIRECTION.DESC) : undefined,
+    page: DEFAULT_PAGE,
   };
   router.push(buildProductListUrl(pathname, next));
 }

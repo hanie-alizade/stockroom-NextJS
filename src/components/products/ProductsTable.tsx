@@ -22,6 +22,7 @@ interface ProductsTableProps {
   items: ProductListItem[];
   isLoading: boolean;
   isFetching?: boolean;
+  isPlaceholderData?: boolean;
   isError: boolean;
   error?: Error | null;
   store: StoreScope;
@@ -38,12 +39,14 @@ interface ProductsTableProps {
   // Filters
   hasFilters: boolean;
   onClearFilters: () => void;
+  onAdjust?: (item: ProductListItem) => void;
 }
 
 export function ProductsTable({
   items,
   isLoading,
   isFetching,
+  isPlaceholderData,
   isError,
   error,
   store,
@@ -58,6 +61,7 @@ export function ProductsTable({
   onTogglePage,
   hasFilters,
   onClearFilters,
+  onAdjust,
 }: ProductsTableProps): React.ReactElement {
   const router = useRouter();
   const now = useMemo(() => new Date(), []);
@@ -70,11 +74,15 @@ export function ProductsTable({
   const hasOldData = items.length > 0;
   const showErrorWithOldData = isError && hasOldData;
   const showErrorEmpty = isError && !hasOldData;
-  const showLoading = isLoading && !hasOldData;
-  const showEmpty = !isLoading && !isError && items.length === 0;
+  const showSkeleton = isLoading || Boolean(isPlaceholderData);
+  const showEmpty = !showSkeleton && !isError && items.length === 0;
 
   return (
     <div className="flex flex-col">
+      <div className="sr-only" role="status" aria-live="polite">
+        {showSkeleton ? "Loading products" : ""}
+      </div>
+
       {showErrorWithOldData && (
         <QueryErrorState
           error={error}
@@ -88,7 +96,7 @@ export function ProductsTable({
       {/* Desktop & tablet table: hidden below md */}
       <div className="hidden md:block overflow-x-auto">
         <table
-          aria-busy={isFetching ?? isLoading}
+          aria-busy={showSkeleton ? "true" : undefined}
           className="w-full min-w-[900px] border-collapse text-left"
         >
           <ProductsTableHead
@@ -101,7 +109,7 @@ export function ProductsTable({
           />
 
           <tbody className={showErrorWithOldData ? "opacity-60" : undefined}>
-            {showLoading && <ProductsTableSkeleton />}
+            {showSkeleton && <ProductsTableSkeleton />}
 
             {showEmpty && (
               <tr>
@@ -114,7 +122,7 @@ export function ProductsTable({
               </tr>
             )}
 
-            {!showLoading &&
+            {!showSkeleton &&
               items.map((item) => (
                 <ProductsTableRow
                   key={item.id}
@@ -124,6 +132,7 @@ export function ProductsTable({
                   now={now}
                   onSelect={onToggleSelect}
                   onRowClick={handleRowClick}
+                  onAdjust={onAdjust}
                 />
               ))}
           </tbody>
@@ -132,11 +141,12 @@ export function ProductsTable({
 
       {/* Mobile cards: hidden from md up */}
       <div className={cn("md:hidden p-lg", showErrorWithOldData && "opacity-60")}>
-        {showLoading && (
-          <div className="flex flex-col gap-3">
+        {showSkeleton && (
+          <div aria-busy="true" className="flex flex-col gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
+                aria-hidden="true"
                 className="border-border-default bg-bg-surface flex flex-col gap-3 rounded-lg border p-4 animate-pulse"
               >
                 <div className="flex items-center justify-between">
@@ -163,13 +173,14 @@ export function ProductsTable({
           />
         )}
 
-        {!showLoading && (
+        {!showSkeleton && (
           <ProductCardList
             items={items}
             isSelected={isSelected}
             storeParam={storeParam}
             onSelect={onToggleSelect}
             onCardClick={handleRowClick}
+            onAdjust={onAdjust}
           />
         )}
       </div>

@@ -13,6 +13,7 @@ import { AdjustStockDialog } from "@/components/adjust";
 import { ApiError } from "@/api/axiosConfig";
 import type { Adjustment } from "@/types";
 import { ProductDetailHeader } from "./ProductDetailHeader";
+import { ProductDetailSkeleton } from "./ProductDetailSkeleton";
 import { StockChart } from "./StockChart";
 import { ProductDetailsCard } from "./ProductDetailsCard";
 import { StockByStoreTable } from "./StockByStoreTable";
@@ -116,12 +117,7 @@ export function ProductDetailView({ productId }: ProductDetailViewProps): ReactE
       );
     }
 
-    return (
-      <PageContainer className="animate-pulse">
-        <div className="h-4 w-48 bg-bg-muted rounded" />
-        <div className="h-14 w-72 bg-bg-muted rounded" />
-      </PageContainer>
-    );
+    return <ProductDetailSkeleton tab={query.tab} />;
   }
 
   const isMovementsTabActive = query.tab === DETAIL_TAB.MOVEMENTS;

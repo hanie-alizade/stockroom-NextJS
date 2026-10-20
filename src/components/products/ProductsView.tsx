@@ -1,16 +1,31 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
+  useIdempotencyKey,
   useProductListUrlState,
   useProductSelection,
   useProductsExport,
 } from "@/hooks";
-import { useQueryMeta, useQueryProductList } from "@/apiHooks";
+import {
+  useMutationAdjustment,
+  useQueryMeta,
+  useQueryProductDetail,
+  useQueryProductList,
+} from "@/apiHooks";
 import { Banner, Pagination } from "@/components/common";
 import { PageContainer } from "@/components/layout";
-import { buildCsv, downloadCsv, cn, productCsvColumns, normalizePageSize } from "@/helpers";
+import { AdjustStockDialog } from "@/components/adjust";
+import {
+  buildCsv,
+  downloadCsv,
+  cn,
+  productCsvColumns,
+  normalizePageSize,
+  getErrorInfo,
+  type AdjustStoreOption,
+} from "@/helpers";
 import {
   ALL_STORES,
   DEFAULT_PAGE,
@@ -26,7 +41,9 @@ import { ProductsSelectionToolbar } from "./ProductsSelectionToolbar";
 import { ProductsChips } from "./ProductsChips";
 import { ProductsTable } from "./ProductsTable";
 import type {
+  Adjustment,
   PageSize,
+  ProductListItem,
   ProductListSummary,
 } from "@/types";
 
@@ -53,6 +70,7 @@ export function ProductsView(): React.ReactElement {
     data: productsData,
     isLoading,
     isFetching,
+    isPlaceholderData,
     isError,
     error,
     refetch,
@@ -92,6 +110,72 @@ export function ProductsView(): React.ReactElement {
     status: query.status,
     userId: currentUser.id,
   });
+
+  const [adjustProduct, setAdjustProduct] = useState<ProductListItem | null>(null);
+  const [isAdjustOpen, setIsAdjustOpen] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const isSubmittingRef = useRef(false);
+
+  const { data: detailData, refetch: refetchDetail } = useQueryProductDetail(
+    adjustProduct?.id ?? "",
+  );
+
+  const adjustMutation = useMutationAdjustment(adjustProduct?.id ?? "");
+  const idempotencyKey = useIdempotencyKey();
+
+  const stockByStore = detailData?.stockByStore;
+  const metaStores = meta?.stores;
+
+  const adjustStores: AdjustStoreOption[] = useMemo(() => {
+    if (!stockByStore) {
+      if (adjustProduct && store !== ALL_STORES) {
+        return [
+          {
+            storeId: store,
+            storeName: storeName ?? store,
+            onHand: adjustProduct.onHand,
+            reorderLevel: adjustProduct.reorderLevel,
+          },
+        ];
+      }
+      return [];
+    }
+    return stockByStore.map((item) => ({
+      storeId: item.storeId,
+      storeName: metaStores?.find((s) => s.id === item.storeId)?.name ?? item.storeId,
+      onHand: item.onHand,
+      reorderLevel: item.reorderLevel,
+    }));
+  }, [stockByStore, adjustProduct, store, storeName, metaStores]);
+
+  const handleAdjust = useCallback((item: ProductListItem) => {
+    setAdjustProduct(item);
+    setServerError(null);
+    setIsAdjustOpen(true);
+  }, []);
+
+  const handleSubmitAdjustment = useCallback(
+    async (payload: Adjustment) => {
+      if (!adjustProduct || isSubmittingRef.current || adjustMutation.isPending) return;
+      isSubmittingRef.current = true;
+      setServerError(null);
+      const key = idempotencyKey.getKey(payload);
+
+      try {
+        await adjustMutation.mutateAsync({ payload, idempotencyKey: key });
+        idempotencyKey.onSuccess();
+        setIsAdjustOpen(false);
+        setAdjustProduct(null);
+      } catch (err: unknown) {
+        idempotencyKey.onError(err);
+        setServerError(getErrorInfo(err).message);
+        void refetchDetail();
+      } finally {
+        isSubmittingRef.current = false;
+      }
+    },
+    [adjustMutation, adjustProduct, idempotencyKey, refetchDetail],
+  );
 
   const handleExportSelected = useCallback(() => {
     const sort = query.sort ?? "updatedAt";
@@ -168,7 +252,7 @@ export function ProductsView(): React.ReactElement {
       <ProductsSummary
         summary={summary}
         store={store}
-        isLoading={isLoading && !productsData}
+        isLoading={isLoading || Boolean(isPlaceholderData)}
         categoriesCount={meta?.categories.length}
         currentStatus={query.status}
         onStatusChange={setStatus}
@@ -221,6 +305,7 @@ export function ProductsView(): React.ReactElement {
           items={items}
           isLoading={isLoading}
           isFetching={isFetching}
+          isPlaceholderData={isPlaceholderData}
           isError={isError}
           error={error}
           store={store}
@@ -237,6 +322,7 @@ export function ProductsView(): React.ReactElement {
           onTogglePage={() => togglePage(items)}
           hasFilters={hasFilters}
           onClearFilters={clearFilters}
+          onAdjust={handleAdjust}
         />
 
         {!showErrorEmpty && (
@@ -249,6 +335,30 @@ export function ProductsView(): React.ReactElement {
           />
         )}
       </div>
+
+      {adjustProduct && (
+        <AdjustStockDialog
+          open={isAdjustOpen}
+          onOpenChange={(open) => {
+            setIsAdjustOpen(open);
+            if (!open) {
+              setServerError(null);
+              setAdjustProduct(null);
+            }
+          }}
+          product={{
+            id: adjustProduct.id,
+            sku: adjustProduct.sku,
+            name: adjustProduct.name,
+          }}
+          stores={adjustStores}
+          initialStoreId={store !== ALL_STORES ? store : undefined}
+          user={currentUser}
+          isSaving={adjustMutation.isPending}
+          serverError={serverError}
+          onSubmit={handleSubmitAdjustment}
+        />
+      )}
     </PageContainer>
   );
 }

@@ -7,6 +7,7 @@ import {
   PAGE_SIZE_OPTIONS,
   PERIOD,
   STORE_IDS,
+  DEV_PARAM,
 } from "@/constants";
 import type { DetailTab } from "@/constants";
 import type {
@@ -83,8 +84,8 @@ export function parseProductDetailParams(
   const pageSizeRaw = Number(getParam(source, "pageSize"));
   const pageSize = normalizePageSize(pageSizeRaw);
 
-  const failRaw = getParam(source, "fail");
-  const fail = failRaw === "1" ? "1" : undefined;
+  const failRaw = getParam(source, DEV_PARAM.FAIL);
+  const fail = failRaw === DEV_PARAM.VALUE ? DEV_PARAM.VALUE : undefined;
 
   return {
     store,
@@ -118,8 +119,8 @@ export function buildProductDetailUrl(pathname: string, query: ProductDetailUrlQ
   if (query.pageSize && query.pageSize !== DEFAULT_PAGE_SIZE) {
     params.set("pageSize", String(query.pageSize));
   }
-  if (query.fail === "1") {
-    params.set("fail", "1");
+  if (query.fail === DEV_PARAM.VALUE) {
+    params.set(DEV_PARAM.FAIL, DEV_PARAM.VALUE);
   }
 
   const queryString = params.toString();

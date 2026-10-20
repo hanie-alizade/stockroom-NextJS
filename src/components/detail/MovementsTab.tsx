@@ -44,14 +44,15 @@ export function MovementsTab({
   onPageSizeChange,
   onAdjust,
 }: MovementsTabProps): ReactElement {
-  const { data, isLoading, isFetching, isError, error, refetch } = useQueryProductMovements(productId, {
-    store,
-    type,
-    period,
-    page,
-    pageSize,
-    fail,
-  });
+  const { data, isLoading, isFetching, isPlaceholderData, isError, error, refetch } =
+    useQueryProductMovements(productId, {
+      store,
+      type,
+      period,
+      page,
+      pageSize,
+      fail,
+    });
 
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -69,7 +70,8 @@ export function MovementsTab({
   const hasOldData = items.length > 0;
   const showErrorWithOldData = isError && hasOldData;
   const showErrorEmpty = isError && !hasOldData;
-  const showEmpty = !isLoading && !isError && items.length === 0;
+  const showSkeleton = isLoading || isPlaceholderData;
+  const showEmpty = !showSkeleton && !isError && items.length === 0;
 
   let content: ReactElement;
 
@@ -82,6 +84,25 @@ export function MovementsTab({
         variant="section"
         title="We couldn't load movements"
       />
+    );
+  } else if (showSkeleton) {
+    content = (
+      <div>
+        <MovementsTable
+          items={items}
+          stores={stores}
+          isLoading={true}
+          isFetching={isFetching}
+        />
+
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+        />
+      </div>
     );
   } else if (showEmpty) {
     content = (
@@ -111,7 +132,7 @@ export function MovementsTab({
         <MovementsTable
           items={items}
           stores={stores}
-          isLoading={isLoading && !hasOldData}
+          isLoading={false}
           isFetching={isFetching}
         />
 
