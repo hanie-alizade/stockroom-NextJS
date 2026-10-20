@@ -88,7 +88,7 @@ Delivered in this phase:
 ### Phase 7: Deploy to Vercel (deployed, see README)
 
 - Deployed to Vercel at https://stockroom-vert-one.vercel.app as documented in `README.md`.
-- Environment variables configured per `docs/DEPLOYMENT.md`.
+- Environment variables documented in README.
 - Documented in README: in-memory state limitation across serverless instances.
 
 ### Phase 8: Postman collection (cut)
@@ -106,8 +106,8 @@ Most priority-3 items were built alongside the screens they belong to:
 
 Gaps acknowledged in README under "What I cut":
 
-- Row actions menu (`···`): button renders in table rows but has no menu (omitted per brief priority).
-- React Testing Library component tests: omitted in favor of unit, integration, and E2E coverage.
+- Detail page `···` button: button next to "Adjust stock" has no actions defined in Figma, so it is omitted (the table row actions menu IS built and opens Adjust stock).
+- React Testing Library component tests: 3 component test files exist (`AdjustStockDialog.test.tsx`, `ProductsFiltersSheet.test.tsx`, `ProductsTable.test.tsx`, 21 tests total). Other areas rely on unit, hook, service, route, and end-to-end coverage.
 
 ## Cut order if time runs short (phases 6 to 9)
 

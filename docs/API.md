@@ -160,9 +160,7 @@ Rules (the server enforces all of them):
 - Transfer: `fromStoreId` must differ from `toStoreId`, else 422 `VALIDATION_ERROR` with a `SAME_STORE` field error.
 - Transfer creates two movements (`transfer_out`, `transfer_in`) with the same `transferId`, in one transaction.
 
-Order of checks (matters when several things are wrong at once): 1) body is valid JSON and matches the Zod schema (422 on failure); 2) `Idempotency-Key` present (400); 3) role may do this type (403); 4) product exists (404); 5) quantity, note and same-store rules; 6) inside the transaction: replay check, store carries the product, enough stock.
-
-Known gap: step 1 runs before step 3, so a Staff request with an invalid write-off body (for example no reason) gets 422, not 403. A valid Staff write-off or transfer gets 403. Moving the type-based permission check before the field validation would close this (see `docs/DECISIONS.md`).
+Order of checks (matters when several things are wrong at once): 1) `Idempotency-Key` present (400 `IDEMPOTENCY_KEY_REQUIRED`); 2) body is parseable JSON and contains valid `type` (422 `VALIDATION_ERROR`); 3) role may do this type (403 `FORBIDDEN` for Staff on write-off or transfer, even if other body fields are missing or invalid); 4) full body matches `adjustmentSchema` (422 `VALIDATION_ERROR`); 5) product exists (404 `PRODUCT_NOT_FOUND`); 6) quantity, note and same-store rules; 7) inside the transaction: replay check, store carries the product, enough stock.
 
 Response 201:
 
@@ -263,4 +261,4 @@ Only available when `NODE_ENV` is `development` or `E2E=1`; otherwise 404. Resto
 
 ## Calling the API without the UI
 
-The cookie decides the role. With curl: `-H "Cookie: stockroom_user=aina-rahman"` for Manager, `faiz-hakim` for Staff. A Postman collection is planned (Phase 8 in `docs/PLAN.md`).
+The cookie decides the role. With curl: `-H "Cookie: stockroom_user=aina-rahman"` for Manager, `faiz-hakim` for Staff. (A Postman collection was originally planned in Phase 8, but cut in favor of automated route tests and curl examples).

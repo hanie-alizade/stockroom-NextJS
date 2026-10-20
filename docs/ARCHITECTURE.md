@@ -66,8 +66,7 @@ src/
   types/                     shared types
   domain/                    pure business rules
   helpers/                   pure helpers
-  hooks/                     client hooks (adjust form, idempotency key, import wizard, URL state, selection, export, now)
-  lib/client/                useDebouncedCallback (see Known deviations)
+  hooks/                     client hooks (adjust form, idempotency key, import wizard, URL state, selection, export, now, debounced callback)
   providers/                 Providers (QueryClient, toasts on errors), SessionProvider
   server/
     http/                    withApi, parseRequest (parseJsonBody, parseQuery), readJsonBody
@@ -87,9 +86,7 @@ Outside src:
 
 Known deviations from `docs/CONVENTIONS.md` (decide before the final review, or list them in the README):
 
-- `src/lib/client/useDebouncedCallback.ts` lives in a `lib` folder that the conventions do not have. Move it to `src/hooks`.
 - `session.ts` and `guards.ts` are single files in `src/server`, not folders.
-- The row actions button (`···`) in the products table renders but has no menu or handler yet.
 
 ## Shared domain rules (pure functions)
 
@@ -121,7 +118,7 @@ Having one wrapper means the error format, delay and fail switch cannot drift be
 3. `products/[id]/page.tsx` fetches the detail (a missing product calls `notFound()`), and prefetches the first movements page and the stock history.
 4. `import/page.tsx` checks the permission first (`requirePermissionOrRedirect`), then prefetches meta.
 5. Client components call `useQuery` with the same key, so they render instantly from the hydrated cache and refetch by normal rules.
-6. If the URL has `?fail=1`, the page skips the prefetch. The client then fetches on its own and shows the real error state with a retry button. A failed prefetch is never dehydrated.
+6. If the URL has `?fail=1` or `?slow=1`, the page skips the prefetch. The client then fetches on its own and shows the real error or loading state. A failed prefetch is never dehydrated.
 7. Query keys are built only in `src/constants/queryKeys.ts` from the normalized URL params, so server and client always agree.
 
 QueryClient defaults (in `Providers`): `staleTime` 30 s; a 403 from any query shows a toast and calls `router.refresh()`; mutation errors show a toast with the server message unless the mutation sets `meta.silent`.

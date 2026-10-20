@@ -6,7 +6,7 @@ How the tests are organised, what they cover, how to run them, and what is still
 
 | Command              | What it runs                                                             |
 | -------------------- | ------------------------------------------------------------------------ |
-| `npm test`           | Vitest: unit, route handler and hook tests (about 300 tests, 33 files)   |
+| `npm test`           | Vitest: unit, route handler, hook and component tests (376 tests, 38 files) |
 | `npm test -- <path>` | one test file                                                            |
 | `npm run e2e`        | Playwright: builds the app, starts it with `E2E=1`, runs `e2e/*.spec.ts` |
 | `npm run check`      | typecheck, lint, repo rules and `npm test` (no e2e)                      |
@@ -28,7 +28,7 @@ Both suites run with one command and exit by themselves.
 | Route handlers      | `src/app/api/**/__tests__/route.test.ts`            | call the exported handler with a real `Request`, cookie mocked       |
 | End to end          | `e2e/*.spec.ts` (Phase 6)                           | Playwright, Chromium, real built app                                 |
 
-Not covered by any test yet: React components (no Testing Library component tests, only the hook test uses the setup file).
+Component tests: 3 component test files exist (`src/components/adjust/__tests__/AdjustStockDialog.test.tsx`, `src/components/products/__tests__/ProductsFiltersSheet.test.tsx`, `src/components/products/__tests__/ProductsTable.test.tsx`, 21 tests total), covering adjust stock dialog validation and role locks, mobile filter sheet interactions, and table loading skeletons, aria-busy/aria-hidden, background refetch, and selection preservation. Other components rely on unit, hook, service, route, and end-to-end coverage.
 
 ## 3. Test seams
 
@@ -38,7 +38,7 @@ Not covered by any test yet: React components (no Testing Library component test
 - **Repository mock.** `mockRepository()` in `tests/helpers` for service tests that must not touch real data.
 - **`server-only` stub.** Vitest aliases `server-only` to `tests/stubs/server-only.ts`.
 - **Seed rebasing is off in tests.** When `NODE_ENV === "test"` the seed movements keep their original dates, so tests do not depend on today's date.
-- **Playwright config.** `playwright.config.ts`: one worker, not parallel, Chromium only, `webServer.command` is `npm run build && npm run start`, `reuseExistingServer: false` (port 3000 must be free).
+- **Playwright config.** `playwright.config.ts`: one worker, not parallel, Chromium only, `webServer.command` is `npm run build && npm run start`, `reuseExistingServer: true`. If a dev server (`npm run dev`) is already running on port 3000, Playwright reuses it instead of building and starting a dedicated production server. Note that reusing an active dev server means `SIMULATED_LATENCY_MS` (500 ms) and `E2E=1` (required for `POST /api/test/reset`) are not the dedicated Playwright environment settings; stopping `npm run dev` first is recommended so Playwright spins up a dedicated production build with `SIMULATED_LATENCY_MS=0` and `E2E=1`.
 
 ## 4. Fixtures
 
@@ -60,19 +60,19 @@ If the seed generator changes, these numbers change. Re-run `npm test` and updat
 | Unit tests: cannot go below zero                                            | done (`canRemoveStock`, `planDirectAdjustment`, `planTransfer`, exact stock allowed)                                                                            |
 | Unit tests: transfer totals                                                 | done (`planTransfer`: two movements sum to 0, same `transferId`, `balanceAfter`; same store rejected)                                                           |
 | Route tests: Staff 403 for write-off                                        | done (adjustments route test)                                                                                                                                   |
-| Route tests: Staff 403 for transfer                                         | service level only (`createAdjustment.test.ts`). Add a route-level test                                                                                         |
+| Route tests: Staff 403 for transfer                                         | done (service level in `createAdjustment.test.ts` and route level in adjustments `route.test.ts`)                                                               |
 | Route tests: Staff 403 for import                                           | done (validate and commit in `imports/__tests__/route.test.ts`)                                                                                                 |
-| Route tests: oversell returns the error code                                | service level only (`INSUFFICIENT_STOCK`, 409). Add a route-level test                                                                                          |
+| Route tests: oversell returns the error code                                | done (service level in `createAdjustment.test.ts` and route level in adjustments `route.test.ts` for sell and transfer, returning 409 `INSUFFICIENT_STOCK`)     |
 | CSV row validation, at least five kinds of problem                          | done (`importValidation.test.ts`: missing field, invalid SKU, name too long, invalid quantity, invalid unit cost, unknown category, duplicate SKU, error order) |
 | CSV sample file counts                                                      | done (`importsService.test.ts`: 63 total, 55 valid, 8 invalid, 15 create, 40 update)                                                                            |
-| Playwright: Manager filters, opens a product, transfers, both stores change | Phase 6                                                                                                                                                         |
-| Playwright: Write-off and Transfer locked for Staff                         | Phase 6                                                                                                                                                         |
+| Playwright: Manager filters, opens a product, transfers, both stores change | done (`e2e/manager-transfer.spec.ts`)                                                                                                                           |
+| Playwright: Write-off and Transfer locked for Staff                         | done (`e2e/staff-locked.spec.ts`)                                                                                                                               |
 
 Extra tests that exist beyond the brief: idempotent replay and key reuse (service), transfer rollback when the destination does not carry the product, import commit rollback and replay, seed integrity, `withApi` behavior, session cookie, date formatting in a fixed time zone, money parsing without floats.
 
-### Route-level gaps to close (Phase 6)
+### Route-level gaps closed (Phase 6)
 
-Add to `src/app/api/products/[id]/adjustments/__tests__/route.test.ts`, using `KL-1042`:
+Covered in `src/app/api/products/[id]/adjustments/__tests__/route.test.ts`, using `KL-1042`:
 
 - Staff transfer returns 403 `FORBIDDEN` with the unified body.
 - Staff receive and sell return 201.
@@ -84,7 +84,7 @@ Add to `src/app/api/products/[id]/adjustments/__tests__/route.test.ts`, using `K
 
 ## 6. Playwright plan (Phase 6)
 
-Files in `e2e/`, names in camelCase (`managerTransfer.spec.ts`, `staffLocked.spec.ts`) and a small `helpers.ts`.
+Files in `e2e/`, names in kebab-case (`manager-transfer.spec.ts`, `staff-locked.spec.ts`) and a small `helpers.ts`.
 
 Helpers:
 
