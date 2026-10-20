@@ -56,10 +56,22 @@ export function AdjustStockDialog({
 
   const form = useAdjustForm({ stores, initialStoreId, isOpen: open, onSubmit });
 
+  const fromStoreOptions = useMemo(
+    () => stores.filter((s) => s.storeId !== form.toStoreId),
+    [stores, form.toStoreId],
+  );
+
   const toStoreOptions = useMemo(
     () => stores.filter((s) => s.storeId !== form.fromStoreId),
     [stores, form.fromStoreId],
   );
+
+  const selectedFromStore = useMemo(
+    () => stores.find((s) => s.storeId === form.fromStoreId),
+    [stores, form.fromStoreId],
+  );
+  const isFromStoreOutOfStock =
+    form.type === ADJUSTMENT_TYPE.TRANSFER && selectedFromStore?.onHand === 0;
 
   const previewRows = useMemo(
     () =>
@@ -127,12 +139,12 @@ export function AdjustStockDialog({
                 onBlur={() => form.markTouched("store")}
               />
             ) : (
-              <div className="grid grid-cols-1 items-end gap-x-[10px] gap-y-sm sm:grid-cols-[1fr_24px_1fr] sm:gap-y-0">
+              <div className="grid grid-cols-1 items-start gap-x-[10px] gap-y-sm sm:grid-cols-[1fr_24px_1fr] sm:gap-y-0">
                 <StoreSelect
                   id="adjust-from-store"
                   label="From"
                   value={form.fromStoreId ?? ""}
-                  stores={stores}
+                  stores={fromStoreOptions}
                   disabled={isSaving}
                   error={form.errors.from}
                   touched={form.touched.from}
@@ -142,9 +154,9 @@ export function AdjustStockDialog({
                 <button
                   type="button"
                   aria-label="Swap stores"
-                  disabled={isSaving}
+                  disabled={isSaving || !form.fromStoreId || !form.toStoreId}
                   onClick={form.swapStores}
-                  className="my-1 flex size-6 cursor-pointer items-center justify-center justify-self-center rounded-md text-text-tertiary transition-colors hover:bg-bg-subtle disabled:pointer-events-none disabled:opacity-50 sm:my-0 sm:mb-2 sm:rotate-0 sm:justify-self-auto rotate-90"
+                  className="my-1 flex size-6 cursor-pointer items-center justify-center justify-self-center rounded-md text-text-tertiary transition-colors hover:bg-bg-subtle disabled:pointer-events-none disabled:opacity-50 sm:my-0 sm:mt-[32px] sm:rotate-0 sm:justify-self-auto rotate-90"
                 >
                   <TransferIcon className="size-4" />
                 </button>
@@ -165,8 +177,8 @@ export function AdjustStockDialog({
             <QuantityField
               value={form.quantity}
               error={form.errors.quantity}
-              touched={form.touched.quantity}
-              disabled={isSaving}
+              touched={form.touched.quantity || isFromStoreOutOfStock}
+              disabled={isSaving || isFromStoreOutOfStock}
               onChange={form.setQuantity}
               onBlur={() => form.markTouched("quantity")}
             />
@@ -211,7 +223,7 @@ export function AdjustStockDialog({
               <button
                 type="submit"
                 disabled={!form.isValid || isSaving}
-                className="inline-flex h-10 cursor-pointer items-center justify-center gap-xs rounded-md bg-accent-default px-xl text-label text-text-on-accent transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-accent-disabled"
+                className="inline-flex h-10 max-w-full cursor-pointer items-center justify-center gap-xs rounded-md bg-accent-default px-xl text-label text-text-on-accent transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-accent-disabled"
               >
                 {isSaving ? (
                   <>
@@ -219,7 +231,7 @@ export function AdjustStockDialog({
                     <span>Saving...</span>
                   </>
                 ) : (
-                  submitLabel
+                  <span className="truncate">{submitLabel}</span>
                 )}
               </button>
             </div>

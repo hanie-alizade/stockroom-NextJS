@@ -66,13 +66,14 @@ export function AdjustTypeSelector({
                         "text-text-disabled flex h-8 min-w-0 cursor-not-allowed items-center justify-center gap-xs rounded-md px-1 text-label select-none",
                       )}
                     >
-                      <LockIcon className="size-3.5 shrink-0" />
-                      <span className="truncate">{label}</span>
+                      <LockIcon className="size-3.5 shrink-0 text-text-disabled" />
+                      <span className="truncate text-text-disabled">{label}</span>
                     </button>
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
                     align="end"
+                    sideOffset={8}
                     hideArrow
                     className="bg-bg-overlay text-text-on-accent text-caption shadow-popover whitespace-nowrap rounded-md border-0 px-md py-sm"
                   >
@@ -94,9 +95,9 @@ export function AdjustTypeSelector({
               onClick={() => !disabled && onTypeChange(t)}
               className={cn(
                 "flex h-8 min-w-0 cursor-pointer items-center justify-center rounded-md px-1 text-label transition-all select-none",
-                isSelected
-                  ? "bg-bg-surface text-text-primary shadow-card"
-                  : "text-text-secondary hover:text-text-primary",
+                isSelected && "bg-bg-surface text-text-primary shadow-card",
+                !isSelected && !disabled && "text-text-secondary hover:text-text-primary",
+                !isSelected && disabled && "text-text-disabled",
                 disabled && "cursor-not-allowed opacity-50",
               )}
             >

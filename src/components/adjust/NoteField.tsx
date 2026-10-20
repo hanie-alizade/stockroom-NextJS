@@ -36,11 +36,21 @@ export function NoteField({
 
   return (
     <div className="flex flex-col gap-xs">
-      <div className="flex items-center">
-        <label htmlFor="adjust-note" className="text-label text-text-primary">
-          {label}
-        </label>
-        <span className="ml-sm text-caption text-text-tertiary">{hint}</span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <label htmlFor="adjust-note" className="text-label text-text-primary">
+            {label}
+          </label>
+          <span className="ml-sm text-caption text-text-tertiary">{hint}</span>
+        </div>
+        <span
+          className={cn(
+            "text-caption text-text-tertiary",
+            value.length > 200 && "text-status-danger-fg",
+          )}
+        >
+          {value.length}/200
+        </span>
       </div>
 
       <Input

@@ -22,12 +22,12 @@ export function AdjustPreview({ rows }: AdjustPreviewProps): ReactElement | null
         {rows.map((row) => (
           <div
             key={row.storeName}
-            className="flex min-h-[22px] items-center justify-between"
+            className="flex min-h-[22px] min-w-0 items-center justify-between gap-sm"
           >
-            <span className="text-body-small text-text-primary">{row.storeName}</span>
+            <span className="text-body-small text-text-primary min-w-0 truncate">{row.storeName}</span>
 
-            <div className="flex items-center gap-sm">
-              <span className="text-mono text-text-secondary">
+            <div className="flex shrink-0 items-center gap-sm">
+              <span className="text-mono text-text-secondary whitespace-nowrap">
                 {row.beforeOnHand} →{" "}
                 <span
                   className={
