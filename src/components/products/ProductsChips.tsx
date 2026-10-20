@@ -78,14 +78,15 @@ export function ProductsChips({
           {chips.map((chip) => (
             <div
               key={chip.key}
-              className="max-w-32 overflow-hidden text-ellipsis whitespace-nowrap border-border-default bg-bg-surface text-label text-text-primary inline-flex h-[30px] items-center gap-1.5 rounded-full border py-1 pr-1.5 pl-3 select-none"
+              title={chip.label}
+              className="border-border-default bg-bg-surface text-label text-text-primary inline-flex h-[30px] max-w-[240px] items-center gap-1.5 rounded-full border py-1 pr-1.5 pl-3 select-none"
             >
-              <span>{chip.label}</span>
+              <span className="truncate">{chip.label}</span>
               <button
                 type="button"
                 aria-label={chip.ariaLabel}
                 onClick={chip.onRemove}
-                className="text-text-tertiary hover:text-text-primary inline-flex size-4 cursor-pointer items-center justify-center rounded-full transition-colors"
+                className="text-text-tertiary hover:text-text-primary inline-flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors"
               >
                 <CloseIcon className="size-3" />
               </button>

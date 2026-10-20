@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SearchIcon } from "@/components/icons";
 import {
   Select,
@@ -9,10 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { StockStatus, ProductSortKey, SortDirection } from "@/types";
-import { ALL_OPTION, STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
+import { ALL_OPTION, DEFAULT_PAGE, SORT_DIRECTION, STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
+import { buildProductListUrl, parseProductListParams } from "@/helpers";
 import { useDebouncedCallback } from "@/lib/client/useDebouncedCallback";
-import { ProductsFiltersSheet } from "./ProductsFiltersSheet";
+import type { StockStatus, ProductSortKey, SortDirection, ProductListQuery } from "@/types";
+import { ProductsFiltersSheet, type ProductsFiltersDraft } from "./ProductsFiltersSheet";
 
 export interface ProductsToolbarProps {
   search?: string;
@@ -41,6 +43,9 @@ export function ProductsToolbar({
   dir,
   onSortChange,
 }: ProductsToolbarProps): React.ReactElement {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const desktopInputRef = useRef<HTMLInputElement | null>(null);
   const mobileInputRef = useRef<HTMLInputElement | null>(null);
   const debouncedSearch = useDebouncedCallback(onSearchChange, 500);
@@ -80,6 +85,19 @@ export function ProductsToolbar({
     }
   };
 
+  const handleApplyFilters = (draft: ProductsFiltersDraft): void => {
+    const current = parseProductListParams(searchParams);
+    const next: ProductListQuery = {
+      ...current,
+      category: draft.category,
+      status: draft.status,
+      sort: draft.sort,
+      dir: draft.sort ? (draft.dir ?? SORT_DIRECTION.DESC) : undefined,
+      page: DEFAULT_PAGE,
+    };
+    router.push(buildProductListUrl(pathname, next));
+  };
+
   const categoryLabel = category ?? "All categories";
   const statusLabel = status ? STOCK_STATUS_LABEL[status] : "All statuses";
   const activeFiltersCount = (category ? 1 : 0) + (status ? 1 : 0);
@@ -109,9 +127,7 @@ export function ProductsToolbar({
           dir={dir}
           categories={categories}
           activeFiltersCount={activeFiltersCount}
-          onCategoryChange={onCategoryChange}
-          onStatusChange={onStatusChange}
-          onSortChange={onSortChange}
+          onApply={handleApplyFilters}
         />
       </div>
 
