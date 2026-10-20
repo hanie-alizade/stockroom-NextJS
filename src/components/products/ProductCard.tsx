@@ -2,6 +2,12 @@
 
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { StatusBadge } from "@/components/common";
 import { cn, formatMoney } from "@/helpers";
 import type { ProductListItem } from "@/types";
@@ -12,6 +18,7 @@ export interface ProductCardProps {
   storeParam: string;
   onSelect: (item: ProductListItem) => void;
   onClick: (id: string) => void;
+  onAdjust?: (item: ProductListItem) => void;
 }
 
 export function ProductCard({
@@ -20,6 +27,7 @@ export function ProductCard({
   storeParam,
   onSelect,
   onClick,
+  onAdjust,
 }: ProductCardProps): React.ReactElement {
   return (
     <div
@@ -62,8 +70,31 @@ export function ProductCard({
             </span>
           </div>
         </div>
-        <div className="shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           <StatusBadge status={item.status} />
+          <div onClick={(e) => e.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={`Actions for ${item.name}`}
+                  className="text-text-tertiary hover:text-text-primary inline-flex size-8 items-center justify-center rounded-md text-body-small transition-colors focus-visible:outline-none focus:focus-ring"
+                >
+                  ···
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAdjust?.(item);
+                  }}
+                >
+                  Adjust stock
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

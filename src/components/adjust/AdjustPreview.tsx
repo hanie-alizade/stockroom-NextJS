@@ -1,5 +1,3 @@
-"use client";
-
 import type { ReactElement } from "react";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { STOCK_STATUS } from "@/constants";

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { ALL_OPTION, DEFAULT_PAGE, SORT_DIRECTION, STOCK_STATUS, STOCK_STATUS_LABEL } from "@/constants";
 import { buildProductListUrl, parseProductListParams } from "@/helpers";
-import { useDebouncedCallback } from "@/lib/client/useDebouncedCallback";
+import { useDebouncedCallback } from "@/hooks";
 import type { StockStatus, ProductSortKey, SortDirection, ProductListQuery } from "@/types";
 import { ProductsFiltersSheet, type ProductsFiltersDraft } from "./ProductsFiltersSheet";
 

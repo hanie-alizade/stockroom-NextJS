@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useEffect, type ReactElement } from "react";
+import { useMemo, useRef, useEffect, useCallback, type ReactElement } from "react";
 import { CloseIcon, TransferIcon } from "@/components/icons";
 import {
   Dialog,
@@ -51,8 +51,26 @@ export function AdjustStockDialog({
   const selectedTypeRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    if (open) openerRef.current = document.activeElement as HTMLElement | null;
-  }, [open]);
+    if (open) {
+      const rowTrigger = document.querySelector<HTMLElement>(
+        `button[aria-label="Actions for ${product.name}"]`,
+      );
+      if (rowTrigger) {
+        openerRef.current = rowTrigger;
+      } else if (
+        document.activeElement &&
+        document.activeElement !== document.body &&
+        !document.activeElement.closest('[role="dialog"]')
+      ) {
+        openerRef.current = document.activeElement as HTMLElement | null;
+      }
+    }
+  }, [open, product.name]);
+
+  const handleCloseDialog = useCallback(() => {
+    onOpenChange(false);
+    openerRef.current?.focus();
+  }, [onOpenChange]);
 
   const form = useAdjustForm({ stores, initialStoreId, isOpen: open, onSubmit });
 
@@ -107,7 +125,7 @@ export function AdjustStockDialog({
           </DialogDescription>
           <button
             type="button"
-            onClick={() => onOpenChange(false)}
+            onClick={handleCloseDialog}
             disabled={isSaving}
             aria-label="Close"
             className="absolute top-md right-lg flex size-8 cursor-pointer items-center justify-center rounded-md text-text-tertiary transition-colors hover:bg-bg-subtle disabled:pointer-events-none disabled:opacity-50"
@@ -214,7 +232,7 @@ export function AdjustStockDialog({
             <div className="flex w-full items-center justify-end gap-sm sm:w-auto">
               <button
                 type="button"
-                onClick={() => onOpenChange(false)}
+                onClick={handleCloseDialog}
                 disabled={isSaving}
                 className="h-10 cursor-pointer rounded-md border border-border-default bg-bg-surface px-lg text-label text-text-primary transition-colors hover:bg-bg-subtle disabled:pointer-events-none disabled:opacity-50"
               >
