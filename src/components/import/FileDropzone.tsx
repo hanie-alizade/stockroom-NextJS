@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useState, type DragEvent, type ChangeEvent, type ReactElement } from "react";
 import { CircleAlertIcon, UploadIcon } from "@/components/icons";
 import { cn, parseCsv } from "@/helpers";

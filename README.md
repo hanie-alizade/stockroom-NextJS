@@ -34,6 +34,7 @@ Switch user (Manager or Staff) and store from the sidebar. There is no real logi
 
 - Unit and route handler tests: `npm test`
 - End-to-end: `npm run e2e` (builds the app, starts it with E2E=1 and SIMULATED_LATENCY_MS=0, runs tests)
+- Note: `npx playwright install chromium` is needed once before running end-to-end tests.
 
 ## Tech stack
 

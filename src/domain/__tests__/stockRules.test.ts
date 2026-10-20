@@ -32,6 +32,13 @@ describe("isValidQuantity", () => {
   it("returns false for NaN", () => {
     expect(isValidQuantity(NaN)).toBe(false);
   });
+
+  it("returns false for non-numeric or non-integer edge cases (string, null, undefined, Infinity)", () => {
+    expect(isValidQuantity("5" as unknown as number)).toBe(false);
+    expect(isValidQuantity(null as unknown as number)).toBe(false);
+    expect(isValidQuantity(undefined as unknown as number)).toBe(false);
+    expect(isValidQuantity(Infinity)).toBe(false);
+  });
 });
 
 describe("canRemoveStock", () => {
